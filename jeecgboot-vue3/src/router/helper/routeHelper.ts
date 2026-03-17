@@ -122,7 +122,7 @@ function dynamicImport(dynamicViewsModules: Record<string, () => Promise<Recorda
     return;
   }
   // online/aiflow 本地未找到，尝试从懒加载包中按需加载
-  if (component.startsWith('/super/online') || component.startsWith('/super/aiflow')) {
+  if (component.startsWith('/super/online') || component.startsWith('/super/airag')) {
     return () => {
       return loadPackageComponent(component).then((factory) => (factory ? factory() : Promise.reject(`组件 ${component} 未找到`)));
     };
