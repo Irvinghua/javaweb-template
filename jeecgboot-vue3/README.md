@@ -1,106 +1,94 @@
-JeecgBoot 企业级低代码开发平台
-===============
-当前最新版本： 3.9.1（预计发布时间：2026-01-22）
+# vibeCRUD 前端模板（基于 JeecgBoot Vue3 裁剪）
 
-[![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
-[![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://jeecg.com/aboutusIndex)
-[![](https://img.shields.io/badge/version-3.9.1-brightgreen.svg)](https://github.com
-/zhangdaiscott/jeecg-boot)
-[![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
-[![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
+本工程是 ToB 后台管理系统的前端脚手架模板，为**每个新项目 fork 一次独立开发**而设计（fork-and-forget）。
+后端在同仓库的 `jeecg-boot/` 目录。
 
+## 工程定位
 
+- 70% 业务是 CRUD 后台管理，复用 JeecgBoot 的系统管理、权限、字典等内核
+- 30% 业务为 dashboard / 报表 / 定制业务页，按每个项目的设计稿 AI 改造
+- 每个项目 fork 后独立演化，**不回流 template**
 
-## 简介
-JeecgBoot-Vue3采用 Vue3.0、Vite、 Ant-Design-Vue4、TypeScript 等新技术方案，包括二次封装组件、utils、hooks、动态菜单、权限校验、按钮级别权限控制等功能。
- 
-> 强大的代码生成器让前后端代码一键生成! JeecgBoot引领低代码开发模式(OnlineCoding-> 代码生成-> 手工MERGE)， 帮助解决Java项目70%的重复工作，让开发更多关注业务。既能快速提高效率，节省成本，同时又不失灵活性
+## 技术栈
 
+Vue 3 + Vite 6 + TypeScript + Ant Design Vue 4 + Pinia + Vue Router 4。
+包管理 pnpm，Node ^18 || >=20。
 
-## 开发环境搭建
-
-- [前端开发环境准备](https://help.jeecg.com/setup/dev)
-- [前端项目快速启动](https://help.jeecg.com/setup/startup)
-- [通过IDEA启动项目](https://help.jeecg.com/java/setup/idea/startup)
-
-## 技术文档
-
--   官方文档：[https://help.jeecg.com](https://help.jeecg.com)
--   快速入门：[快速入门](http://jeecg.com/doc/quickstart) | [常见问题](http://help.jeecg.com/qa) 
--   QQ交流群：964611995、⑩716488839(满)、⑨808791225(满)、其他满
--   在线演示 ：  [系统演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
-> 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取
-
-
-## 安装与使用
-
-*   本地环境安装 `Node.js 、npm 、pnpm`
-*   Node.js 版本要求`Node 20+` 版本以上
-
- ` ( 因为Vite5 不再支持已 EOL 的 Node.js 14 / 16 / 17 / 19，现在需要 Node 20+ )`
-
-
-  
-- Get the project code
+## 启动
 
 ```bash
-git clone https://github.com/jeecgboot/JeecgBoot.git
-```
-
-- Installation dependencies
-
-```bash
-cd JeecgBoot/jeecgboot-vue3
-
 pnpm install
+pnpm dev          # 端口 3100；代理 /jeecgboot → localhost:8080/jeecg-boot
 ```
 
-- 配置接口地址 `.env.development`
+详细环境变量见 `.env.development`。
+
+## Fork 后的改造流程
+
+fork 本模板后 + 拿到新项目设计稿，按以下步骤：
+
+1. **改项目身份**
+   - `package.json` 的 `name` / `version` / `author` / `repository`
+   - `.env` 的 `VITE_GLOB_APP_TITLE` / `VITE_GLOB_APP_SHORT_NAME`
+   - `public/favicon.ico`、`src/assets/images/logo.png`
+2. **改主题 token**：修改 `src/theme/tokens.ts`（ROI 最高，让 70% 的 CRUD 页自动吃上新风格）
+3. **改应用外壳**：按设计稿重写 `src/layouts/default/**`
+4. **改登录 / 主页**：`src/views/login/**`、`src/views/dashboard/**`
+5. **如项目不需要深色模式**：删除设置抽屉里的 dark 切换组件（位于 `src/layouts/default/setting/**`）
+6. **开发业务页**：新模块建议放 `src/views/<moduleName>/**`
+
+完整流程与给 AI 的 prompt 模板见 **[`docs/ai-redesign-workflow.md`](./docs/ai-redesign-workflow.md)**。
+
+## 禁区（不主动改）
+
+除非有明确理由，fork 后**不要**改以下目录：
+
+- `src/views/system/**` — JeecgBoot 系统管理页
+- `src/components/**` — 基础组件库
+- `src/store/**` / `src/router/**` / `src/utils/**` / `src/api/**` / `src/hooks/**` / `src/logics/**` / `src/settings/**`
+- `build/**` / `vite.config.ts`
+
+改这些会把本模板的内核改坏，也让未来想借鉴其他 fork 的修复变困难。
+
+## 目录结构（节选）
+
+```
+src/
+├── theme/tokens.ts         # [可改区] design token 单一真源
+├── layouts/default/        # [可改区] 应用外壳
+├── views/
+│   ├── login/              # [可改区] 登录页
+│   ├── dashboard/          # [可改区] 主页 / 概览
+│   ├── system/             # [禁区] JeecgBoot 系统管理页
+│   └── <your-module>/      # [可改区] 业务页
+├── components/             # [禁区] 基础组件库
+├── store/                  # [禁区] 状态管理
+├── router/                 # [禁区] 路由配置
+├── api/                    # [禁区] HTTP 客户端与业务 API
+└── assets/                 # [可改区] 静态资源
+```
+
+## 常用命令
 
 ```bash
-VITE_PROXY = [["/jeecgboot","http://localhost:8080/jeecg-boot"],["/upload","http://localhost:3300/upload"]]
-VITE_GLOB_DOMAIN_URL=http://localhost:8080/jeecg-boot
+pnpm dev              # 开发服务器
+pnpm build            # 生产构建
+pnpm clean:cache      # 清 vite 缓存
+pnpm reinstall        # 重装依赖
+pnpm batch:prettier   # 批量格式化 src
 ```
 
-> 说明：把`http://localhost:8080/jeecg-boot` 换成自己地址，其他不用改。
+## Lint / 类型检查
 
+- `npx eslint src/path/to/file.vue`
+- `npx stylelint "src/**/*.{vue,less,css}"`
+- `npx vue-tsc --noEmit`（未配全量 CI，手动跑）
 
-- run
+## 更多
 
-```bash
-pnpm dev
-```
+- 后端参见 `jeecg-boot/` 及其 `CLAUDE.md`
+- 前端编码约定参见 `CLAUDE.md`（与本文互补：本文档面向人类与 AI 代理，CLAUDE.md 记录编码细节）
 
+---
 
-- build
-
-```bash
-pnpm build
-```
-
-## 入门必备
-
-本项目需要一定前端基础知识，请确保掌握 Vue 的基础知识，以便能处理一些常见的问题。 建议在开发前先学一下以下内容，提前了解和学习这些知识，会对项目理解非常有帮助:
-
-*   [JeecgBoot文档](http://help.jeecg.com)
-*   [Vue3 文档](https://cn.vuejs.org/)
-*   [Vben文档](https://doc.vvbin.cn)
-*   [Ant-Design-Vue](https://www.antdv.com/docs/vue/introduce-cn/)
-*   [TypeScript](https://www.typescriptlang.org/)
-*   [Vue-router](https://router.vuejs.org/zh)
-*   [Es6](https://es6.ruanyifeng.com/)
-*   [Vitejs](https://cn.vitejs.dev/guide/)
-*   [Pinia(vuex替代方案)](https://pinia.esm.dev/introduction.html)
-*   [Vue-RFCS](https://github.com/vuejs/rfcs)
-*   [vxetable文档](https://vxetable.cn)
-
-
-##   浏览器支持
-
-**本地开发**推荐使用`Chrome 最新版`浏览器，**不支持**`Chrome 90`以下版本。
-
-**生产环境**支持现代浏览器，不支持 IE。
-
-| [![IE](https://raw.githubusercontent.com/alrra/browser-logos/master/src/archive/internet-explorer_9-11/internet-explorer_9-11_48x48.png)](http://godban.github.io/browsers-support-badges/)IE | [![ Edge](https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png)](http://godban.github.io/browsers-support-badges/)Edge | [![Firefox](https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png)](http://godban.github.io/browsers-support-badges/)Firefox | [![Chrome](https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png)](http://godban.github.io/browsers-support-badges/)Chrome | [![Safari](https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png)](http://godban.github.io/browsers-support-badges/)Safari |
-| --- | --- | --- | --- | --- |
-| not support | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
+底层基于 [JeecgBoot](https://github.com/jeecgboot/JeecgBoot) 3.9.1 裁剪。
