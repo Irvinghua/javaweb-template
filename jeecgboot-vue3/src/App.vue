@@ -17,6 +17,7 @@
   import { useRootSetting } from '/@/hooks/setting/useRootSetting';
   import { ThemeEnum } from '/@/enums/appEnum';
   import { changeTheme } from '/@/logics/theme/index';
+  import { tokens } from '/@/theme/tokens';
 
   const appStore = useAppStore();
   // 解决日期时间国际化问题
@@ -71,22 +72,10 @@
       const primary = newValue.themeColor;
       const result = {
         ...appTheme.value,
-        ...{
-          token: {
-            colorPrimary: primary,
-            wireframe: true,
-            fontSize: 14,
-            colorTextBase: '#333',
-            colorSuccess: '#55D187',
-            colorInfo: primary,
-            borderRadius: 4,
-            sizeStep: 4,
-            sizeUnit: 4,
-            colorWarning: '#EFBD47',
-            colorError: '#ED6F6F',
-            fontFamily:
-              '-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol',
-          },
+        token: {
+          ...tokens,
+          colorPrimary: primary,
+          colorInfo: primary,
         },
       };
       appTheme.value = result;
