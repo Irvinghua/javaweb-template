@@ -2,9 +2,7 @@ package org.jeecg.modules.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
-import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.PushMessageDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.api.vo.Result;
@@ -16,7 +14,6 @@ import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.Map;
@@ -441,16 +438,6 @@ public class SystemApiController {
     }
 
     //-----
-
-    /**
-     * 判断是否有online访问的权限
-     * @param onlineAuthDTO
-     * @return
-     */
-    @PostMapping("/hasOnlineAuth")
-    public boolean hasOnlineAuth(@RequestBody OnlineAuthDTO onlineAuthDTO){
-        return sysBaseApi.hasOnlineAuth(onlineAuthDTO);
-    }
 
     /**
      * 查询用户角色信息
@@ -1067,31 +1054,6 @@ public class SystemApiController {
     @GetMapping(value = "/queryCompByOrgCodeAndLevel")
     SysDepartModel queryCompByOrgCodeAndLevel(@RequestParam("orgCode") String orgCode, @RequestParam("level") Integer level){
         return sysBaseApi.queryCompByOrgCodeAndLevel(orgCode,level);
-    }
-
-    /**
-     * 运行AIRag流程
-     * for  [QQYUN-13634]在baseapi里面封装方法，方便其他模块调用
-     * @param airagFlowDTO
-     * @return 流程执行结果,可能是String或者Map
-     * @return
-     */
-    @PostMapping(value = "/runAiragFlow")
-    Object runAiragFlow(@RequestBody AiragFlowDTO airagFlowDTO) {
-        return sysBaseApi.runAiragFlow(airagFlowDTO);
-    }
-
-    /**
-     * 流式运行AIRag流程
-     * for  [QQYUN-13634]在baseapi里面封装方法，方便其他模块调用
-     *
-     * @param airagFlowDTO
-     * @return 流程执行结果,可能是String或者Map
-     * @return
-     */
-    @PostMapping(value = "/runAiragFlowStream")
-    SseEmitter runAiragFlowStream(@RequestBody AiragFlowDTO airagFlowDTO) {
-        return sysBaseApi.runAiragFlowStream(airagFlowDTO);
     }
 
     /**

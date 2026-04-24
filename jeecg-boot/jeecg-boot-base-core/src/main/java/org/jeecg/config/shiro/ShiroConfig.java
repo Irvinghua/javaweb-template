@@ -111,7 +111,6 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/sys/getLoginQrcode/**", "anon"); //登录二维码
         filterChainDefinitionMap.put("/sys/getQrcodeToken/**", "anon"); //监听扫码
         filterChainDefinitionMap.put("/sys/checkAuth", "anon"); //授权接口排除
-        filterChainDefinitionMap.put("/openapi/call/**", "anon"); // 开放平台接口排除
 
         // 代码逻辑说明: 排除静态资源后缀
         filterChainDefinitionMap.put("/", "anon");
@@ -140,26 +139,8 @@ public class ShiroConfig {
 
         filterChainDefinitionMap.put("/sys/annountCement/show/**", "anon");
 
-        //积木报表排除
-        filterChainDefinitionMap.put("/jmreport/**", "anon");
         filterChainDefinitionMap.put("/**/*.js.map", "anon");
         filterChainDefinitionMap.put("/**/*.css.map", "anon");
-        
-        //积木BI大屏和仪表盘排除
-        filterChainDefinitionMap.put("/drag/view", "anon");
-        filterChainDefinitionMap.put("/drag/page/queryById", "anon");
-        filterChainDefinitionMap.put("/drag/page/addVisitsNumber", "anon");
-        filterChainDefinitionMap.put("/drag/page/queryTemplateList", "anon");
-        filterChainDefinitionMap.put("/drag/share/view/**", "anon");
-        filterChainDefinitionMap.put("/drag/onlDragDatasetHead/getAllChartData", "anon");
-        filterChainDefinitionMap.put("/drag/onlDragDatasetHead/getTotalData", "anon");
-        filterChainDefinitionMap.put("/drag/onlDragDatasetHead/getMapDataByCode", "anon");
-        filterChainDefinitionMap.put("/drag/onlDragDatasetHead/getTotalDataByCompId", "anon");
-        filterChainDefinitionMap.put("/drag/mock/json/**", "anon");
-        filterChainDefinitionMap.put("/drag/onlDragDatasetHead/getDictByCodes", "anon");
-        filterChainDefinitionMap.put("/drag/onlDragDatasetHead/queryAllById", "anon");
-        filterChainDefinitionMap.put("/jimubi/view", "anon");
-        filterChainDefinitionMap.put("/jimubi/share/view/**", "anon");
 
         //大屏模板例子
         filterChainDefinitionMap.put("/test/bigScreen/**", "anon");
@@ -189,8 +170,6 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/error", "anon");
         // 企业微信证书排除
         filterChainDefinitionMap.put("/WW_verify*", "anon");
-
-        filterChainDefinitionMap.put("/openapi/call/**", "anon");
 
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
@@ -223,19 +202,6 @@ public class ShiroConfig {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(new DelegatingFilterProxy("shiroFilterFactoryBean"));
         registration.setEnabled(true);
-        // 代码逻辑说明: [issues/7491]运行耗时长，效率慢 
-        registration.addUrlPatterns("/test/ai/chat/send");
-        registration.addUrlPatterns("/airag/flow/run");
-        registration.addUrlPatterns("/airag/flow/debug");
-        registration.addUrlPatterns("/airag/chat/send");
-        registration.addUrlPatterns("/airag/app/debug");
-        registration.addUrlPatterns("/airag/app/prompt/generate");
-        registration.addUrlPatterns("/airag/chat/receive/**");
-        // 添加SSE接口的异步支持
-        registration.addUrlPatterns("/airag/extData/evaluator/debug");
-        registration.addUrlPatterns("/drag/onlDragDatasetHead/generateChartSse");
-        registration.addUrlPatterns("/drag/onlDragDatasetHead/updateChartOptSse");
-        registration.addUrlPatterns("/drag/onlDragDatasetHead/generateSqlSse");
         //支持异步
         registration.setAsyncSupported(true);
         registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);

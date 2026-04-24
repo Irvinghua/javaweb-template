@@ -110,7 +110,6 @@ export default {
     fullContent: '全屏内容',
     grayMode: '灰色模式',
     colorWeak: '色弱模式',
-    aiIconSHow: 'Ai图标显示',
 
     progress: '顶部进度条',
     switchLoading: '切换loading',

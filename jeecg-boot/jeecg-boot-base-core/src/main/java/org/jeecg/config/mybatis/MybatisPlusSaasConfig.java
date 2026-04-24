@@ -74,12 +74,6 @@ public class MybatisPlusSaasConfig {
             TENANT_TABLE.add("jimu_report_data_source");
             TENANT_TABLE.add("jimu_report");
             TENANT_TABLE.add("jimu_dict");
-            //b-4.AIRAG
-            TENANT_TABLE.add("airag_app");
-            TENANT_TABLE.add("airag_flow");
-            TENANT_TABLE.add("airag_knowledge");
-            TENANT_TABLE.add("airag_knowledge_doc");
-            TENANT_TABLE.add("airag_model");
         }
 
         //2.示例测试

@@ -42,7 +42,7 @@ The `/@/` prefix (with leading slash) is the project's conventional alias — pr
 
 ### Bootstrap Sequence (src/main.ts)
 
-`createApp` → createRouter → setupStore (pinia) → setupProps → i18n → initAppConfigStore → registerPackages (@jeecg/online) → registerGlobComp (core Ant Design components) → SSO login → registerSuper (dynamic module discovery) → setupRouter → guards → directives → error handler → registerThirdComp (vxe-table, emoji, dayjs) → setupElectron → router.isReady() → mount
+`createApp` → createRouter → setupStore (pinia) → setupProps → i18n → initAppConfigStore → registerPackages (no-op, 已移除 @jeecg/online) → registerGlobComp (core Ant Design components) → SSO login → registerSuper (dynamic module discovery) → setupRouter → guards → directives → error handler → registerThirdComp (vxe-table, emoji, dayjs) → setupElectron → router.isReady() → mount
 
 ### Routing & Permissions
 
@@ -93,8 +93,7 @@ Three icon approaches:
 
 ### External Packages
 
-- `@jeecg/online` and `@jeecg/aiflow` are external monorepo packages excluded from Vite optimizeDeps (CJS compatibility issues)
-- Registered via `registerPackages(app)` in main.ts
+- 本工程已移除 `@jeecg/online`（在线表单/列表设计器）和 `@jeecg/aiflow`。`registerPackages(app)` 保留为空实现，便于后续若引入新外部包时统一挂接。
 
 ### Performance Optimization Patterns
 
