@@ -13,7 +13,6 @@ import org.jeecg.common.api.dto.LogDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.constant.enums.ModuleType;
 import org.jeecg.common.constant.enums.OperateTypeEnum;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.vo.LoginUser;
@@ -74,9 +73,6 @@ public class AutoLogAspect {
         if(syslog != null){
             //update-begin-author:taoyan date:
             String content = syslog.value();
-            if(syslog.module()== ModuleType.ONLINE){
-                content = getOnlineLogContent(obj, content);
-            }
             //注解上的描述,操作日志内容
             dto.setLogType(syslog.logType());
             dto.setLogContent(content);
@@ -181,78 +177,4 @@ public class AutoLogAspect {
         }
         return params;
     }
-
-    /**
-     * online日志内容拼接
-     * @param obj
-     * @param content
-     * @return
-     */
-    private String getOnlineLogContent(Object obj, String content){
-        if (Result.class.isInstance(obj)){
-            Result res = (Result)obj;
-            String msg = res.getMessage();
-            String tableName = res.getOnlTable();
-            if(oConvertUtils.isNotEmpty(tableName)){
-                content+=",表名:"+tableName;
-            }
-            if(res.isSuccess()){
-                content+= ","+(oConvertUtils.isEmpty(msg)?"操作成功":msg);
-            }else{
-                content+= ","+(oConvertUtils.isEmpty(msg)?"操作失败":msg);
-            }
-        }
-        return content;
-    }
-
-
-    /*    private void saveSysLog(ProceedingJoinPoint joinPoint, long time, Object obj) {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
-
-        SysLog sysLog = new SysLog();
-        AutoLog syslog = method.getAnnotation(AutoLog.class);
-        if(syslog != null){
-            //update-begin-author:taoyan date:
-            String content = syslog.value();
-            if(syslog.module()== ModuleType.ONLINE){
-                content = getOnlineLogContent(obj, content);
-            }
-            //注解上的描述,操作日志内容
-            sysLog.setLogContent(content);
-            sysLog.setLogType(syslog.logType());
-        }
-
-        //请求的方法名
-        String className = joinPoint.getTarget().getClass().getName();
-        String methodName = signature.getName();
-        sysLog.setMethod(className + "." + methodName + "()");
-
-
-        //设置操作类型
-        if (sysLog.getLogType() == CommonConstant.LOG_TYPE_2) {
-            sysLog.setOperateType(getOperateType(methodName, syslog.operateType()));
-        }
-
-        //获取request
-        HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
-        //请求的参数
-        sysLog.setRequestParam(getReqestParams(request,joinPoint));
-
-        //设置IP地址
-        sysLog.setIp(IPUtils.getIpAddr(request));
-
-        //获取登录用户信息
-        LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
-        if(sysUser!=null){
-            sysLog.setUserid(sysUser.getUsername());
-            sysLog.setUsername(sysUser.getRealname());
-
-        }
-        //耗时
-        sysLog.setCostTime(time);
-        sysLog.setCreateTime(new Date());
-        //保存系统日志
-        sysLogService.save(sysLog);
-    }*/
 }

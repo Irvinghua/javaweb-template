@@ -10,36 +10,16 @@
                 <Icon icon="ant-design:close-circle-outlined" @click="handleEmpty" title="清空" v-if="showText"></Icon>
             </template>-->
     </a-input>
-    <a-form-item>
-      <!--popup弹窗-->
-      <JPopupOnlReportModal
-        @register="regModal"
-        :code="code"
-        :multi="multi"
-        :sorter="sorter"
-        :groupId="uniqGroupId"
-        :param="param"
-        :showAdvancedButton="showAdvancedButton"
-        :getContainer="getContainer"
-        :getFormValues="getFormValues"
-        @ok="callBack"
-      ></JPopupOnlReportModal>
-    </a-form-item>
   </div>
 </template>
 <script lang="ts">
-  import JPopupOnlReportModal from './modal/JPopupOnlReportModal.vue';
-  import { defineComponent, ref, reactive, onMounted, watchEffect, watch, computed, unref } from 'vue';
-  import { useModal } from '/@/components/Modal';
+  import { defineComponent, ref, onMounted, watch, computed } from 'vue';
   import { propTypes } from '/@/utils/propTypes';
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { useMessage } from '/@/hooks/web/useMessage';
 
   export default defineComponent({
     name: 'JPopup',
-    components: {
-      JPopupOnlReportModal,
-    },
     inheritAttrs: false,
     props: {
       code: propTypes.string.def(''),
@@ -64,15 +44,13 @@
       inSearch: propTypes.bool.def(false),
     },
     emits: ['update:value', 'register', 'popUpChange', 'focus'],
-    setup(props, { emit, refs }) {
+    setup(props, { emit }) {
       const { createMessage } = useMessage();
       const attrs = useAttrs();
       //pop是否展示
       const avalid = ref(true);
       const showText = ref('');
       const innerShowText = ref('')
-      //注册model
-      const [regModal, { openModal }] = useModal();
       //表单值
       let {code, fieldConfig } = props;
       //唯一分组groupId
@@ -102,8 +80,6 @@
        */
       function handleOpen() {
         emit('focus');
-        // 代码逻辑说明: 【TV360X-317】禁用后JPopup和JPopupdic还可以点击出弹窗
-        !attrs.value.disabled && openModal(true);
       }
 
       /**
@@ -156,7 +132,6 @@
         avalid,
         uniqGroupId,
         attrs,
-        regModal,
         handleOpen,
         handleEmpty,
         callBack,

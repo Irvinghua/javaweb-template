@@ -109,5 +109,9 @@ private IXxxService xxxService;
 - `org.jeecg.modules.airag.*`、`org.jeecg.modules.openapi.*`
 - `@jeecg/aiflow`（前端）、`dashboard/ai`、`super/airag`、`views/openapi`
 - `runAiragFlow`、`aiIconShow`、`AI_ICON_SHOW`
+- `UrlMatchEnum`、`LowCodeUrlsEnum`、`LowCodeModeInterceptor`、`LowCodeModeConfiguration`、`CgformEnum`、`OnlineAuth`
+- `code-template-online`、`onl_drag_page`、`onl_drag_dataset_head`、`bigscreen`
+- `JPopupOnlReportModal`、`JLinkTableCard`、`OnLine` 组件目录
+- `org.jeecg.modules.demo.online`、`BigScreenTemplatController`
 
 如果需要恢复其中某个能力，优先从 JeecgBoot 官方源码同步，而不是自行重建。

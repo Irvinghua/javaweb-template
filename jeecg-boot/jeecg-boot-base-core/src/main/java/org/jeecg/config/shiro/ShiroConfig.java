@@ -144,8 +144,6 @@ public class ShiroConfig {
 
         //大屏模板例子
         filterChainDefinitionMap.put("/test/bigScreen/**", "anon");
-        filterChainDefinitionMap.put("/bigscreen/template1/**", "anon");
-        filterChainDefinitionMap.put("/bigscreen/template2/**", "anon");
         //filterChainDefinitionMap.put("/test/jeecgDemo/rabbitMqClientTest/**", "anon"); //MQ测试
         //filterChainDefinitionMap.put("/test/jeecgDemo/html", "anon"); //模板页面
         //filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
@@ -156,8 +154,6 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/vxeSocket/**", "anon");//JVxeTable无痕刷新示例
         //App vue3版本查询版本接口
         filterChainDefinitionMap.put("/sys/version/app3version", "anon");
-        //仪表盘（按钮通信）
-        filterChainDefinitionMap.put("/dragChannelSocket/**","anon");
         //App vue3版本查询版本接口
         filterChainDefinitionMap.put("/sys/version/app3version", "anon");
 

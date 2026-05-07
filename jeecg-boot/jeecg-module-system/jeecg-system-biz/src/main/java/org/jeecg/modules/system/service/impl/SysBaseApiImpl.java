@@ -25,7 +25,6 @@ import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.PushMessageDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.aspect.UrlMatchEnum;
 import org.jeecg.common.constant.*;
 import org.jeecg.common.constant.enums.*;
 import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
@@ -215,20 +214,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			
 			query.eq(SysPermission::getUrl, requestPath);
 			currentSyspermission = sysPermissionMapper.selectList(query);
-			//2.未找到 再通过自定义匹配URL 获取菜单
-			if(currentSyspermission==null || currentSyspermission.size()==0) {
-				//通过自定义URL匹配规则 获取菜单（实现通过菜单配置数据权限规则，实际上针对获取数据接口进行数据规则控制）
-				String userMatchUrl = UrlMatchEnum.getMatchResultByUrl(requestPath);
-				LambdaQueryWrapper<SysPermission> queryQserMatch = new LambdaQueryWrapper<SysPermission>();
-				// 代码逻辑说明:  online菜单如果配置成一级菜单 权限查询不到 取消menuType = 1
-				//queryQserMatch.eq(SysPermission::getMenuType, 1);
-				queryQserMatch.eq(SysPermission::getDelFlag, 0);
-				queryQserMatch.eq(SysPermission::getUrl, userMatchUrl);
-				if(oConvertUtils.isNotEmpty(userMatchUrl)){
-					currentSyspermission = sysPermissionMapper.selectList(queryQserMatch);
-				}
-			}
-			//3.未找到 再通过正则匹配获取菜单
+			//2.未找到 再通过正则匹配获取菜单
 			if(currentSyspermission==null || currentSyspermission.size()==0) {
 				//通过正则匹配权限配置
 				String regUrl = getRegexpUrl(requestPath);

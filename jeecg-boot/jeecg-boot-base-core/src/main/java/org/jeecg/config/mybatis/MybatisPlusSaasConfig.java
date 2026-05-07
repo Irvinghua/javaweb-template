@@ -69,8 +69,6 @@ public class MybatisPlusSaasConfig {
             TENANT_TABLE.add("sys_data_source");
             TENANT_TABLE.add("sys_position");
             //b-2.仪表盘
-            TENANT_TABLE.add("onl_drag_page");
-            TENANT_TABLE.add("onl_drag_dataset_head");
             TENANT_TABLE.add("jimu_report_data_source");
             TENANT_TABLE.add("jimu_report");
             TENANT_TABLE.add("jimu_dict");

@@ -252,13 +252,6 @@ export function useMessageHref(emit, props){
           showDesignFormBtn: false,
         };
         break;
-      case 'cgform':
-        //Online表单
-        currentModal.value = 'OnlineAutoModal';
-        bindParams.value = {
-          id: params.formId,
-        }
-        break;
       default:
         currentModal.value = null;
         break;
@@ -328,11 +321,7 @@ export function useMessageHref(emit, props){
       if(msgAbstract){
         try {
           let data = JSON.parse(msgAbstract.toString());
-          if(data.type == 'designForm'){
-            showDesignFormModal(data);
-          } else {
-            showOnlineCgformModal(data);
-          }
+          showDesignFormModal(data);
         }catch (e) {
           console.error('打开评论表单，但是msgAbstract参数不是JSON格式', msgAbstract)
           if(openModalFun){
@@ -373,21 +362,6 @@ export function useMessageHref(emit, props){
   }
 
   /**
-   * 打开Online表单 弹窗
-   * @param data
-   */
-  function showOnlineCgformModal(data) {
-    handleOpenType('cgform', {
-      formId: data.formId,
-      isUpdate: true,
-      disableSubmit: true,
-      record: {
-        id: data.dataId,
-      },
-    });
-  }
-
-  /**
    * 判断是不是表单的评论消息
    * @param record
    */
@@ -397,7 +371,7 @@ export function useMessageHref(emit, props){
       if(msgAbstract){
         try {
           let data = JSON.parse(msgAbstract);
-          if(['cgform', 'designForm'].includes(data.type)){
+          if(data.type === 'designForm'){
             return true
           }
         }catch (e) {

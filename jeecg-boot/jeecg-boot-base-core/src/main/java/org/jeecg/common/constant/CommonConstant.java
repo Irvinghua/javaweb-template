@@ -236,12 +236,6 @@ public interface CommonConstant {
     String DESIGN_FORM_URL_TYPE_VIEW = "view";
 
     /**
-     * online参数值设置（是：Y, 否：N）
-     */
-    String ONLINE_PARAM_VAL_IS_TURE = "Y";
-    String ONLINE_PARAM_VAL_IS_FALSE = "N";
-
-    /**
      * 文件上传类型（本地：local，Minio：minio，阿里云：alioss）
      */
     String UPLOAD_TYPE_LOCAL = "local";
@@ -394,9 +388,6 @@ public interface CommonConstant {
     String ANNOUNCEMENT_SEND_STATUS_1 = "1";
     /** 系统通告消息状态：2=已撤销 */
     String ANNOUNCEMENT_SEND_STATUS_2 = "2";
-
-    /**ONLINE 报表权限用 从request中获取地址栏后的参数*/
-    String ONL_REP_URL_PARAM_STR="onlRepUrlParamStr";
 
     /**POST请求*/
     String HTTP_POST = "POST";

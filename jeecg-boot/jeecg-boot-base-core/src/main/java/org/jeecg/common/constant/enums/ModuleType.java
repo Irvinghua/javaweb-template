@@ -9,10 +9,5 @@ public enum ModuleType {
     /**
      * 普通
      */
-    COMMON,
-
-    /**
-     * online
-     */
-    ONLINE;
+    COMMON;
 }

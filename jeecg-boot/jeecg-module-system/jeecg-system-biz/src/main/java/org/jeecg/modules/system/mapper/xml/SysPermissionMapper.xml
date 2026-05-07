@@ -72,9 +72,6 @@
 					JOIN sys_role b ON a.role_id = b.id
 					JOIN sys_user_role c ON c.role_id = b.id AND c.user_id = #{userId,jdbcType=VARCHAR}
 					)
-					or (p.url like '%:code' and p.url like '/online%' and p.hidden = 1)
-					or (p.url like '%:id' and p.url like '/online%' and p.hidden = 1)
-					or p.url = '/online'
 		       )
 			<!--update begin Author:lvdandan  Date:20200213 for：加入部门权限 -->
 			   UNION

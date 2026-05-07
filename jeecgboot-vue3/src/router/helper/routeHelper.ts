@@ -7,8 +7,6 @@ import { warn } from '/@/utils/log';
 import { createRouter, createWebHashHistory } from 'vue-router';
 import { getTenantId, getToken } from "/@/utils/auth";
 import { URL_HASH_TAB, _eval } from '/@/utils';
-//引入online lib路由
-import { packageViews } from '/@/utils/monorepo/dynamicRouter';
 import {useI18n} from "/@/hooks/web/useI18n";
 
 export type LayoutMapKey = 'LAYOUT';
@@ -28,8 +26,6 @@ let dynamicViewsModules: Record<string, () => Promise<Recordable>>;
 function asyncImportRoute(routes: AppRouteRecordRaw[] | undefined) {
   if (!dynamicViewsModules) {
     dynamicViewsModules = import.meta.glob('../../views/**/*.{vue,tsx}');
-    //合并online lib路由
-    dynamicViewsModules = Object.assign({}, dynamicViewsModules, packageViews);
   }
   if (!routes) return;
   routes.forEach((item) => {

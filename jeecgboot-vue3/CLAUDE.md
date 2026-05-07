@@ -107,7 +107,7 @@ Three icon approaches:
 
 ### External Packages
 
-- 本工程已移除 `@jeecg/online`（在线表单/列表设计器）和 `@jeecg/aiflow`。`registerPackages(app)` 保留为空实现，便于后续若引入新外部包时统一挂接。
+- 本工程已移除 `@jeecg/online`（在线表单/列表设计器）和 `@jeecg/aiflow`。`registerPackages(app)` 保留为空实现，便于后续若引入新外部包时统一挂接。Online 表单/报表弹窗组件（`JPopupOnlReportModal`、`OnLine/` 目录、`JLinkTableCard`）也已移除；`JPopup` / `JPopupDict` 保留为只读壳。
 
 ### Performance Optimization Patterns
 
@@ -164,7 +164,7 @@ Three icon approaches:
 ```
 build/                    # Vite plugins, build scripts, theme generation
 src/api/                  # API definitions (sys/, common/, demo/)
-src/components/jeecg/     # Jeecg-specific components (JVxeTable, OnLine, etc.)
+src/components/jeecg/     # Jeecg-specific components (JVxeTable, etc.)
 src/layouts/default/      # Main app layout (header, sider, tabs, menu)
 src/settings/             # Project settings (design, components, locale, encryption)
 src/utils/http/axios/     # HTTP client configuration

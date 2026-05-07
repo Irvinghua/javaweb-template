@@ -5,44 +5,15 @@
     <a-select v-model:value="showText" v-bind="attrs" :mode="multi ? 'multiple' : ''" @click="handleOpen" readOnly :loading="loading">
       <a-select-option v-for="item in options" :value="item.value">{{ item.text }}</a-select-option>
     </a-select>
-    <a-form-item>
-      <!--popup弹窗-->
-      <JPopupOnlReportModal
-        @register="regModal"
-        :code="code"
-        :multi="multi"
-        :selected="selected"
-        :rowkey="valueFiled"
-        :sorter="sorter"
-        :groupId="''"
-        :param="param"
-        :getFormValues="getFormValues"
-        :getContainer="getContainer"
-        :showAdvancedButton="showAdvancedButton"
-        @ok="callBack"
-      />
-    </a-form-item>
   </div>
 </template>
 <script lang="ts">
-  import JPopupOnlReportModal from './modal/JPopupOnlReportModal.vue';
-  import { defineComponent, ref, nextTick, watch, reactive, unref } from 'vue';
-  import { useModal } from '/@/components/Modal';
+  import { defineComponent, ref, nextTick, watch } from 'vue';
   import { propTypes } from '/@/utils/propTypes';
   import { useAttrs } from '/@/hooks/core/useAttrs';
-  import { defHttp } from '/@/utils/http/axios';
   import { useMessage } from '/@/hooks/web/useMessage';
-  //定义请求url信息
-  const configUrl = reactive({
-    getColumns: '/online/cgreport/api/getRpColumns/',
-    getData: '/online/cgreport/api/getData/',
-  });
-
   export default defineComponent({
     name: 'JPopupDict',
-    components: {
-      JPopupOnlReportModal,
-    },
     inheritAttrs: false,
     props: {
       /**
@@ -67,24 +38,19 @@
       const attrs = useAttrs();
       const showText = ref<any>(props.multi ? [] : '');
       const options = ref<any>([]);
-      const cgRpConfigId = ref('');
       const loading = ref(false);
       const code = props.dictCode.split(',')[0];
       const labelFiled = props.dictCode.split(',')[1];
       const valueFiled = props.dictCode.split(',')[2];
-      const selected = ref([]);
       if (!code || !valueFiled || !labelFiled) {
         createMessage.error('popupDict参数未正确配置!');
       }
-      //注册model
-      const [regModal, { openModal }] = useModal();
 
       /**
        * 打开pop弹出框
        */
       function handleOpen() {
-        // 代码逻辑说明: 【TV360X-317】禁用后JPopup和JPopupdic还可以点击出弹窗
-        !attrs.value.disabled && openModal(true);
+        // Online 报表弹窗已移除
       }
       /**
        * 监听value数值
@@ -92,21 +58,10 @@
       watch(
         () => props.value,
         (val) => {
-          const callBack = () => {
-            if (props.multi) {
-              showText.value = val && val.length > 0 ? val.split(props.spliter) : [];
-            } else {
-              showText.value = val ?? '';
-            }
-          };
-          if (props.value || props.defaultValue) {
-            if (cgRpConfigId.value) {
-              loadData({ callBack });
-            } else {
-              loadColumnsInfo({ callBack });
-            }
+          if (props.multi) {
+            showText.value = val && val.length > 0 ? val.split(props.spliter) : [];
           } else {
-            callBack();
+            showText.value = val ?? '';
           }
         },
         { immediate: true }
@@ -126,47 +81,6 @@
           });
         }
       );
-      /**
-       * 加载列信息
-       */
-      function loadColumnsInfo({ callBack }) {
-        loading.value = true;
-        let url = `${configUrl.getColumns}${code}`;
-        defHttp
-          .get({ url }, { isTransformResponse: false, successMessageMode: 'none' })
-          .then((res) => {
-            if (res.success) {
-              cgRpConfigId.value = res.result.cgRpConfigId;
-              loadData({ callBack });
-            }
-          })
-          .catch((err) => {
-            loading.value = false;
-            callBack?.();
-          });
-      }
-      function loadData({ callBack }) {
-        loading.value = true;
-        let url = `${configUrl.getData}${unref(cgRpConfigId)}`;
-        defHttp
-          .get(
-            { url, params: { ['force_' + valueFiled]: props.value || props.defaultValue } },
-            { isTransformResponse: false, successMessageMode: 'none' }
-          )
-          .then((res) => {
-            let data = res.result;
-            if (data.records?.length) {
-              options.value = data.records.map((item) => {
-                return { value: item[valueFiled], text: item[labelFiled] };
-              });
-              selected.value = data.records;
-            }
-          })
-          .finally(() => {
-            loading.value = false;
-            callBack?.();
-          });
-      }
       /**
        * 传值回调
        */
@@ -195,13 +109,11 @@
       return {
         showText,
         attrs,
-        regModal,
         handleOpen,
         callBack,
         code,
         options,
         loading,
-        selected,
         valueFiled,
       };
     },

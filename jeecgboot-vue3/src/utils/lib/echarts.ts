@@ -36,7 +36,7 @@ echarts.use([
   PieChart,
   MapChart,
   RadarChart,
-  // TODO 因为要兼容Online图表自适应打印，所以改成 CanvasRenderer，可能会模糊
+  // 使用 CanvasRenderer
   CanvasRenderer,
   PictorialBarChart,
   RadarComponent,

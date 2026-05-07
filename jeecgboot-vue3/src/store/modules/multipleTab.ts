@@ -9,14 +9,13 @@ import { useGo, useRedo } from '/@/hooks/web/usePage';
 import { Persistent } from '/@/utils/cache/persistent';
 
 import { PageEnum } from '/@/enums/pageEnum';
-import { PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE } from '/@/router/routes/basic';
+import { REDIRECT_ROUTE } from '/@/router/routes/basic';
 import { getRawRoute } from '/@/utils';
 import { MULTIPLE_TABS_KEY } from '/@/enums/cacheEnum';
 
 import projectSetting from '/@/settings/projectSetting';
 import { useUserStore } from '/@/store/modules/user';
 import type { LocationQueryRaw, RouteParamsRaw } from 'vue-router';
-import { getMenus } from '/@/router/menus';
 
 export interface MultipleTabState {
   cacheTabList: Set<string>;
@@ -65,25 +64,6 @@ const closeTabContainCurrentRoute = (router, pathList) => {
   }
   return false;
 };
-/**
- * 2025-05-08
- * liaozhiyang
- * 【issues/8216】online生成的菜单sql 自动带上组件名称
- * */
-function getMatchingRoute(menus, path) {
-  for (let i = 0, len = menus.length; i < len; i++) {
-    const item = menus[i];
-    if (item.path === path && !item.redirect && !item.paramPath) {
-      return item;
-    } else if (item.children?.length) {
-      const result = getMatchingRoute(item.children, path);
-      if (result) {
-        return result;
-      }
-    }
-  }
-  return null;
-}
 
 const cacheTab = projectSetting.multiTabsSetting.cache;
 
@@ -124,20 +104,7 @@ export const useMultipleTabStore = defineStore({
         if (!needCache) {
           continue;
         }
-        // 代码逻辑说明: 【QQYUN-12348】online生成的菜单sql 自动带上组件名称
-        if (
-          ['OnlineAutoList', 'DefaultOnlineList', 'CgformErpList', 'OnlCgformInnerTableList', 'OnlCgformTabList', 'OnlCgReportList', 'GraphreportAutoChart', 'AutoDesformDataList'].includes(item.name as string) &&
-          allMenus?.length
-        ) {
-          const route = getMatchingRoute(allMenus, item.path);
-          if (route?.meta?.keepAlive) {
-            // 如果keepAlive为true，则添加到缓存中
-          } else {
-            continue;
-          }
-        }
-        const name = item.name as string;
-        cacheMap.add(name);
+        cacheMap.add(item.name as string);
       }
       this.cacheTabList = cacheMap;
     },

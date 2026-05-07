@@ -16,7 +16,7 @@ public class Firewall {
      */
     private Boolean disableSelectAll = false;
     /**
-     * 低代码模式（dev:开发模式，prod:发布模式——关闭所有在线开发配置能力）
+     * 安全模式（dev:开发模式——自动添加白名单；prod:发布模式——严格白名单校验）
      */
     private String lowCodeMode;
     /**

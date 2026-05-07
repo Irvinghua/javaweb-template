@@ -84,36 +84,6 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
     }
 
     /**
-     * 下拉选项数据 (online报表使用)
-     * @param sysDataSource
-     * @param req
-     * @return
-     */
-    @SignatureCheck
-    @RequiresPermissions("online:report:add")
-    @GetMapping(value = "/options")
-    public Result<?> queryOptions(SysDataSource sysDataSource, HttpServletRequest req) {
-        //------------------------------------------------------------------------------------------------
-        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
-        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
-            sysDataSource.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(), 0));
-        }
-        //------------------------------------------------------------------------------------------------
-        
-        QueryWrapper<SysDataSource> queryWrapper = QueryGenerator.initQueryWrapper(sysDataSource, req.getParameterMap());
-        List<SysDataSource> pageList = sysDataSourceService.list(queryWrapper);
-        JSONArray array = new JSONArray(pageList.size());
-        for (SysDataSource item : pageList) {
-            JSONObject option = new JSONObject(3);
-            option.put("value", item.getCode());
-            option.put("label", item.getName());
-            option.put("text", item.getName());
-            array.add(option);
-        }
-        return Result.ok(array);
-    }
-
-    /**
      * 添加
      *
      * @param sysDataSource

@@ -125,5 +125,5 @@ export function registerGlobComp(app: App) {
     .use(Cascader)
     .use(Rate)
     .use(Progress);
-    console.log("---初始化---， 全局注册Antd、仪表盘、流程设计器、online、流程等组件--------------")
+    console.log("---初始化---， 全局注册Antd、仪表盘、流程设计器、流程等组件--------------")
 }
