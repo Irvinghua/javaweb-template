@@ -608,17 +608,6 @@ public interface CommonConstant {
     */
    public static String[] allowDevRoles = new String[]{"lowdeveloper", "admin"};
    /**
-    * 【对应积木报表的常量】
-    * 数据隔离模式： 按照创建人隔离
-    */
-   public static final String SAAS_MODE_CREATED = "created";
-   /**
-    * 【对应积木报表的常量】
-    * 数据隔离模式： 按照租户隔离
-    */
-   public static final String SAAS_MODE_TENANT = "tenant";
- 
-   /**
     * 修改手机号短信验证码redis-key的前缀
     */
    String CHANGE_PHONE_REDIS_KEY_PRE = "sys:cache:phone:change_phone_msg:";

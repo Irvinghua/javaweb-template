@@ -480,8 +480,6 @@ public class SysDictController {
 //		Set keys21 = redisTemplate.keys(CacheConstant.SYS_DICT_TABLE_BY_KEYS_CACHE + "*");
 //		Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
 //		Set keys4 = redisTemplate.keys(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
-//		Set keys5 = redisTemplate.keys( "jmreport:cache:dict*");
-//		Set keys6 = redisTemplate.keys( "jmreport:cache:dictTable*");
 //		redisTemplate.delete(keys);
 //		redisTemplate.delete(keys2);
 //		redisTemplate.delete(keys21);
