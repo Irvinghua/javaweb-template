@@ -121,19 +121,8 @@
       const userStore = useUserStore();
       const { getThemeColor } = useRootSetting();
 
-      // Theme color presets — including the redesign primary + JeecgBoot presets
-      const themeColorList = [
-        '#5B6CFF',
-        '#0960bd',
-        '#1890ff',
-        '#009688',
-        '#ff5c93',
-        '#13c2c2',
-        '#52c41a',
-        '#ee4f12',
-        '#9c27b0',
-        '#ff9800',
-      ];
+      // Theme color presets — 6 个，与设计稿主题色板数量一致（首个为当前主色）
+      const themeColorList = ['#5B6CFF', '#0EA5E9', '#10B981', '#8B5CF6', '#F59E0B', '#F43F5E'];
 
       const currentThemeColor = computed(() => getThemeColor.value);
 
@@ -302,7 +291,7 @@
 
     // Custom pop-style menu panel
     &-pop-menu {
-      min-width: 220px;
+      width: 220px;
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 12px;
