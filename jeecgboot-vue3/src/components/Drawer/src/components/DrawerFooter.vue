@@ -57,19 +57,28 @@
 </script>
 
 <style lang="less">
+  // UI Redesign: DrawerFooter 换皮
+  // 详细按钮样式由全局 modal-drawer.less (.jeecg-basic-drawer-footer) 控制
   @prefix-cls: ~'@{namespace}-basic-drawer-footer';
-  @footer-height: 60px;
   .@{prefix-cls} {
     position: absolute;
     bottom: 0;
+    left: 0;
+    right: 0;
     width: 100%;
-    padding: 0 12px 0 20px;
-    text-align: right;
-    background-color: @component-background;
-    border-top: 1px solid @border-color-base;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 13px 20px;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    // 高度由内容撑开（auto），覆盖组件通过 getStyle 设置的 height/lineHeight
+    height: auto !important;
+    line-height: normal !important;
 
     > * {
-      margin-right: 8px;
+      margin-right: 0;
     }
   }
 </style>

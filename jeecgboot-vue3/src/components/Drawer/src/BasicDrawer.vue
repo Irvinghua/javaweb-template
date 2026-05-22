@@ -189,7 +189,9 @@
   });
 </script>
 <style lang="less">
-  @header-height: 60px;
+  // UI Redesign: BasicDrawer 换皮
+  // 头/体/底样式由全局 modal-drawer.less 控制；此处保留结构性（高度/溢出）设置
+  @header-height: 56px; // 与设计稿 .dlg-head 高度对齐（原 60px → 56px）
   @detail-header-height: 40px;
   @prefix-cls: ~'@{namespace}-basic-drawer';
   @prefix-cls-detail: ~'@{namespace}-basic-drawer__detail';
@@ -199,19 +201,13 @@
       overflow: hidden;
     }
 
-    .ant-drawer-close {
-      &:hover {
-        color: @error-color;
-      }
-    }
-
     .ant-drawer-body {
       height: calc(100% - @header-height);
       padding: 0;
-      background-color: @component-background;
+      background-color: var(--surface);
 
       .scrollbar__wrap {
-        padding: 16px !important;
+        padding: 20px !important;
         margin-bottom: 0 !important;
       }
 
@@ -228,7 +224,7 @@
       width: 100%;
       height: @detail-header-height;
       padding: 0;
-      border-top: 1px solid @border-color-base;
+      border-top: 1px solid var(--line);
       box-sizing: border-box;
     }
 
