@@ -8,9 +8,17 @@
   background-color: transparent;
   border-bottom: none;
   box-shadow: none;
-  flex: 1 1 0;
-  min-width: 0;
+  // The wrapper div has display:flex (scoped style) so the .ant-tabs needs to fill remaining space
   align-self: center;
+  // Full width so it fills the parent row
+  width: 100%;
+  min-width: 0;
+
+  // Ant-Tabs grows within the flex row
+  > .ant-tabs {
+    flex: 1 1 0;
+    min-width: 0;
+  }
 
   // The outer wrapper becomes the pill container
   .ant-tabs-small {
@@ -49,7 +57,7 @@
 
       .ant-tabs-tab {
         height: 28px;
-        padding: 0 12px;
+        padding: 0 10px 0 8px;
         line-height: 28px;
         color: var(--ink-600);
         background-color: transparent;
@@ -64,6 +72,19 @@
         .ant-tabs-tab-btn {
           color: var(--ink-600);
           transition: color var(--fast);
+          display: flex;
+          align-items: center;
+          gap: 4px;
+
+          // Tab dot — before the label text
+          &::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--ink-300);
+            flex-shrink: 0;
+          }
         }
 
         &:hover {
@@ -130,7 +151,7 @@
 
       .ant-tabs-tab-active {
         position: relative;
-        padding: 0 12px;
+        padding: 0 10px 0 8px;
         color: var(--accent) !important;
         background: var(--surface) !important;
         border: 0 !important;
@@ -139,6 +160,10 @@
 
         .ant-tabs-tab-btn {
           color: var(--accent) !important;
+
+          &::before {
+            background: var(--accent);
+          }
         }
 
         .ant-tabs-tab-remove .anticon-close {

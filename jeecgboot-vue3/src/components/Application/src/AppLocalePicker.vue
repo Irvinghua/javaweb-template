@@ -69,8 +69,49 @@
 
 <style lang="less">
   .app-locale-picker-overlay {
+    // Override AntD dropdown to use pop-style
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-pop) !important;
+    padding: 6px !important;
+    min-width: 160px !important;
+    animation: locale-pop-in 0.14s ease;
+
+    @keyframes locale-pop-in {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .ant-dropdown-menu {
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 0;
+      border: none;
+    }
+
     .ant-dropdown-menu-item {
-      min-width: 160px;
+      min-width: 140px;
+      border-radius: 7px;
+      color: var(--ink-700);
+      font-size: 13px;
+      padding: 8px 10px;
+      transition: background-color var(--fast);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      &:hover {
+        background: var(--surface-2) !important;
+        color: var(--ink-900);
+      }
+
+      &.ant-dropdown-menu-item-selected {
+        background: var(--accent-50) !important;
+        color: var(--accent) !important;
+        font-weight: 500;
+      }
     }
   }
 </style>

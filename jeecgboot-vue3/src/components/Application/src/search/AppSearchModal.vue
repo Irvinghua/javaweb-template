@@ -9,9 +9,7 @@
                 <SearchOutlined />
               </template>
             </a-input>
-            <span :class="`${prefixCls}-cancel`" @click="handleClose">
-              {{ t('common.cancelText') }}
-            </span>
+            <span :class="`${prefixCls}-cancel`" @click="handleClose">Esc</span>
           </div>
 
           <div :class="`${prefixCls}-not-data`" v-show="getIsNotData">
@@ -117,9 +115,13 @@
     display: flex;
     width: 100%;
     height: 100%;
-    padding-top: 50px;
-    background-color: rgba(0, 0, 0, 0.25);
+    // cmd-overlay style: backdrop blur
+    padding: 14vh 16px 16px;
+    background-color: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     justify-content: center;
+    align-items: flex-start;
 
     &--mobile {
       padding: 0;
@@ -140,6 +142,7 @@
         width: 100%;
         height: 100%;
         border-radius: 0;
+        max-height: 100vh;
       }
 
       .@{footer-prefix-cls} {
@@ -158,74 +161,116 @@
       }
     }
 
+    // cmd-panel style
     &-content {
       position: relative;
-      width: 632px;
-      margin: 0 auto auto auto;
-      background-color: @component-background;
-      border-radius: 16px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      background: var(--surface);
+      border-radius: 14px;
+      box-shadow: 0 24px 64px -12px rgba(15, 23, 42, 0.28);
+      overflow: hidden;
+      display: flex;
       flex-direction: column;
+      max-height: 60vh;
     }
 
+    // cmd-search style — replaces the old input wrapper
     &-input__wrapper {
       display: flex;
-      padding: 14px 14px 0 14px;
-      justify-content: space-between;
       align-items: center;
-    }
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
 
-    &-input {
-      width: 100%;
-      height: 48px;
-      font-size: 1.3em;
-      color: #1c1e21;
-      border-radius: 6px;
-
-      span[role='img'] {
-        color: #999;
+      .@{prefix-cls}-cancel {
+        font-size: 11px;
+        color: var(--ink-500);
+        background: var(--surface-2);
+        padding: 3px 8px;
+        border-radius: 5px;
+        cursor: pointer;
+        white-space: nowrap;
+        display: block; // always show as "Esc" hint
       }
     }
 
-    &-cancel {
-      display: none;
-      font-size: 1em;
-      color: #666;
+    &-input {
+      flex: 1;
+      min-width: 0;
+      height: 36px;
+      font-size: 14px;
+      color: var(--ink-900);
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      padding: 0;
+
+      :deep(.ant-input) {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        font-size: 14px;
+        color: var(--ink-900);
+        padding: 0;
+
+        &::placeholder {
+          color: var(--ink-400);
+        }
+      }
+
+      :deep(.ant-input-prefix) {
+        margin-right: 8px;
+      }
+
+      span[role='img'] {
+        color: var(--ink-400);
+        font-size: 17px;
+      }
+
+      :deep(.ant-input-clear-icon) {
+        color: var(--ink-400);
+      }
     }
 
     &-not-data {
       display: flex;
       width: 100%;
-      height: 100px;
-      font-size: 0.9;
-      color: rgb(150 159 175);
+      padding: 30px 16px;
+      font-size: 13px;
+      color: var(--ink-400);
       align-items: center;
       justify-content: center;
     }
 
+    // cmd-results style
     &-list {
-      max-height: 472px;
-      padding: 0 14px;
-      padding-bottom: 20px;
-      margin: 0 auto;
-      margin-top: 14px;
-      overflow: auto;
+      flex: 1;
+      max-height: none;
+      padding: 6px;
+      margin: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
 
       &__item {
         position: relative;
         display: flex;
         width: 100%;
-        height: 56px;
-        padding-bottom: 4px;
-        padding-left: 14px;
-        margin-top: 8px;
-        font-size: 14px;
-        color: @text-color-base;
+        height: auto;
+        min-height: 44px;
+        padding: 9px 10px;
+        margin-top: 0;
+        margin-bottom: 0;
+        font-size: 13px;
+        color: var(--ink-700);
         cursor: pointer;
-        // background-color: @component-background;
-        border-radius: 4px;
-        box-shadow: 0 1px 3px 0 #d4d9e1;
+        border-radius: 8px;
+        box-shadow: none;
         align-items: center;
+        gap: 10px;
+        transition: background-color var(--fast);
 
         > div:first-child,
         > div:last-child {
@@ -233,17 +278,26 @@
           align-items: center;
         }
 
+        &:hover,
         &--active {
-          color: #fff;
-          background-color: @primary-color;
+          background: var(--accent-50);
+          color: var(--accent);
+          box-shadow: none;
 
-          .@{prefix-cls}-list__item-enter {
-            opacity: 1;
+          :deep(svg) {
+            color: var(--accent) !important;
           }
         }
 
         &-icon {
-          width: 30px;
+          width: 24px;
+          flex-shrink: 0;
+          color: var(--ink-500);
+
+          :deep(svg) {
+            width: 15px;
+            height: 15px;
+          }
         }
 
         &-text {
@@ -251,8 +305,14 @@
         }
 
         &-enter {
-          width: 30px;
+          width: 24px;
           opacity: 0;
+          color: var(--ink-400);
+
+          :deep(svg) {
+            width: 15px;
+            height: 15px;
+          }
         }
       }
     }

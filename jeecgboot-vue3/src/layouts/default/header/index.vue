@@ -4,8 +4,9 @@
     <div :class="`${prefixCls}-left`">
       <!-- logo -->
       <AppLogo v-if="getShowHeaderLogo || getIsMobile" :class="`${prefixCls}-logo`" :theme="getHeaderTheme" :style="getLogoWidth" />
+      <!-- Sidebar trigger moved to tabs row; only keep it here in mobile mode where tabs row isn't shown -->
       <LayoutTrigger
-        v-if="(getShowContent && getShowHeaderTrigger && !getSplit && !getIsMixSidebar) || getIsMobile"
+        v-if="getIsMobile"
         :theme="getHeaderTheme"
         :sider="false"
       />
@@ -34,6 +35,8 @@
       <LockScreen v-if="getUseLockPage" />
 
       <AppLocalePicker v-if="getShowLocalePicker" :reload="true" :showText="false" :class="`${prefixCls}-action__item`" />
+
+      <div class="top-divider"></div>
 
       <UserDropDown :theme="getHeaderTheme" />
     </div>

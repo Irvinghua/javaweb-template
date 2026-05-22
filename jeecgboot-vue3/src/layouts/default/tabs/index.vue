@@ -1,5 +1,13 @@
 <template>
   <div :class="getWrapClass">
+    <!-- Sidebar collapse toggle — leftmost of the tabs row -->
+    <button class="tabs-row-trigger icon-btn" :aria-label="getCollapsed ? '展开侧边栏' : '收起侧边栏'" @click="toggleCollapsed">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="15" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
     <Tabs
       type="editable-card"
       size="small"
@@ -38,6 +46,7 @@
   import { initAffixTabs, useTabsDrag } from './useMultipleTabs';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useMultipleTabSetting } from '/@/hooks/setting/useMultipleTabSetting';
+  import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
 
   import { REDIRECT_NAME } from '/@/router/constant';
   import { listenerRouteChange } from '/@/logics/mitt/routeChange';
@@ -61,6 +70,7 @@
       const tabStore = useMultipleTabStore();
       const userStore = useUserStore();
       const router = useRouter();
+      const { getCollapsed, toggleCollapsed } = useMenuSetting();
 
       const { prefixCls } = useDesign('multiple-tabs');
       const go = useGo();
@@ -130,6 +140,8 @@
         getShowQuick,
         getShowRedo,
         getShowFold,
+        getCollapsed,
+        toggleCollapsed,
       };
     },
   });
@@ -142,6 +154,34 @@
 <style lang="less" scoped>
 @prefix-cls: ~'@{namespace}-multiple-tabs';
 .@{prefix-cls} {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .tabs-row-trigger.icon-btn {
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    color: var(--ink-600);
+    flex-shrink: 0;
+    transition: background-color var(--fast), color var(--fast);
+
+    svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    &:hover {
+      background: var(--surface-2);
+      color: var(--ink-900);
+    }
+  }
+
   :deep(.anticon) {
     display: inline-block;
   }
