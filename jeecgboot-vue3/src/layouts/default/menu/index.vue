@@ -53,6 +53,9 @@
         getIsSidebarType,
         getSplit,
       } = useMenuSetting();
+
+      // expose getCollapsed for renderMenu to use
+      const collapsedRef = getCollapsed;
       const { getShowLogo } = useRootSetting();
 
       const { prefixCls } = useDesign('layout-menu');
@@ -142,21 +145,50 @@
         return <AppLogo showTitle={!unref(getCollapsed)} class={unref(getLogoClass)} theme={unref(getComputedMenuTheme)} />;
       }
 
+      // Paths that belong to 系统设置 group
+      const SETTINGS_PATHS = ['/isystem', '/mytenant', '/monitor', '/message'];
+
       function renderMenu() {
         const { menus, ...menuProps } = unref(getCommonProps);
         // console.log(menus);
         if (!menus || !menus.length) return null;
-        return !props.isHorizontal ? (
-          <SimpleMenu {...menuProps} isSplitMenu={unref(getSplit)} items={menus} />
-        ) : (
-          <BasicMenu
-            {...(menuProps as any)}
-            isHorizontal={props.isHorizontal}
-            type={unref(getMenuType)}
-            showLogo={unref(getIsShowLogo)}
-            mode={unref(getComputedMenuMode as any)}
-            items={menus}
-          />
+
+        if (props.isHorizontal) {
+          return (
+            <BasicMenu
+              {...(menuProps as any)}
+              isHorizontal={props.isHorizontal}
+              type={unref(getMenuType)}
+              showLogo={unref(getIsShowLogo)}
+              mode={unref(getComputedMenuMode as any)}
+              items={menus}
+            />
+          );
+        }
+
+        // Vertical sidebar — split into main/settings groups
+        const isCollapsed = unref(getCollapsed);
+        const mainMenus = menus.filter((item) => !SETTINGS_PATHS.includes(item.path));
+        const settingsMenus = menus.filter((item) => SETTINGS_PATHS.includes(item.path));
+
+        const groupTitle = (title: string) =>
+          !isCollapsed ? <div class="nav-group-title">{title}</div> : null;
+
+        return (
+          <div class="sidebar-menu-groups">
+            {mainMenus.length > 0 && (
+              <div class="nav-section">
+                {groupTitle('主菜单')}
+                <SimpleMenu {...menuProps} isSplitMenu={unref(getSplit)} items={mainMenus} />
+              </div>
+            )}
+            {settingsMenus.length > 0 && (
+              <div class="nav-section nav-section--settings">
+                {groupTitle('系统设置')}
+                <SimpleMenu {...menuProps} isSplitMenu={unref(getSplit)} items={settingsMenus} />
+              </div>
+            )}
+          </div>
         );
       }
 
@@ -175,6 +207,37 @@
   // 代码逻辑说明: 【QQYUN-5872】菜单优化，上下滚动条去掉
   .scroll-container :deep(.scrollbar__bar) {
     display: none;
+  }
+</style>
+<style lang="less">
+  // Sidebar group headers and section layout
+  .sidebar-menu-groups {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav-section {
+    display: flex;
+    flex-direction: column;
+
+    &--settings {
+      margin-top: 14px;
+      padding-top: 6px;
+      border-top: 1px solid var(--line);
+    }
+  }
+
+  .nav-group-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-400);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 14px 14px 8px;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
   }
 </style>
 <style lang="less">

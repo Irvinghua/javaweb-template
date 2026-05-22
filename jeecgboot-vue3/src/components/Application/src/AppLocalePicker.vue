@@ -4,8 +4,13 @@
 -->
 <template>
   <Dropdown :trigger="['click']" placement="bottomRight" overlayClassName="app-locale-picker-overlay">
-    <span class="cursor-pointer flex items-center">
-      <Icon icon="ion:language" />
+    <span class="locale-trigger">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M2 12h20"/>
+        <path d="M12 2a15 15 0 0 1 0 20"/>
+        <path d="M12 2a15 15 0 0 0 0 20"/>
+      </svg>
       <span v-if="showText" class="ml-1">{{ getLocaleText }}</span>
     </span>
     <template #overlay>
@@ -54,7 +59,6 @@
   import type { DropMenu } from '/@/components/Dropdown';
   import { ref, watchEffect, unref, computed } from 'vue';
   import { Dropdown } from 'ant-design-vue';
-  import { Icon } from '/@/components/Icon';
   import { useLocale } from '/@/locales/useLocale';
   import { localeList } from '/@/settings/localeSetting';
 
@@ -100,6 +104,28 @@
 </script>
 
 <style lang="less">
+  .locale-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    color: var(--ink-600);
+    border-radius: 9px;
+    transition: background-color var(--fast), color var(--fast);
+
+    &:hover {
+      background: var(--surface-2);
+      color: var(--ink-900);
+    }
+
+    svg {
+      width: 17px;
+      height: 17px;
+    }
+  }
+
   /* AntD dropdown 外壳中性化，真正面板由 .locale-pop 承担 */
   .app-locale-picker-overlay {
     background: transparent !important;

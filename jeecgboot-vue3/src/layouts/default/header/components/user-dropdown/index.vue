@@ -2,11 +2,6 @@
   <Dropdown placement="bottomLeft" :overlayClassName="`${prefixCls}-dropdown-overlay`">
     <span :class="[prefixCls, `${prefixCls}--${theme}`]" class="flex">
       <img :class="`${prefixCls}__header`" :src="getAvatarUrl" />
-      <span :class="`${prefixCls}__info hidden md:block`">
-        <span :class="`${prefixCls}__name  `" class="truncate">
-          {{ getUserInfo.realname }}
-        </span>
-      </span>
     </span>
 
     <template #overlay>
@@ -261,9 +256,9 @@
     }
 
     img {
-      width: 28px;
-      height: 28px;
-      margin-right: 8px;
+      width: 30px;
+      height: 30px;
+      margin-right: 0;
     }
 
     &__header {

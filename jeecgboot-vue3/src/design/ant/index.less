@@ -219,53 +219,146 @@ html[data-theme='dark'] {
 // 目标: BasicTable 内的 BasicForm（source="table-query"）
 // class 路径: .jeecg-basic-table-form-container > .jeecg-basic-form
 .jeecg-basic-table-form-container {
-  // 筛选区卡片外观
+  // 筛选区卡片外观 — 匹配 .filter-card 精确值
   > .jeecg-basic-form,
   > .table-search-area-hidden {
-    background: var(--surface);
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-card);
-    padding: 16px 20px 4px;
-    margin-bottom: 14px;
+    background: var(--surface) !important;
+    border-radius: var(--radius-card) !important;
+    box-shadow: var(--shadow-card) !important;
+    padding: 14px 18px !important;
+    margin-bottom: 14px !important;
   }
 
-  // 字段标签 — 统一字号与颜色
+  // 字段标签 — 精确匹配 .field > label: 13px, ink-700, weight 500
   > .jeecg-basic-form .ant-form-item-label > label {
-    font-size: 13px;
-    color: var(--ink-700);
-    font-weight: 500;
+    font-size: 13px !important;
+    color: var(--ink-700) !important;
+    font-weight: 500 !important;
+    line-height: 1.4;
+    height: auto;
+    white-space: nowrap;
   }
 
-  // 输入框 / 选择器外观
+  // 去掉 ant 给 label 加的必填星号颜色覆盖
+  > .jeecg-basic-form .ant-form-item-label > label.ant-form-item-required::before {
+    color: var(--bad);
+  }
+
+  // 输入框 / 选择器外观 — 精确匹配 .control: h38, radius 10px, surface-3, border line, font-13
   > .jeecg-basic-form .ant-input,
   > .jeecg-basic-form .ant-input-affix-wrapper,
   > .jeecg-basic-form .ant-select:not(.ant-select-customize-input) .ant-select-selector,
   > .jeecg-basic-form .ant-picker,
   > .jeecg-basic-form .ant-input-number {
-    border-radius: 8px;
-    border-color: var(--line-strong);
-    background: var(--surface-2);
+    height: 38px;
+    border-radius: 10px !important;
+    border-color: var(--line) !important;
+    background: var(--surface-3) !important;
     font-size: 13px;
-    transition: border-color var(--fast), box-shadow var(--fast), background-color var(--fast);
+    transition: border-color 0.18s, box-shadow 0.18s, background-color 0.18s;
 
     &:hover {
-      border-color: var(--accent);
+      border-color: rgba(42, 107, 239, 0.4) !important;
     }
 
     &:focus,
     &.ant-input-affix-wrapper-focused,
-    &.ant-picker-focused,
-    &.ant-select-focused,
-    &.ant-input-number-focused {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.14);
-      background: var(--surface);
+    &.ant-picker-focused {
+      border-color: rgba(42, 107, 239, 0.4) !important;
+      box-shadow: 0 0 0 3px rgba(42, 107, 239, 0.12) !important;
+      background: var(--surface) !important;
+    }
+  }
+
+  // Select selector height fix
+  > .jeecg-basic-form .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    height: 38px !important;
+    line-height: 36px !important;
+    display: flex;
+    align-items: center;
+    padding: 0 12px !important;
+  }
+
+  > .jeecg-basic-form .ant-select:not(.ant-select-customize-input) .ant-select-selection-item,
+  > .jeecg-basic-form .ant-select:not(.ant-select-customize-input) .ant-select-selection-placeholder {
+    line-height: 36px !important;
+    font-size: 13px;
+  }
+
+  // Date picker height fix
+  > .jeecg-basic-form .ant-picker {
+    display: flex;
+    align-items: center;
+    padding: 0 12px !important;
+
+    .ant-picker-input > input {
+      font-size: 13px;
+    }
+  }
+
+  // Input affix height fix
+  > .jeecg-basic-form .ant-input-affix-wrapper {
+    padding: 0 12px !important;
+    display: flex;
+    align-items: center;
+
+    > input.ant-input {
+      height: auto;
+      background: transparent !important;
+      font-size: 13px;
     }
   }
 
   // 选择器 hover/focus 穿透
   > .jeecg-basic-form .ant-select-focused:not(.ant-select-disabled) .ant-select-selector {
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.14) !important;
+    border-color: rgba(42, 107, 239, 0.4) !important;
+    box-shadow: 0 0 0 3px rgba(42, 107, 239, 0.12) !important;
+    background: var(--surface) !important;
+  }
+
+  // 查询按钮 — 精确匹配 .btn-primary
+  > .jeecg-basic-form .form-action-submit-btn.ant-btn {
+    height: 38px !important;
+    padding: 0 16px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    background: linear-gradient(135deg, #2a66ff, #1a56ff) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    box-shadow: 0 6px 14px rgba(26, 86, 255, 0.25) !important;
+    transition: box-shadow 0.18s, opacity 0.18s !important;
+
+    &:hover,
+    &:focus {
+      box-shadow: 0 8px 18px rgba(26, 86, 255, 0.32) !important;
+      opacity: 0.95;
+    }
+  }
+
+  // 重置按钮 — 精确匹配 .btn-ghost
+  > .jeecg-basic-form .form-action-reset-btn.ant-btn {
+    height: 38px !important;
+    padding: 0 16px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    background: var(--surface) !important;
+    border-color: var(--line) !important;
+    color: var(--ink-700) !important;
+    box-shadow: none !important;
+    transition: background-color 0.18s, color 0.18s !important;
+
+    &:hover,
+    &:focus {
+      background: var(--surface-2) !important;
+      color: var(--ink-900) !important;
+      border-color: var(--line) !important;
+    }
+  }
+
+  // Form item spacing
+  > .jeecg-basic-form .ant-form-item {
+    margin-bottom: 12px !important;
   }
 }

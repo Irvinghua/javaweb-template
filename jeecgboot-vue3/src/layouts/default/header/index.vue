@@ -1,33 +1,38 @@
 <template>
-  <Header :class="getHeaderClass">
-    <!-- Mobile: sidebar trigger (tabs row is not shown on mobile) -->
-    <LayoutTrigger
-      v-if="getIsMobile"
-      :theme="getHeaderTheme"
-      :sider="false"
-    />
+  <Header :class="[getHeaderClass, 'header-block']">
+    <!-- Main topbar row -->
+    <div class="header-main-row">
+      <!-- Mobile: sidebar trigger (tabs row is not shown on mobile) -->
+      <LayoutTrigger
+        v-if="getIsMobile"
+        :theme="getHeaderTheme"
+        :sider="false"
+      />
 
-    <!-- Tabs strip (flex-grows, contains collapse toggle as leftmost element) -->
-    <MultipleTabs v-if="!getIsMobile" class="header-tabs-slot" />
+      <!-- Tabs strip (flex-grows, contains collapse toggle as leftmost element) -->
+      <MultipleTabs v-if="!getIsMobile" class="header-tabs-slot" />
 
-    <!-- action  -->
-    <div :class="`${prefixCls}-action`">
-      <AppSearch :class="`${prefixCls}-action__item `" v-if="getShowSearch" />
+      <!-- action  -->
+      <div :class="`${prefixCls}-action`">
+        <AppSearch :class="`${prefixCls}-action__item `" v-if="getShowSearch" />
 
-      <ErrorAction v-if="getUseErrorHandle" :class="`${prefixCls}-action__item error-action`" />
+        <ErrorAction v-if="getUseErrorHandle" :class="`${prefixCls}-action__item error-action`" />
 
-      <Notify v-if="getShowNotice" :class="`${prefixCls}-action__item notify-item`" />
+        <Notify v-if="getShowNotice" :class="`${prefixCls}-action__item notify-item`" />
 
-      <FullScreen v-if="getShowFullScreen" :class="`${prefixCls}-action__item fullscreen-item`" />
+        <FullScreen v-if="getShowFullScreen" :class="`${prefixCls}-action__item fullscreen-item`" />
 
-      <LockScreen v-if="getUseLockPage" />
+        <LockScreen v-if="getUseLockPage" />
 
-      <AppLocalePicker v-if="getShowLocalePicker" :reload="true" :showText="false" :class="`${prefixCls}-action__item`" />
+        <AppLocalePicker v-if="getShowLocalePicker" :reload="true" :showText="false" :class="`${prefixCls}-action__item`" />
 
-      <div class="top-divider"></div>
+        <div class="top-divider"></div>
 
-      <UserDropDown :theme="getHeaderTheme" />
+        <UserDropDown :theme="getHeaderTheme" />
+      </div>
     </div>
+    <!-- Breadcrumb strip -->
+    <LayoutBreadcrumb v-if="!getIsMobile" :theme="getHeaderTheme" />
   </Header>
   <LoginSelect ref="loginSelectRef" @success="loginSelectOk"></LoginSelect>
 </template>
@@ -51,6 +56,7 @@
   import { AppLocalePicker } from '/@/components/Application';
 
   import { UserDropDown, FullScreen, Notify, ErrorAction, LockScreen } from './components';
+  import LayoutBreadcrumb from './components/Breadcrumb.vue';
   import { useAppInject } from '/@/hooks/web/useAppInject';
   import { useDesign } from '/@/hooks/web/useDesign';
 
@@ -76,6 +82,7 @@
       ErrorAction,
       LockScreen,
       LoginSelect,
+      LayoutBreadcrumb,
       SettingDrawer: createAsyncComponent(() => import('/@/layouts/default/setting/index.vue'), {
         loading: true,
       }),
@@ -193,11 +200,20 @@
   @prefix-cls: ~'@{namespace}-layout-header';
 
   .ant-layout .@{prefix-cls} {
-    display: flex;
-    padding: 0 16px 0 8px;
-    height: @header-height;
-    align-items: center;
-    gap: 8px;
+    display: block;
+    padding: 0;
+    height: auto;
+    align-items: unset;
+    gap: unset;
+
+    // Main row inside the block header
+    .header-main-row {
+      display: flex;
+      padding: 0 16px 0 8px;
+      height: @header-height;
+      align-items: center;
+      gap: 8px;
+    }
 
     .headerIntroductionClass {
       margin-right: 4px;

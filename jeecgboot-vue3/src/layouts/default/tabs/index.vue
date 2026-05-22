@@ -1,7 +1,7 @@
 <template>
-  <div :class="getWrapClass">
+  <div :class="getWrapClass" @click="closeCtxMenu">
     <!-- Sidebar collapse toggle — leftmost of the tabs row -->
-    <button class="tabs-row-trigger icon-btn" :aria-label="getCollapsed ? '展开侧边栏' : '收起侧边栏'" @click="toggleCollapsed">
+    <button class="tabs-row-trigger icon-btn" :aria-label="getCollapsed ? '展开侧边栏' : '收起侧边栏'" @click.stop="toggleCollapsed">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="6" x2="21" y2="6"/>
         <line x1="3" y1="12" x2="15" y2="12"/>
@@ -17,7 +17,8 @@
           :class="{ active: activeKeyRef === (item.query ? item.fullPath : item.path) }"
           role="tab"
           :aria-selected="activeKeyRef === (item.query ? item.fullPath : item.path)"
-          @click="handleChange(item.query ? item.fullPath : item.path)"
+          @click.stop="handleChange(item.query ? item.fullPath : item.path)"
+          @contextmenu.prevent="(e) => openCtxMenu(e, item)"
         >
           <span class="tab-dot"></span>
           <TabContent :tabItem="item" />
@@ -34,18 +35,55 @@
         </button>
       </template>
     </div>
+
+    <!-- Tab right-click context menu -->
+    <Teleport to="body">
+      <div
+        v-if="ctxMenu.visible"
+        class="tab-ctx"
+        :style="{ left: ctxMenu.x + 'px', top: ctxMenu.y + 'px' }"
+        @click.stop
+      >
+        <!-- 刷新当前 -->
+        <button @click="ctxAction('refresh')" :disabled="!ctxMenu.isCurrentTab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          刷新当前
+        </button>
+        <!-- 关闭当前 -->
+        <button @click="ctxAction('close')" :disabled="!!ctxMenu.tab?.meta?.affix">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          关闭当前
+        </button>
+        <!-- 关闭其他 -->
+        <button @click="ctxAction('closeOther')" :disabled="getTabsState.length <= 1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          关闭其他
+        </button>
+        <!-- 关闭右侧 -->
+        <button @click="ctxAction('closeRight')" :disabled="ctxMenu.isLast">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          关闭右侧
+        </button>
+        <!-- 关闭全部 -->
+        <button @click="ctxAction('closeAll')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          关闭全部
+        </button>
+      </div>
+    </Teleport>
   </div>
 </template>
 <script lang="ts">
   import type { RouteLocationNormalized, RouteMeta } from 'vue-router';
 
-  import { defineComponent, computed, unref, ref } from 'vue';
+  import { defineComponent, computed, unref, ref, reactive, onMounted, onUnmounted } from 'vue';
 
   import TabContent from './components/TabContent.vue';
   import FoldButton from './components/FoldButton.vue';
   import TabRedo from './components/TabRedo.vue';
 
   import { useGo } from '/@/hooks/web/usePage';
+  import { useTabs } from '/@/hooks/web/useTabs';
 
   import { useMultipleTabStore } from '/@/store/modules/multipleTab';
   import { useUserStore } from '/@/store/modules/user';
@@ -82,6 +120,7 @@
       const { prefixCls } = useDesign('multiple-tabs');
       const go = useGo();
       const { getShowQuick, getShowRedo, getShowFold, getTabsTheme } = useMultipleTabSetting();
+      const { refreshPage, close, closeAll, closeLeft, closeRight, closeOther } = useTabs(router);
 
       const getTabsState = computed(() => {
         return tabStore.getTabList.filter((item) => !item.meta?.hideTab);
@@ -136,6 +175,88 @@
 
         tabStore.closeTabByKey(targetKey, router);
       }
+
+      // ---- Context menu ----
+      const ctxMenu = reactive({
+        visible: false,
+        x: 0,
+        y: 0,
+        tab: null as RouteLocationNormalized | null,
+        isCurrentTab: false,
+        isLast: false,
+      });
+
+      function openCtxMenu(e: MouseEvent, tab: RouteLocationNormalized) {
+        const tabList = unref(getTabsState);
+        const idx = tabList.findIndex((t) => t.path === tab.path);
+        ctxMenu.tab = tab;
+
+        const menuWidth = 170;
+        const menuHeight = 185; // approx height for 5 items
+
+        // X position — clamp to viewport right edge
+        let x = e.clientX;
+        if (x + menuWidth > window.innerWidth) {
+          x = window.innerWidth - menuWidth - 8;
+        }
+        ctxMenu.x = x;
+
+        // Y position — position below click. Clamp so menu never hides under header.
+        let y = e.clientY + 8;
+        // If too close to bottom, try above click point
+        if (y + menuHeight > window.innerHeight) {
+          y = e.clientY - menuHeight - 4;
+        }
+        // Never go above viewport or under the header (header ~88px)
+        const minY = 94;
+        if (y < minY) y = minY;
+        ctxMenu.y = y;
+
+        ctxMenu.isCurrentTab = tab.path === unref(router.currentRoute).path;
+        ctxMenu.isLast = idx === tabList.length - 1;
+        ctxMenu.visible = true;
+      }
+
+      function closeCtxMenu() {
+        ctxMenu.visible = false;
+      }
+
+      async function ctxAction(action: string) {
+        const tab = ctxMenu.tab as RouteLocationNormalized;
+        closeCtxMenu();
+        switch (action) {
+          case 'refresh':
+            await refreshPage();
+            break;
+          case 'close':
+            if (!tab?.meta?.affix) {
+              await close(tab);
+            }
+            break;
+          case 'closeOther':
+            await closeOther(tab);
+            break;
+          case 'closeRight':
+            await closeRight(tab);
+            break;
+          case 'closeAll':
+            await closeAll(tab);
+            break;
+        }
+      }
+
+      // Close context menu on global click / Escape
+      function onDocClick() { ctxMenu.visible = false; }
+      function onEsc(e: KeyboardEvent) { if (e.key === 'Escape') ctxMenu.visible = false; }
+      onMounted(() => {
+        document.addEventListener('click', onDocClick);
+        document.addEventListener('keydown', onEsc);
+      });
+      onUnmounted(() => {
+        document.removeEventListener('click', onDocClick);
+        document.removeEventListener('keydown', onEsc);
+      });
+
       return {
         prefixCls,
         unClose,
@@ -150,12 +271,63 @@
         getCollapsed,
         toggleCollapsed,
         t,
+        ctxMenu,
+        openCtxMenu,
+        closeCtxMenu,
+        ctxAction,
       };
     },
   });
 </script>
 <style lang="less">
   @import './index.less';
+
+  // Tab right-click context menu (rendered via Teleport to body)
+  .tab-ctx {
+    position: fixed;
+    z-index: 300;
+    min-width: 160px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow-pop);
+    padding: 4px;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 7px 10px;
+      background: transparent;
+      border: 0;
+      border-radius: 6px;
+      font-size: 12.5px;
+      color: var(--ink-700);
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      transition: background-color var(--fast), color var(--fast);
+
+      &:hover {
+        background: var(--surface-2);
+        color: var(--ink-900);
+      }
+
+      &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      svg {
+        width: 13px;
+        height: 13px;
+        color: var(--ink-500);
+        flex-shrink: 0;
+      }
+    }
+  }
 </style>
 <style lang="less" scoped>
 @prefix-cls: ~'@{namespace}-multiple-tabs';
