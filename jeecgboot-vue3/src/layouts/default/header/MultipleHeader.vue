@@ -2,14 +2,12 @@
   <div :style="getPlaceholderDomStyle" v-if="getIsShowPlaceholderDom"></div>
   <div :style="getWrapStyle" :class="getClass">
     <LayoutHeader v-if="getShowHeader" />
-    <MultipleTabs v-if="getShowTabs" />
   </div>
 </template>
 <script lang="ts">
   import { defineComponent, unref, computed, CSSProperties } from 'vue';
 
   import LayoutHeader from './index.vue';
-  import MultipleTabs from '../tabs/index.vue';
 
   import { useAppStore } from "@/store/modules/app";
   import { useGlobSetting } from "/@/hooks/setting";
@@ -33,7 +31,7 @@
 
   export default defineComponent({
     name: 'LayoutMultipleHeader',
-    components: { LayoutHeader, MultipleTabs },
+    components: { LayoutHeader },
     setup() {
       const { setHeaderHeight } = useLayoutHeight();
       const { prefixCls } = useDesign('layout-multiple-header');
@@ -99,11 +97,9 @@
       const getPlaceholderDomStyle = computed((): CSSProperties => {
         let height = 0;
         // 代码逻辑说明: 【issues/7561】主题切换为顶部混合模式时，页面顶部内容显示不出来，被遮盖
+        // Tabs are now embedded inside the header row (single row), so only count HEADER_HEIGHT once.
         if ((unref(getShowFullHeaderRef) || !unref(getSplit)) && unref(getShowHeader) && !unref(getFullContent) || unref(getMenuType) == MenuTypeEnum.MIX) {
           height += HEADER_HEIGHT;
-        }
-        if (unref(getShowTabs) && !unref(getFullContent)) {
-          height += unref(getTabsThemeHeight);
         }
         setHeaderHeight(height);
         return {
@@ -127,7 +123,6 @@
         getIsFixed,
         getWrapStyle,
         getIsShowPlaceholderDom,
-        getShowTabs,
         getShowHeader,
       };
     },

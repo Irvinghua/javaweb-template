@@ -8,24 +8,32 @@
         <line x1="3" y1="18" x2="21" y2="18"/>
       </svg>
     </button>
-    <Tabs
-      type="editable-card"
-      size="small"
-      :animated="false"
-      :hideAdd="true"
-      :tabBarGutter="3"
-      :activeKey="activeKeyRef"
-      @change="handleChange"
-      @edit="handleEdit"
-    >
+
+    <!-- Custom pill capsule tabs — faithful mockup match -->
+    <div class="tabs-capsule" role="tablist">
       <template v-for="item in getTabsState" :key="item.query ? item.fullPath : item.path">
-        <TabPane :closable="!(item && item.meta && item.meta.affix)">
-          <template #tab>
-            <TabContent :tabItem="item" />
-          </template>
-        </TabPane>
+        <button
+          class="tab-pill"
+          :class="{ active: activeKeyRef === (item.query ? item.fullPath : item.path) }"
+          role="tab"
+          :aria-selected="activeKeyRef === (item.query ? item.fullPath : item.path)"
+          @click="handleChange(item.query ? item.fullPath : item.path)"
+        >
+          <span class="tab-dot"></span>
+          <TabContent :tabItem="item" />
+          <span
+            v-if="!(item && item.meta && item.meta.affix)"
+            class="tab-close"
+            :title="t('common.closeText')"
+            @click.stop="handleEdit(item.query ? item.fullPath : item.path)"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="10" height="10">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </span>
+        </button>
       </template>
-    </Tabs>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -33,7 +41,6 @@
 
   import { defineComponent, computed, unref, ref } from 'vue';
 
-  import { Tabs } from 'ant-design-vue';
   import TabContent from './components/TabContent.vue';
   import FoldButton from './components/FoldButton.vue';
   import TabRedo from './components/TabRedo.vue';
@@ -47,6 +54,7 @@
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useMultipleTabSetting } from '/@/hooks/setting/useMultipleTabSetting';
   import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
+  import { useI18n } from '/@/hooks/web/useI18n';
 
   import { REDIRECT_NAME } from '/@/router/constant';
   import { listenerRouteChange } from '/@/logics/mitt/routeChange';
@@ -58,13 +66,12 @@
     components: {
       TabRedo,
       FoldButton,
-      Tabs,
-      TabPane: Tabs.TabPane,
       TabContent,
     },
     setup() {
       const affixTextList = initAffixTabs();
       const activeKeyRef = ref('');
+      const { t } = useI18n();
 
       useTabsDrag(affixTextList);
       const tabStore = useMultipleTabStore();
@@ -142,21 +149,22 @@
         getShowFold,
         getCollapsed,
         toggleCollapsed,
+        t,
       };
     },
   });
 </script>
 <style lang="less">
   @import './index.less';
-  @import './tabs.theme.card.less';
-  @import './tabs.theme.smooth.less';
 </style>
 <style lang="less" scoped>
 @prefix-cls: ~'@{namespace}-multiple-tabs';
 .@{prefix-cls} {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  flex: 1 1 0;
+  min-width: 0;
 
   .tabs-row-trigger.icon-btn {
     width: 36px;
@@ -182,37 +190,98 @@
     }
   }
 
-  :deep(.anticon) {
-    display: inline-block;
-  }
-  .rightExtra {
+  // Capsule tab strip
+  .tabs-capsule {
+    flex: 1 1 0;
     display: flex;
+    gap: 2px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 3px;
+    background: var(--surface-2);
+    border-radius: 10px;
+    border: 1px solid var(--line);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .tab-pill {
+    display: inline-flex;
     align-items: center;
-    height: 34px;
+    gap: 4px;
+    padding: 6px 10px 6px 8px;
+    border-radius: 7px;
+    background: transparent;
+    border: 0;
+    font-size: 12.5px;
+    color: var(--ink-600);
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color var(--fast), color var(--fast);
+    user-select: none;
+    font-family: inherit;
+    flex-shrink: 0;
 
-    :deep(svg) {
-      &:not(.icon) {
-        vertical-align: -0.3em;
+    &:hover {
+      background: var(--surface);
+      color: var(--ink-900);
+
+      .tab-close {
+        opacity: 1;
       }
     }
 
-    .ai-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      width: 36px;
-      height: 36px;
-      border-radius: 9px;
-      color: var(--ink-500);
-      transition: background-color var(--fast), color var(--fast);
-      border-left: 1px solid var(--line);
+    &.active {
+      background: var(--surface);
+      color: var(--accent);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      font-weight: 600;
 
-      &:hover {
-        background-color: var(--surface-2);
-        color: var(--ink-900);
+      .tab-dot {
+        background: var(--accent);
+      }
+
+      .tab-close {
+        opacity: 1;
       }
     }
+  }
+
+  .tab-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ink-300);
+    flex-shrink: 0;
+  }
+
+  .tab-close {
+    margin-left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 5px;
+    color: var(--ink-400);
+    opacity: 0.55;
+    display: inline-grid;
+    place-items: center;
+    transition: background-color var(--fast), color var(--fast), opacity var(--fast);
+    flex-shrink: 0;
+
+    &:hover {
+      background: var(--line-strong);
+      color: var(--ink-700);
+      opacity: 1;
+    }
+  }
+
+  // Hide close when only one tab
+  &--hide-close .tab-close {
+    opacity: 0 !important;
+    pointer-events: none;
   }
 }
 </style>

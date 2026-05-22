@@ -1,26 +1,14 @@
 <template>
   <Header :class="getHeaderClass">
-    <!-- left start -->
-    <div :class="`${prefixCls}-left`">
-      <!-- logo -->
-      <AppLogo v-if="getShowHeaderLogo || getIsMobile" :class="`${prefixCls}-logo`" :theme="getHeaderTheme" :style="getLogoWidth" />
-      <!-- Sidebar trigger moved to tabs row; only keep it here in mobile mode where tabs row isn't shown -->
-      <LayoutTrigger
-        v-if="getIsMobile"
-        :theme="getHeaderTheme"
-        :sider="false"
-      />
-      <LayoutBreadcrumb v-if="getShowContent && getShowBread" :theme="getHeaderTheme" />
-      <!-- 欢迎语 -->
-      <span v-if="getShowContent && getShowBreadTitle && !getIsMobile" :class="[prefixCls, `${prefixCls}--${getHeaderTheme}`,'headerIntroductionClass']"> {{t('layout.header.welcomeIn')}} {{ title }} </span>
-    </div>
-    <!-- left end -->
+    <!-- Mobile: sidebar trigger (tabs row is not shown on mobile) -->
+    <LayoutTrigger
+      v-if="getIsMobile"
+      :theme="getHeaderTheme"
+      :sider="false"
+    />
 
-    <!-- menu start -->
-    <div :class="`${prefixCls}-menu`" v-if="getShowTopMenu && !getIsMobile">
-      <LayoutMenu :isHorizontal="true" :theme="getHeaderTheme" :splitType="getSplitType" :menuMode="getMenuMode" />
-    </div>
-    <!-- menu-end -->
+    <!-- Tabs strip (flex-grows, contains collapse toggle as leftmost element) -->
+    <MultipleTabs v-if="!getIsMobile" class="header-tabs-slot" />
 
     <!-- action  -->
     <div :class="`${prefixCls}-action`">
@@ -49,9 +37,8 @@
   import { propTypes } from '/@/utils/propTypes';
 
   import { Layout } from 'ant-design-vue';
-  import { AppLogo } from '/@/components/Application';
-  import LayoutMenu from '../menu/index.vue';
   import LayoutTrigger from '../trigger/index.vue';
+  import MultipleTabs from '../tabs/index.vue';
 
   import { AppSearch } from '/@/components/Application';
 
@@ -63,7 +50,7 @@
   import { SettingButtonPositionEnum } from '/@/enums/appEnum';
   import { AppLocalePicker } from '/@/components/Application';
 
-  import { UserDropDown, LayoutBreadcrumb, FullScreen, Notify, ErrorAction, LockScreen } from './components';
+  import { UserDropDown, FullScreen, Notify, ErrorAction, LockScreen } from './components';
   import { useAppInject } from '/@/hooks/web/useAppInject';
   import { useDesign } from '/@/hooks/web/useDesign';
 
@@ -79,10 +66,8 @@
     name: 'LayoutHeader',
     components: {
       Header: Layout.Header,
-      AppLogo,
       LayoutTrigger,
-      LayoutBreadcrumb,
-      LayoutMenu,
+      MultipleTabs,
       UserDropDown,
       AppLocalePicker,
       FullScreen,
@@ -186,30 +171,18 @@
       return {
         prefixCls,
         getHeaderClass,
-        getShowHeaderLogo,
         getHeaderTheme,
         getShowHeaderTrigger,
         getIsMobile,
-        getShowBreadTitle,
-        getShowBread,
-        getShowContent,
-        getSplitType,
-        getSplit,
-        getMenuMode,
-        getShowTopMenu,
         getShowLocalePicker,
         getShowFullScreen,
         getShowNotice,
         getUseErrorHandle,
-        getLogoWidth,
-        getIsMixSidebar,
-        getShowSettingButton,
         getShowSetting,
         getShowSearch,
         getUseLockPage,
         loginSelectOk,
         loginSelectRef,
-        title,
         t,
       };
     },
