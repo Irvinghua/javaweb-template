@@ -95,21 +95,23 @@
 
           <!-- 验证码 -->
           <a-form-item>
-            <div class="ml-field ml-field--with-suffix" :class="{ 'ml-field--focused': focusedField === 'inputCode' }">
-              <svg class="ml-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M9 12l2 2 4-4"/>
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-              <a-input
-                class="ml-control fix-auto-fill"
-                type="text"
-                :placeholder="t('sys.login.inputCode')"
-                v-model:value="formData.inputCode"
-                :bordered="false"
-                :maxlength="4"
-                @focus="focusedField = 'inputCode'"
-                @blur="focusedField = ''"
-              />
+            <div class="ml-field-row">
+              <div class="ml-field" :class="{ 'ml-field--focused': focusedField === 'inputCode' }">
+                <svg class="ml-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M9 12l2 2 4-4"/>
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <a-input
+                  class="ml-control fix-auto-fill"
+                  type="text"
+                  :placeholder="t('sys.login.inputCode')"
+                  v-model:value="formData.inputCode"
+                  :bordered="false"
+                  :maxlength="4"
+                  @focus="focusedField = 'inputCode'"
+                  @blur="focusedField = ''"
+                />
+              </div>
               <img
                 v-if="randCodeData.requestCodeSuccess"
                 class="ml-captcha-img"
@@ -196,20 +198,22 @@
 
           <!-- 短信验证码 + 发送按钮 -->
           <a-form-item>
-            <div class="ml-field ml-field--with-suffix" :class="{ 'ml-field--focused': focusedField === 'smscode' }">
-              <svg class="ml-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <path d="m22 4-10 10.01-3-3"/>
-              </svg>
-              <a-input
-                class="ml-control fix-auto-fill"
-                :maxlength="6"
-                :placeholder="t('sys.login.smsCode')"
-                v-model:value="phoneFormData.smscode"
-                :bordered="false"
-                @focus="focusedField = 'smscode'"
-                @blur="focusedField = ''"
-              />
+            <div class="ml-field-row">
+              <div class="ml-field" :class="{ 'ml-field--focused': focusedField === 'smscode' }">
+                <svg class="ml-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <path d="m22 4-10 10.01-3-3"/>
+                </svg>
+                <a-input
+                  class="ml-control fix-auto-fill"
+                  :maxlength="6"
+                  :placeholder="t('sys.login.smsCode')"
+                  v-model:value="phoneFormData.smscode"
+                  :bordered="false"
+                  @focus="focusedField = 'smscode'"
+                  @blur="focusedField = ''"
+                />
+              </div>
               <button
                 v-if="showInterval"
                 class="ml-sms-btn"
@@ -932,7 +936,19 @@
 
   /* AntD FormItem 间距重置 */
   :deep(.ant-form-item) {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+  }
+
+  /* 输入字段 + 右侧附件（验证码图片 / 短信按钮）的横向容器 */
+  .ml-field-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .ml-field {
+      flex: 1;
+      min-width: 0;
+    }
   }
 
   /* 通用输入字段容器 */
@@ -940,6 +956,7 @@
     position: relative;
     display: flex;
     align-items: center;
+    min-height: 46px;
     background: rgba(255, 255, 255, 0.7);
     border: 1px solid rgba(15, 23, 42, 0.08);
     border-radius: 10px;
@@ -958,12 +975,28 @@
       }
     }
 
-    &--with-suffix {
-      overflow: hidden;
-    }
-
     &--select {
       overflow: visible;
+    }
+
+    /* AntD a-input 渲染出的 <input class="ant-input">，是 .ml-field 的直接子节点 */
+    :deep(.ant-input) {
+      height: 46px;
+      padding: 0 14px 0 42px;
+      background: transparent;
+      border: none;
+      box-shadow: none !important;
+      font-size: 14px;
+      color: var(--ink-900);
+      width: 100%;
+
+      &::placeholder {
+        color: var(--ink-400);
+      }
+
+      &:focus {
+        box-shadow: none !important;
+      }
     }
   }
 
@@ -979,39 +1012,15 @@
     z-index: 1;
   }
 
-  /* AntD Input 裸核 */
-  .ml-control {
-    :deep(.ant-input),
-    :deep(input) {
-      height: 44px;
-      padding: 0 14px 0 42px !important;
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      font-size: 14px;
-      color: var(--ink-900);
-      width: 100%;
-
-      &::placeholder {
-        color: var(--ink-400);
-      }
-    }
-
-    :deep(.ant-input:focus) {
-      box-shadow: none !important;
-    }
-  }
-
-  /* 验证码图片 */
+  /* 验证码图片（输入框外的独立方块，与设计稿一致） */
   .ml-captcha-img {
-    width: 100px;
-    height: 40px;
-    border-radius: 8px;
-    margin-right: 4px;
+    width: 108px;
+    height: 46px;
+    border-radius: 10px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
     flex-shrink: 0;
     cursor: pointer;
-    object-fit: cover;
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    object-fit: fill;
     transition: opacity var(--fast);
 
     &:hover {
@@ -1028,12 +1037,12 @@
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      height: 44px !important;
+      height: 46px !important;
       padding: 0 !important;
 
       .ant-select-selection-item,
       .ant-select-selection-placeholder {
-        line-height: 44px;
+        line-height: 46px;
         font-size: 14px;
         color: var(--ink-400);
       }
@@ -1095,14 +1104,14 @@
     }
   }
 
-  /* 短信按钮 */
+  /* 短信按钮（输入框外的独立方块，与设计稿一致） */
   .ml-sms-btn {
-    background: rgba(255, 255, 255, 0.7);
-    border: none;
-    border-left: 1px solid rgba(15, 23, 42, 0.08);
-    color: var(--accent);
-    height: 44px;
+    height: 46px;
     padding: 0 16px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--accent);
     font-family: inherit;
     font-size: 13px;
     font-weight: 600;
@@ -1117,16 +1126,17 @@
   }
 
   .ml-sms-countdown {
+    height: 46px;
+    padding: 0 16px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 10px;
     background: rgba(241, 243, 248, 0.7);
     color: var(--ink-400);
-    height: 44px;
-    padding: 0 14px;
     font-size: 12px;
     display: flex;
     align-items: center;
     flex-shrink: 0;
     white-space: nowrap;
-    border-left: 1px solid rgba(15, 23, 42, 0.08);
   }
 
   /* 其他登录入口 */
@@ -1310,8 +1320,8 @@ html[data-theme='dark'] {
       border-color: rgba(255, 255, 255, 0.08) !important;
     }
 
-    .ml-control :deep(input),
-    .ml-control :deep(.ant-input) {
+    .ml-field input,
+    .ml-field .ant-input {
       color: #e2e8f0 !important;
       -webkit-text-fill-color: #e2e8f0 !important;
       background: transparent !important;
