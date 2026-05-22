@@ -6,7 +6,7 @@
 ## 背景
 
 - 仓库为基于 JeecgBoot 3.9.1 裁剪的 ToB CRUD 脚手架（后端 `jeecg-boot/`，前端 `jeecgboot-vue3/`）。
-- 上一版 spec/plan（`2026-04-24-frontend-template-fork-conventions`）建立了 fork-and-forget 的"可改区 / 禁区"规约，并规划了 `src/theme/tokens.ts`。**该 plan 尚未执行**——`src/theme/` 目录不存在，`App.vue` 仍是内联 token。本 spec 把 `tokens.ts` 的创建吸收为第一步。
+- 上一版 spec/plan（`2026-04-24-frontend-template-fork-conventions`）已执行：`src/theme/tokens.ts` 已存在（默认值仍是 JeecgBoot 原色 `#1890ff` 等）、`App.vue` 已消费它、`CLAUDE.md` 与 `docs/ai-redesign-workflow.md` 已更新。本 spec 在此基础上**修改** `tokens.ts` 的值为新设计稿配色。
 - 本任务是上一版规约所预备的"真实 fork 换皮"。它**显式覆盖**上一版 spec 的两条非目标：本次**要**重绘 layout / login / dashboard，且**要**改 `src/components/**` 共享组件层。
 
 ## 目标
@@ -67,9 +67,9 @@
 
 ## 产物 1：Design Tokens
 
-### 1a. `src/theme/tokens.ts`（新建）
+### 1a. `src/theme/tokens.ts`（修改已有文件）
 
-AntD Vue 4 `ConfigProvider.theme.token` 的单一真源：
+AntD Vue 4 `ConfigProvider.theme.token` 的单一真源（文件已存在，改其值）：
 
 ```typescript
 export const tokens = {
