@@ -276,11 +276,6 @@
           <a class="ml-third-btn" title="钉钉" @click="onThirdLogin('dingtalk')"><DingtalkCircleFilled /></a>
           <a class="ml-third-btn" title="微信" @click="onThirdLogin('wechat_open')"><WechatFilled /></a>
         </div>
-
-        <!-- 服务协议 -->
-        <div class="ml-agreement">
-          登录即代表您同意 <a href="#" class="ml-agreement-link">《服务协议》</a> 和 <a href="#" class="ml-agreement-link">《隐私政策》</a>
-        </div>
       </template>
 
       <!-- ============ 忘记密码面板 ============ -->
@@ -1210,26 +1205,6 @@
       color: var(--accent);
       background: var(--accent-50);
       border-color: var(--accent-100);
-    }
-  }
-
-  /* 服务协议 */
-  .ml-agreement {
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1px solid var(--line);
-    font-size: 12px;
-    color: var(--ink-500);
-    text-align: center;
-    line-height: 1.55;
-  }
-
-  .ml-agreement-link {
-    color: var(--accent);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
     }
   }
 
