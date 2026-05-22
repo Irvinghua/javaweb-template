@@ -237,9 +237,8 @@
   .@{prefix-cls} {
     display: flex;
     align-items: center;
-    /* update-begin-author:taoyan date:2022-11-18 for: 表格默认行高比官方示例多出2px*/
     height: 22px;
-    /* update-end-author:taoyan date:2022-11-18 for: 表格默认行高比官方示例多出2px*/
+    gap: 2px;
 
     .action-divider {
       display: table;
@@ -257,12 +256,35 @@
       justify-content: flex-end;
     }
 
-    button {
-      display: flex;
+    /* 行操作链接式按钮样式 — 对齐设计稿 .link-action */
+    button.ant-btn-link {
+      color: var(--accent-600) !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      padding: 2px 6px !important;
+      height: auto !important;
+      border-radius: 6px !important;
+      transition: background-color 0.15s !important;
+      display: inline-flex;
       align-items: center;
 
       span {
         margin-left: 0 !important;
+      }
+
+      &:hover {
+        background: var(--accent-50) !important;
+        color: var(--accent) !important;
+      }
+
+      /* 危险操作 */
+      &.ant-btn-dangerous {
+        color: var(--bad) !important;
+
+        &:hover {
+          background: var(--bad-bg) !important;
+          color: var(--bad) !important;
+        }
       }
     }
 
@@ -272,37 +294,61 @@
       }
     }
 
+    /* 分割线 */
     .ant-divider,
     .ant-divider-vertical {
       margin: 0 2px;
+      border-color: var(--line-strong);
     }
 
-    .icon-more {
-      transform: rotate(90deg);
-
-      svg {
-        font-size: 1.1em;
-        font-weight: 700;
-      }
+    /* 更多按钮 */
+    .ant-btn-link > .anticon + span,
+    .ant-btn-link > span {
+      margin-left: 2px;
     }
+
     &-popconfirm {
       .ant-popconfirm-buttons {
         min-width: 120px;
-        // 代码逻辑说明: 【issues/1019】popConfirm确认框待端后端返回过程中（处理中）样式错乱
         display: flex;
         align-items: center;
         justify-content: center;
       }
     }
-    // 代码逻辑说明: 【QQYUN-8762】调整table操作栏ant-dropdown样式
+
+    /* 下拉菜单样式 */
     &-dropdown {
+      .ant-dropdown-menu {
+        border-radius: 10px;
+        box-shadow: var(--shadow-pop);
+        padding: 5px;
+        border: 1px solid var(--line);
+      }
+
       .ant-dropdown-menu .ant-dropdown-menu-item-divider {
-        margin: 2px 0;
+        margin: 4px 6px;
+        background: var(--line);
       }
+
       .ant-dropdown-menu .ant-dropdown-menu-item {
-        padding: 3px 8px;
-        font-size: 13.6px;
+        padding: 7px 10px;
+        font-size: 13px;
+        color: var(--ink-700);
+        border-radius: 7px;
+
+        &:hover {
+          background: var(--surface-2);
+        }
+
+        &.ant-dropdown-menu-item-danger {
+          color: var(--bad);
+
+          &:hover {
+            background: var(--bad-bg);
+          }
+        }
       }
+
       .dropdown-event-area {
         padding: 0 !important;
       }

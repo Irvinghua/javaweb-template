@@ -1,3 +1,121 @@
+/* ============================================================
+   Pagination 全局换皮 (Task 6 ui-redesign)
+   对齐 jeecgboot-ui/pages/jeecg-page.css .pagination / .pager
+   ============================================================ */
+
+.ant-pagination {
+  /* 整体：右对齐，间距 */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--ink-500);
+
+  /* 页码项 & 前/后翻页 */
+  .ant-pagination-prev,
+  .ant-pagination-next,
+  .ant-pagination-item {
+    min-width: 32px;
+    height: 32px;
+    line-height: 30px;
+    border-radius: 8px !important;
+    border: 1px solid var(--line) !important;
+    background: var(--surface) !important;
+    margin: 0 2px !important;
+    transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+
+    a {
+      color: var(--ink-700) !important;
+      font-size: 13px;
+      line-height: 30px;
+    }
+
+    &:hover:not(.ant-pagination-disabled) {
+      border-color: var(--accent) !important;
+
+      a {
+        color: var(--accent-600) !important;
+      }
+
+      .ant-pagination-item-link {
+        color: var(--accent) !important;
+        border-color: var(--accent) !important;
+      }
+    }
+  }
+
+  /* 当前激活页码 */
+  .ant-pagination-item-active {
+    background: var(--accent) !important;
+    border-color: transparent !important;
+    border-radius: 8px !important;
+
+    a {
+      color: #fff !important;
+    }
+
+    &:hover a {
+      color: #fff !important;
+    }
+  }
+
+  /* 省略号 */
+  .ant-pagination-jump-prev,
+  .ant-pagination-jump-next {
+    .ant-pagination-item-container .ant-pagination-item-ellipsis {
+      color: var(--ink-400);
+    }
+  }
+
+  /* 每页条数选择器 */
+  .ant-pagination-options {
+    margin-left: 8px;
+
+    .ant-select-selector {
+      height: 32px !important;
+      border-radius: 8px !important;
+      border: 1px solid var(--line) !important;
+      background: var(--surface) !important;
+      font-size: 13px;
+    }
+
+    .ant-select-selection-item {
+      line-height: 30px !important;
+      color: var(--ink-700);
+    }
+  }
+
+  /* 快速跳转 */
+  .ant-pagination-options-quick-jumper {
+    color: var(--ink-500);
+    font-size: 13px;
+
+    input {
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink-700);
+      font-size: 13px;
+      padding: 0 8px;
+      width: 48px;
+      text-align: center;
+
+      &:focus {
+        border-color: var(--accent);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(91, 108, 255, 0.12);
+      }
+    }
+  }
+
+  /* disabled */
+  .ant-pagination-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
 html[data-theme='dark'] {
   .ant-pagination {
     &.mini {
