@@ -137,12 +137,9 @@
   @prefix-cls: ~'@{namespace}-layout-multiple-header';
 
   .@{prefix-cls} {
-    transition: width 0.2s;
+    transition: width 0.2s, box-shadow var(--norm);
     flex: 0 0 auto;
-    // 代码逻辑说明: 【issues/8709】LayoutContent样式多出1px
-    // &--dark {
-    //   margin-left: -1px;
-    // }
+    background-color: var(--window);
 
     &--fixed {
       position: fixed;
@@ -156,5 +153,18 @@
       position: absolute;
     }
 
+    // Light theme: no bottom border by default
+    &--light {
+      background-color: var(--window);
+      border-bottom: none;
+    }
+
+    // Scroll shadow applied via JS scroll detection — but since we can't add logic,
+    // simulate with sticky + drop-shadow on the wrapper when content scrolls.
+    // The shadow is handled by the header's box-shadow on scroll via CSS.
+    &--scrolled {
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      border-bottom: 1px solid var(--line);
+    }
   }
 </style>

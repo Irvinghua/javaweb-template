@@ -162,23 +162,33 @@
   :deep(.anticon) {
     display: inline-block;
   }
-  // 代码逻辑说明: 【issues/7345】标签样式切换到极简模式样式错乱
   .rightExtra {
     display: flex;
+    align-items: center;
+    height: 34px;
+
     :deep(svg) {
       &:not(.icon) {
         vertical-align: -0.3em;
       }
     }
+
     .ai-icon {
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       width: 36px;
-      color: @text-color;
-      text-align: center;
-      border-left: 1px solid @border-color-base;
+      height: 36px;
+      border-radius: 9px;
+      color: var(--ink-500);
+      transition: background-color var(--fast), color var(--fast);
+      border-left: 1px solid var(--line);
+
+      &:hover {
+        background-color: var(--surface-2);
+        color: var(--ink-900);
+      }
     }
   }
 }

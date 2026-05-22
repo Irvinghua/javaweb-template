@@ -180,6 +180,7 @@
 <style lang="less">
   @prefix-cls: ~'@{namespace}-layout-menu';
   @logo-prefix-cls: ~'@{namespace}-app-logo';
+  @menu-prefix-cls: ~'@{namespace}-menu';
 
   .@{prefix-cls} {
     &-logo {
@@ -196,6 +197,118 @@
       .@{logo-prefix-cls} {
         &__title {
           opacity: 1;
+        }
+      }
+    }
+  }
+
+  // Redesign override: when app-logo renders in dark mode inside fixed sidebar,
+  // force light colors so it's always readable on white background.
+  .jeecg-layout-sideBar--fixed .jeecg-app-logo {
+    background: var(--surface) !important;
+
+    &.dark .jeecg-app-logo__title {
+      color: var(--ink-900) !important;
+      font-weight: 700;
+    }
+  }
+
+  // Redesign override: when sidebar menu uses dark class (from cached user settings),
+  // force light redesign colors so sidebar always looks like the design spec.
+  // This only applies inside the sidebar sider container (fixed layout sider).
+  .jeecg-layout-sideBar--fixed {
+    .@{menu-prefix-cls}-dark.@{menu-prefix-cls}-vertical {
+      background-color: var(--surface) !important;
+
+      // submenu parent container
+      .jeecg-simple-menu__parent,
+      .@{menu-prefix-cls}-submenu,
+      .@{menu-prefix-cls}-submenu-nested {
+        background-color: var(--surface) !important;
+      }
+
+      .@{menu-prefix-cls}-item,
+      .@{menu-prefix-cls}-submenu-title {
+        color: var(--ink-700) !important;
+
+        &:hover {
+          background-color: var(--surface-2) !important;
+          color: var(--ink-900) !important;
+        }
+      }
+
+      // Active leaf item (top-level)
+      > .@{menu-prefix-cls}-item-active:not(.@{menu-prefix-cls}-submenu) {
+        background-color: var(--accent-50) !important;
+        color: var(--accent) !important;
+        font-weight: 600;
+        position: relative;
+
+        &::before {
+          content: '' !important;
+          position: absolute;
+          left: -14px;
+          top: 10px;
+          bottom: 10px;
+          width: 3px;
+          border-radius: 0 3px 3px 0;
+          background-color: var(--accent) !important;
+        }
+
+        &::after {
+          display: none !important;
+        }
+      }
+
+      // Parent with active child
+      .@{menu-prefix-cls}-child-item-active > .@{menu-prefix-cls}-submenu-title,
+      .@{menu-prefix-cls}-submenu-active > .@{menu-prefix-cls}-submenu-title,
+      .@{menu-prefix-cls}-opened > .@{menu-prefix-cls}-submenu-title {
+        background-color: var(--surface-2) !important;
+        color: var(--ink-900) !important;
+      }
+
+      // Nested sub-items (children of submenu)
+      .@{menu-prefix-cls}-submenu .@{menu-prefix-cls}-item,
+      .@{menu-prefix-cls}-submenu-nested .@{menu-prefix-cls}-item {
+        color: var(--ink-600) !important;
+
+        &:hover {
+          background-color: var(--surface-2) !important;
+          color: var(--ink-900) !important;
+        }
+
+        &.@{menu-prefix-cls}-item-active {
+          background-color: var(--accent-50) !important;
+          color: var(--accent) !important;
+          font-weight: 600;
+
+          &::after {
+            display: none !important;
+          }
+        }
+      }
+
+      // Collapsed state
+      &.@{menu-prefix-cls}-collapse {
+        background-color: var(--surface) !important;
+
+        > .@{menu-prefix-cls}-item-active,
+        > .@{menu-prefix-cls}-submenu-active {
+          background-color: var(--accent-50) !important;
+          position: relative;
+
+          &::before {
+            content: '' !important;
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            border-radius: 0 3px 3px 0;
+            background-color: var(--accent) !important;
+          }
         }
       }
     }

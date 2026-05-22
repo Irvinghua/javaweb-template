@@ -216,32 +216,33 @@
 </script>
 <style lang="less">
   @import './index.less';
-  //顶部欢迎语展示样式
   @prefix-cls: ~'@{namespace}-layout-header';
 
   .ant-layout .@{prefix-cls} {
     display: flex;
-    padding: 0 8px;
-    // 代码逻辑说明: 【QQYUN-8762】顶栏高度
+    padding: 0 16px 0 8px;
     height: @header-height;
     align-items: center;
+    gap: 8px;
 
     .headerIntroductionClass {
       margin-right: 4px;
       margin-bottom: 2px;
-      border-bottom: 0px;
-      border-left: 0px;
+      border-bottom: 0;
+      border-left: 0;
+      font-size: 13px;
+      color: var(--ink-500);
     }
 
     &--light {
       .headerIntroductionClass {
-        color: #000;
+        color: var(--ink-500);
       }
     }
 
     &--dark {
       .headerIntroductionClass {
-        color: rgba(255, 255, 255, 1);
+        color: rgba(255, 255, 255, 0.8);
       }
       .anticon, .truncate {
         color: rgba(255, 255, 255, 1);

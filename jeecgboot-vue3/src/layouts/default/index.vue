@@ -77,17 +77,17 @@
     display: flex;
     width: 100%;
     min-height: 100%;
-    background-color: @content-bg;
+    background-color: var(--window);
     flex-direction: column;
 
     > .ant-layout {
       min-height: 100%;
+      background-color: var(--window);
     }
 
     &-main {
       width: 100%;
-      // 代码逻辑说明:【issues/8709】LayoutContent样式多出1px
-      // margin-left: 1px;
+      background-color: var(--window);
     }
   }
 </style>

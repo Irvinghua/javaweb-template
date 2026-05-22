@@ -1,86 +1,112 @@
 @prefix-cls: ~'@{namespace}-multiple-tabs';
 
-html[data-theme='dark'] {
-  .@{prefix-cls} {
-    .ant-tabs-tab {
-      border-bottom: 1px solid @border-color-base;
-    }
-  }
-}
-
-html[data-theme='light'] {
-  .@{prefix-cls} {
-    .ant-tabs-tab:not(.ant-tabs-tab-active) {
-      border: 1px solid #e6e6e6;
-    }
-  }
-}
-
+// ---- Redesign: Capsule tabs in topbar row ----
 .@{prefix-cls} {
   z-index: 10;
-  height: @multiple-height + 2;
-  line-height: @multiple-height + 2;
-  background-color: @component-background;
-  border-bottom: 1px solid @border-color-base;
-  box-shadow: 0 4px 4px rgb(0 21 41 / 8%);
+  height: auto;
+  line-height: normal;
+  background-color: transparent;
+  border-bottom: none;
+  box-shadow: none;
+  flex: 1 1 0;
+  min-width: 0;
+  align-self: center;
 
+  // The outer wrapper becomes the pill container
   .ant-tabs-small {
-    height: calc(@multiple-height + 4px);
+    height: auto;
   }
 
   .ant-tabs.ant-tabs-card {
-    padding-left: 0px;
+    padding-left: 0;
 
     .ant-tabs-nav {
-      height: calc(@multiple-height);
+      height: auto;
       margin: 0;
-      background-color: @component-background;
+      background-color: transparent;
       border: 0;
       box-shadow: none;
 
+      &::before {
+        display: none;
+      }
+
       .ant-tabs-nav-wrap {
-        height: @multiple-height;
-        margin-top: 2px;
+        height: auto;
+        margin-top: 0;
+        // Capsule pill container
+        background: var(--surface-2);
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        padding: 3px;
+        overflow: hidden;
+      }
+
+      .ant-tabs-nav-list {
+        gap: 2px;
+        padding: 0;
       }
 
       .ant-tabs-tab {
-        height: calc(@multiple-height - 4px);
-        padding-right: 12px;
-        line-height: calc(@multiple-height - 4px);
-        color: @text-color-base;
-        background-color: @component-background;
-        transition: none;
+        height: 28px;
+        padding: 0 12px;
+        line-height: 28px;
+        color: var(--ink-600);
+        background-color: transparent;
+        border: 0 !important;
+        border-radius: 7px;
+        font-size: 12.5px;
+        font-weight: 500;
+        margin: 0 !important;
+        transition: background-color var(--fast), color var(--fast);
+        user-select: none;
 
         .ant-tabs-tab-btn {
-          color: @text-color-base;
-          transition: none;
+          color: var(--ink-600);
+          transition: color var(--fast);
         }
 
         &:hover {
+          background-color: var(--surface);
+          color: var(--ink-900);
+
+          .ant-tabs-tab-btn {
+            color: var(--ink-900);
+          }
+
           .ant-tabs-tab-remove .anticon-close {
             opacity: 1;
           }
         }
 
         .ant-tabs-tab-remove {
-          margin: 0;
+          margin: 0 0 0 2px;
           padding: 0;
-          position: relative;
-          top: 0;
-          left: 4px;
+          width: 16px;
+          height: 16px;
+          display: inline-grid;
+          place-items: center;
+          border-radius: 5px;
+          color: var(--ink-400);
+          opacity: 0.55;
+          transition: background-color var(--fast), color var(--fast), opacity var(--fast);
+
+          &:hover {
+            background-color: var(--line-strong);
+            color: var(--ink-700);
+            opacity: 1;
+          }
 
           .anticon-close {
-            width: 8px;
-            height: 12px;
-            font-size: 12px;
+            width: 10px;
+            height: 10px;
+            font-size: 10px;
             color: inherit;
-            opacity: 0;
+            opacity: 1;
             transition: none;
 
-            &:hover {
-              svg {
-                width: 0.8em;
-              }
+            &:hover svg {
+              width: 0.8em;
             }
           }
         }
@@ -92,26 +118,27 @@ html[data-theme='light'] {
         }
 
         svg {
-          fill: @text-color-base;
+          fill: var(--ink-600);
         }
       }
 
       .ant-tabs-tab:not(.ant-tabs-tab-active) {
         &:hover {
-          color: @primary-color;
+          color: var(--ink-900);
         }
       }
 
       .ant-tabs-tab-active {
         position: relative;
-        padding-left: 18px;
-        color: @white !important;
-        background: @primary-color;
-        border: 1px solid transparent;
-        transition: none;
+        padding: 0 12px;
+        color: var(--accent) !important;
+        background: var(--surface) !important;
+        border: 0 !important;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+        font-weight: 600;
 
         .ant-tabs-tab-btn {
-          color: @white;
+          color: var(--accent) !important;
         }
 
         .ant-tabs-tab-remove .anticon-close {
@@ -119,24 +146,23 @@ html[data-theme='light'] {
         }
 
         svg {
-          width: 0.7em;
-          fill: @white;
+          fill: var(--accent);
         }
       }
     }
 
     .ant-tabs-nav > div:nth-child(1) {
-      padding: 0 6px;
+      padding: 0;
 
       .ant-tabs-tab {
-        margin-right: 6px !important;
+        margin-right: 0 !important;
       }
     }
   }
 
   .ant-tabs-tab:not(.ant-tabs-tab-active) {
     .ant-tabs-tab-remove .anticon-close {
-      font-size: 12px;
+      font-size: 10px;
 
       svg {
         width: 0.6em;
@@ -145,10 +171,7 @@ html[data-theme='light'] {
   }
 
   .ant-tabs-extra-content {
-    // update-begin--author:liaozhiyang---date:20241016---for：【issues/7345】标签样式切换到极简模式样式错乱
-    // margin-top: 2px;
-    // update-end--author:liaozhiyang---date:20241016---for：【issues/7345】标签样式切换到极简模式样式错乱
-    line-height: @multiple-height !important;
+    line-height: 34px !important;
   }
 
   .ant-dropdown-trigger {
@@ -167,15 +190,15 @@ html[data-theme='light'] {
     &__extra-fold {
       display: inline-block;
       width: 36px;
-      height: @multiple-height;
-      line-height: @multiple-height;
-      color: @text-color-secondary;
+      height: 36px;
+      line-height: 36px;
+      color: var(--ink-500);
       text-align: center;
       cursor: pointer;
-      border-left: 1px solid @border-color-base;
+      border-left: 1px solid var(--line);
 
       &:hover {
-        color: @text-color-base;
+        color: var(--ink-900);
       }
 
       span[role='img'] {
@@ -192,12 +215,29 @@ html[data-theme='light'] {
     &__info {
       display: inline-block;
       width: 100%;
-      height: @multiple-height - 2;
+      height: 28px;
       padding-left: 0;
       margin-left: -10px;
       font-size: 12px;
       cursor: pointer;
       user-select: none;
+    }
+  }
+}
+
+// Override dark theme tabs to keep existing behavior
+html[data-theme='dark'] {
+  .@{prefix-cls} {
+    .ant-tabs-tab {
+      border-bottom: none;
+    }
+  }
+}
+
+html[data-theme='light'] {
+  .@{prefix-cls} {
+    .ant-tabs-tab:not(.ant-tabs-tab-active) {
+      border: none;
     }
   }
 }

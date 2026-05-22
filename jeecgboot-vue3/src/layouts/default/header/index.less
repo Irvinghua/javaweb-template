@@ -6,15 +6,14 @@
 .@{header-prefix-cls} {
   display: flex;
   height: @header-height;
-  padding: 0;
-  // update-begin--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
-  // margin-left: -1px;
-  // update-end--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
+  padding: 0 20px 0 12px;
   line-height: @header-height;
-  color: @white;
-  background-color: @white;
+  color: var(--ink-900);
+  background-color: var(--window);
+  border-bottom: none !important;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
 
   &--mobile {
     .@{breadcrumb-prefix-cls},
@@ -68,25 +67,35 @@
     display: flex;
     height: 100%;
     align-items: center;
+    gap: 4px;
+    flex: 1 1 0;
+    min-width: 0;
 
     .@{header-trigger-prefix-cls} {
       display: flex;
-      height: 100%;
-      padding: 1px 10px 0 10px;
+      width: 36px;
+      height: 36px;
+      padding: 0;
       cursor: pointer;
       align-items: center;
+      justify-content: center;
+      border-radius: 9px;
+      flex-shrink: 0;
+      color: var(--ink-600);
+      transition: background-color var(--fast), color var(--fast);
 
       .anticon {
-        font-size: 22px;
+        font-size: 18px;
       }
 
       &.light {
         &:hover {
-          background-color: @header-light-bg-hover-color;
+          background-color: var(--surface-2);
+          color: var(--ink-900);
         }
 
         svg {
-          fill: #000;
+          fill: var(--ink-600);
         }
       }
 
@@ -107,98 +116,131 @@
 
   &-action {
     display: flex;
-    min-width: 180px;
-    // padding-right: 12px;
+    min-width: 0;
     align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+    margin-left: auto;
 
     &__item {
       display: flex !important;
-      height: @header-height;
-      padding: 0 2px;
+      width: 36px;
+      height: 36px;
+      padding: 0;
       font-size: 1.2em;
       cursor: pointer;
       align-items: center;
+      justify-content: center;
+      border-radius: 9px;
+      color: var(--ink-600);
+      transition: background-color var(--fast), color var(--fast);
+
+      &:hover {
+        background-color: var(--surface-2) !important;
+        color: var(--ink-900) !important;
+      }
 
       .ant-badge {
-        height: @header-height;
-        line-height: @header-height;
+        height: 36px;
+        line-height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .ant-badge-dot {
-        top: 10px;
-        right: 2px;
+        top: 6px;
+        right: 6px;
+      }
+
+      // Override: disable the old header item hover color
+      &:hover {
+        background-color: var(--surface-2) !important;
       }
     }
 
     span[role='img'] {
-      padding: 0 8px;
+      padding: 0 4px;
+      font-size: 17px !important;
     }
   }
 
   &--light {
-    background-color: @white !important;
-    border-bottom: 1px solid @header-light-bottom-border-color;
-    border-left: 1px solid @header-light-bottom-border-color;
+    background-color: var(--window) !important;
+    border-bottom: none !important;
+    border-left: none !important;
 
     .@{header-prefix-cls}-logo {
-      color: @text-color-base;
+      color: var(--ink-900);
 
       &:hover {
-        background-color: @header-light-bg-hover-color;
+        background-color: transparent;
       }
     }
 
     .@{header-prefix-cls}-action {
       &__item {
-        color: @text-color-base;
+        color: var(--ink-600);
 
         .app-iconify {
-          padding: 0 10px;
-          font-size: 16px !important;
+          padding: 0 4px;
+          font-size: 17px !important;
         }
 
         &:hover {
-          background-color: @header-light-bg-hover-color;
+          background-color: var(--surface-2) !important;
+          color: var(--ink-900) !important;
         }
       }
 
       &-icon,
       span[role='img'] {
-        color: @text-color-base;
+        color: var(--ink-600);
       }
     }
   }
 
+  // Redesign: dark header in sidebar mode is overridden to use light surface
+  // (user may have cached dark setting from another session/mode)
   &--dark {
-    background-color: @header-dark-bg-color !important;
-    // border-bottom: 1px solid @border-color-base;
-    // update-begin--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
-    // border-left: 1px solid @border-color-base;
-    // update-end--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
+    background-color: var(--window) !important;
+    border-bottom: none !important;
 
     .@{header-prefix-cls}-logo {
+      color: var(--ink-900);
       &:hover {
-        background-color: @header-dark-bg-hover-color;
+        background-color: transparent;
       }
     }
 
     .@{header-prefix-cls}-action {
       &__item {
+        color: var(--ink-600) !important;
+
         .app-iconify {
-          padding: 0 10px;
-          font-size: 16px !important;
+          padding: 0 4px;
+          font-size: 17px !important;
         }
 
         .ant-badge {
           span {
-            color: @white;
+            color: var(--ink-900) !important;
           }
         }
 
         &:hover {
-          background-color: @header-dark-bg-hover-color;
+          background-color: var(--surface-2) !important;
+          color: var(--ink-900) !important;
         }
       }
+
+      .anticon, .truncate {
+        color: var(--ink-600) !important;
+      }
+    }
+
+    .headerIntroductionClass {
+      color: var(--ink-500) !important;
     }
   }
 }

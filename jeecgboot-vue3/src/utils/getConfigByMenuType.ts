@@ -34,10 +34,10 @@ export function getConfigByMenuType(menuType: MenuTypeEnum): {
     headerBgColor = HEADER_PRESET_BG_COLOR_LIST[0];
     sideBgColor = SIDE_BAR_BG_COLOR_LIST[0];
   } else if (menuType === MenuTypeEnum.SIDEBAR) {
-    // 侧边栏导航
+    // 侧边栏导航 — redesign: 白色侧边栏 + 白色顶栏
     themeColor = APP_PRESET_COLOR_LIST[1];
-    headerBgColor = HEADER_PRESET_BG_COLOR_LIST[4];
-    sideBgColor = SIDE_BAR_BG_COLOR_LIST[7];
+    headerBgColor = HEADER_PRESET_BG_COLOR_LIST[0]; // #ffffff
+    sideBgColor = SIDE_BAR_BG_COLOR_LIST[3];        // #ffffff
   }
   return {
     themeColor,

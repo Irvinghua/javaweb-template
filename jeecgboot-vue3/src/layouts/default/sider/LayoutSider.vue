@@ -153,7 +153,49 @@
       height: calc(100% - @header-height);
     }
 
-    &.ant-layout-sider-dark {
+    // ---- Redesign: sidebar container ----
+    // In sidebar nav mode (default), always use white surface regardless of
+    // the theme class that may be set from cached user settings.
+    // We target the fixed sidebar (not mix/mobile drawer).
+    &--fixed,
+    &:not(.ant-layout-sider-dark) {
+      background-color: var(--surface) !important;
+      border-right: 1px solid var(--line) !important;
+      box-shadow: none !important;
+      // Allow the active left-edge indicator (::before on menu items) to be visible
+      overflow: visible !important;
+
+      .ant-layout-sider-trigger {
+        background-color: var(--surface) !important;
+        color: var(--ink-500) !important;
+        border-top: 1px solid var(--line);
+        height: 40px;
+        line-height: 40px;
+        font-size: 14px;
+        transition: background-color var(--fast), color var(--fast);
+
+        &:hover {
+          background-color: var(--surface-2) !important;
+          color: var(--ink-900) !important;
+        }
+
+        .anticon {
+          font-size: 16px;
+        }
+      }
+
+      // The inner content area
+      .ant-layout-sider-children {
+        display: flex;
+        flex-direction: column;
+        // Keep clip for vertical scroll but allow left-edge overflow for active indicator
+        overflow-x: visible;
+        overflow-y: auto;
+      }
+    }
+
+    // Dark theme only when NOT fixed sidebar (mix modes can keep dark if set)
+    &.ant-layout-sider-dark:not(.@{prefix-cls}--fixed) {
       background-color: @sider-dark-bg-color;
 
       .ant-layout-sider-trigger {
@@ -167,23 +209,14 @@
       }
     }
 
-    &:not(.ant-layout-sider-dark) {
-      // box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
-
-      .ant-layout-sider-trigger {
-        color: @text-color-base;
-        border-top: 1px solid @border-color-light;
-      }
-    }
-
     .ant-layout-sider-zero-width-trigger {
       top: 40%;
       z-index: 10;
     }
 
     & .ant-layout-sider-trigger {
-      height: 36px;
-      line-height: 36px;
+      height: 40px;
+      line-height: 40px;
     }
   }
 </style>
