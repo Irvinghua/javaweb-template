@@ -5,17 +5,17 @@
  * 详见 docs/ai-redesign-workflow.md 与 README.md。
  */
 export const tokens = {
-  colorPrimary: '#1890ff',
-  colorSuccess: '#55D187',
-  colorWarning: '#EFBD47',
-  colorError: '#ED6F6F',
-  colorInfo: '#1890ff',
-  colorTextBase: '#333',
-  borderRadius: 4,
+  colorPrimary: '#5B6CFF',
+  colorSuccess: '#15A34A',
+  colorWarning: '#D97706',
+  colorError: '#DC2626',
+  colorInfo: '#5B6CFF',
+  colorTextBase: '#0F172A',
+  borderRadius: 8,
   fontSize: 14,
   sizeStep: 4,
   sizeUnit: 4,
-  wireframe: true,
+  wireframe: false,
   fontFamily:
-    '-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol',
+    "'Inter','Noto Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei','Helvetica Neue',Helvetica,Arial,sans-serif",
 };
