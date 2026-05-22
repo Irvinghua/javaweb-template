@@ -210,3 +210,60 @@ html[data-theme='dark'] {
   }
 }
 // update-end--author:liaozhiyang---date:20240605---for：【TV360X-189】统一只读样式
+
+// =====================================================
+// == UI重设计: 搜索区（BasicForm query filter card） ==
+// =====================================================
+// 目标: BasicTable 内的 BasicForm（source="table-query"）
+// class 路径: .jeecg-basic-table-form-container > .jeecg-basic-form
+.jeecg-basic-table-form-container {
+  // 筛选区卡片外观
+  > .jeecg-basic-form,
+  > .table-search-area-hidden {
+    background: var(--surface);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: 16px 20px 4px;
+    margin-bottom: 14px;
+  }
+
+  // 字段标签 — 统一字号与颜色
+  > .jeecg-basic-form .ant-form-item-label > label {
+    font-size: 13px;
+    color: var(--ink-700);
+    font-weight: 500;
+  }
+
+  // 输入框 / 选择器外观
+  > .jeecg-basic-form .ant-input,
+  > .jeecg-basic-form .ant-input-affix-wrapper,
+  > .jeecg-basic-form .ant-select:not(.ant-select-customize-input) .ant-select-selector,
+  > .jeecg-basic-form .ant-picker,
+  > .jeecg-basic-form .ant-input-number {
+    border-radius: 8px;
+    border-color: var(--line-strong);
+    background: var(--surface-2);
+    font-size: 13px;
+    transition: border-color var(--fast), box-shadow var(--fast), background-color var(--fast);
+
+    &:hover {
+      border-color: var(--accent);
+    }
+
+    &:focus,
+    &.ant-input-affix-wrapper-focused,
+    &.ant-picker-focused,
+    &.ant-select-focused,
+    &.ant-input-number-focused {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.14);
+      background: var(--surface);
+    }
+  }
+
+  // 选择器 hover/focus 穿透
+  > .jeecg-basic-form .ant-select-focused:not(.ant-select-disabled) .ant-select-selector {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.14) !important;
+  }
+}
