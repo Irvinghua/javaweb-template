@@ -124,6 +124,49 @@
   display: none !important;
 }
 
+/* ============================================================
+   FIX: 包裹 toolbar + 表格 + 分页 的容器（.ant-table-wrapper 内层）
+   按设计稿 .card.panel：white bg / 18px radius / shadow-card / padding 16px 20px 18px
+   ============================================================ */
+
+/* 1) JeecgBoot BasicTable 外层容器：纵向 flex 布局，14px 间隙
+      —— 让"搜索 card"与"表格 card"自然垂直分开 */
+.jeecg-basic-table {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 2) 表格 card：toolbar + 表头 + 数据 + 分页 一并装进 .ant-table-wrapper */
+.jeecg-basic-table .ant-table-wrapper {
+  background: var(--surface) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--shadow-card) !important;
+  padding: 16px 20px 18px !important;
+}
+
+/* 3) 内部 .ant-table-title (toolbar) 取消自带 padding/bg，让 card 控制 */
+.jeecg-basic-table .ant-table-wrapper .ant-table-title {
+  padding: 0 0 14px !important;
+  background: transparent !important;
+}
+
+/* 4) 表格本体 (.ant-table) 紧贴 card 内边距，无额外边距 */
+.jeecg-basic-table .ant-table-wrapper .ant-table {
+  margin: 0 !important;
+}
+
+/* 5) 分页器贴近 card 底部，仅留 14px 上间距 */
+.jeecg-basic-table .ant-table-wrapper .ant-table-pagination,
+.jeecg-basic-table .ant-table-wrapper .ant-pagination {
+  margin: 14px 0 0 !important;
+}
+
+/* 6) 中和外层 ant-form-item-rest > ant-form-item 的 margin（rest 是 Vue 兼容包装） */
+.jeecg-basic-table > .ant-form-item-rest > .ant-form-item {
+  margin: 0 !important;
+}
+
 /* 6) 中和 AntD 用于列宽测量的隐藏行 ant-table-measure-row
       —— 它本身高度应为 0，但被我们对 tbody td 的 padding/font-size 规则撑成 26.5px，
       在 thead 和首条数据行之间形成视觉"空白间隙"。
