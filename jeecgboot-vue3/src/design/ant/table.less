@@ -243,6 +243,33 @@
   border: 0 !important;
 }
 
+/* ============================================================
+   7) 表格密度（宽松 / 默认 / 紧凑）—— 对齐设计稿
+      body.density-loose: thead 16/14, tbody 18/14
+      body.density-default(默认): thead 12/14, tbody 13/14   (已是默认规则)
+      body.density-compact: thead 8/14,  tbody 7/14 + 12.5px
+   AntD 通过 .ant-table-large / .ant-table-middle / .ant-table-small 切换。
+   选择器需比 `.ant-table-wrapper .ant-table-tbody > tr > td` (0,2,2) 高，
+   挂在 `.ant-table-wrapper .ant-table-XXX .ant-table-tbody > tr > td` (0,3,2) 上即可。
+   ============================================================ */
+
+/* 宽松 */
+.ant-table-wrapper .ant-table.ant-table-large .ant-table-thead > tr > th {
+  padding: 16px 14px !important;
+}
+.ant-table-wrapper .ant-table.ant-table-large .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
+  padding: 18px 14px !important;
+}
+
+/* 紧凑 */
+.ant-table-wrapper .ant-table.ant-table-small .ant-table-thead > tr > th {
+  padding: 8px 14px !important;
+}
+.ant-table-wrapper .ant-table.ant-table-small .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
+  padding: 7px 14px !important;
+  font-size: 12.5px !important;
+}
+
 // fix table unnecessary scrollbar
 .@{prefix-cls} {
   .hide-scrollbar-y {
