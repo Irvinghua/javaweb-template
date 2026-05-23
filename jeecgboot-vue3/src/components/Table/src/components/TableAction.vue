@@ -102,6 +102,14 @@
         return isIfShow;
       }
 
+      // 共享层自动识别：label 含「删除 / delete」的操作自动按 danger 渲染（设计稿要求红色）
+      function isDangerAction(action: ActionItem): boolean {
+        if ((action as any).danger === true || (action as any).color === 'error') return true;
+        const label = (action as any).label;
+        if (!label || typeof label !== 'string') return false;
+        return /删除|delete/i.test(label);
+      }
+
       const getActions = computed(() => {
         return (toRaw(props.actions) || [])
           .filter((action) => {
@@ -124,6 +132,7 @@
               const overlayClassName = popConfirm.overlayClassName;
               popConfirm.overlayClassName = `${overlayClassName ? overlayClassName : ''} ${prefixCls}-popconfirm`;
             }
+            const danger = isDangerAction(action);
             return {
               getPopupContainer: () => unref((table as any)?.wrapRef.value) ?? document.body,
               type: 'link',
@@ -134,6 +143,8 @@
               onConfirm: handelConfirm(popConfirm?.confirm),
               onCancel: popConfirm?.cancel,
               enable: !!popConfirm,
+              danger,
+              color: danger ? 'error' : (action as any).color,
             };
           });
       });
@@ -170,6 +181,7 @@
           if (popConfirm) {
             popConfirm.confirm = handelConfirm(popConfirm?.confirm);
           }
+          const danger = isDangerAction(action);
           return {
             ...action,
             ...popConfirm,
@@ -177,6 +189,8 @@
             onCancel: popConfirm?.cancel,
             text: label,
             divider: index < list.length - 1 ? props.divider : false,
+            danger,
+            color: danger ? 'error' : (action as any).color,
           };
         });
       });
