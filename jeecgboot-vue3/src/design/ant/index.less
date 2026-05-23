@@ -314,15 +314,21 @@ html[data-theme='dark'] {
     }
   }
 
-  // Input affix height fix
+  // Input affix height fix —— 内部 <input> 必须填满外层 wrapper（38px），
+  // 否则会出现内层 ~20px / 外层 38px 高度不一致的视觉缺陷
   > .jeecg-basic-form .ant-input-affix-wrapper {
     padding: 0 12px !important;
     display: flex;
     align-items: center;
 
     > input.ant-input {
-      height: auto;
+      height: 100% !important;
+      width: 100%;
       background: transparent !important;
+      border: 0 !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+      outline: none !important;
       font-size: 13px;
     }
   }
