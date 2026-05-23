@@ -253,15 +253,24 @@
    挂在 `.ant-table-wrapper .ant-table-XXX .ant-table-tbody > tr > td` (0,3,2) 上即可。
    ============================================================ */
 
-/* 宽松 */
-.ant-table-wrapper .ant-table.ant-table-large .ant-table-thead > tr > th {
+/* 宽松（settings 弹层选"宽松"时给 wrapRef 加 .jeecg-table-density-loose） */
+.jeecg-table-density-loose .ant-table-thead > tr > th {
   padding: 16px 14px !important;
 }
-.ant-table-wrapper .ant-table.ant-table-large .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
+.jeecg-table-density-loose .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
   padding: 18px 14px !important;
 }
 
-/* 紧凑 */
+/* 紧凑（settings 弹层选"紧凑"时给 wrapRef 加 .jeecg-table-density-compact） */
+.jeecg-table-density-compact .ant-table-thead > tr > th {
+  padding: 8px 14px !important;
+}
+.jeecg-table-density-compact .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
+  padding: 7px 14px !important;
+  font-size: 12.5px !important;
+}
+
+/* 兼容：AntD 若仍给 'small' 加 .ant-table-small 类，沿用相同紧凑值 */
 .ant-table-wrapper .ant-table.ant-table-small .ant-table-thead > tr > th {
   padding: 8px 14px !important;
 }

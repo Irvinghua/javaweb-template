@@ -190,11 +190,24 @@
         table.setProps({ size: cachedSize });
       }
 
+      // 同时给 table.wrapRef 挂 density class，避免依赖 AntD size 类（AntD4 对 'large' 不一定加类）
+      function applyDensityClass(size: SizeType) {
+        const wrap = unref(table.wrapRef);
+        if (!wrap || !wrap.classList) return;
+        wrap.classList.remove('jeecg-table-density-loose', 'jeecg-table-density-compact');
+        if (size === 'large') wrap.classList.add('jeecg-table-density-loose');
+        else if (size === 'small') wrap.classList.add('jeecg-table-density-compact');
+      }
+
       function setSize(size: SizeType) {
         currentSize.value = size;
         table.setProps({ size });
         $ls.set(cacheKey.value, size);
+        applyDensityClass(size);
       }
+
+      // 初始化时（缓存值或默认值）也同步一下 class
+      nextTick(() => applyDensityClass(unref(currentSize)));
 
       // ── fullscreen ───────────────────────────────────────────────────
       const { toggle: toggleFullscreen, isFullscreen } = useFullscreen(table.wrapRef);
