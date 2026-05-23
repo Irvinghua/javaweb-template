@@ -33,7 +33,14 @@
         <slot :name="item.slot"></slot>
       </template>
 
-      <a-button type="link" size="small" v-if="!$slots.more"> 更多 <Icon icon="mdi-light:chevron-down"></Icon> </a-button>
+      <!-- ITEM 4: ⋯ more trigger — 28×28 ghost square -->
+      <button class="row-btn more" v-if="!$slots.more" type="button">
+        <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+          <circle cx="3" cy="8" r="1.5"/>
+          <circle cx="8" cy="8" r="1.5"/>
+          <circle cx="13" cy="8" r="1.5"/>
+        </svg>
+      </button>
     </Dropdown>
   </div>
 </template>
@@ -235,14 +242,10 @@
   @prefix-cls: ~'@{namespace}-basic-table-action';
 
   .@{prefix-cls} {
-    display: flex;
+    // ITEM 4: row-actions-v2 layout
+    display: inline-flex;
     align-items: center;
-    height: 22px;
-    gap: 2px;
-
-    .action-divider {
-      display: table;
-    }
+    gap: 4px;
 
     &.left {
       justify-content: flex-start;
@@ -256,55 +259,87 @@
       justify-content: flex-end;
     }
 
-    /* 行操作链接式按钮样式 — 对齐设计稿 .link-action */
-    button.ant-btn-link {
-      color: var(--accent-600) !important;
-      font-size: 13px !important;
-      font-weight: 500 !important;
-      padding: 2px 6px !important;
-      height: auto !important;
+    // ITEM 4: 可见行操作 — .row-btn ghost style (替代原 link-action)
+    button.ant-btn-link,
+    button.ant-btn {
+      height: 28px !important;
+      padding: 0 10px !important;
+      background: transparent !important;
+      border: 1px solid var(--line) !important;
       border-radius: 6px !important;
-      transition: background-color 0.15s !important;
-      display: inline-flex;
-      align-items: center;
+      color: var(--ink-700) !important;
+      font-size: 12.5px !important;
+      font-weight: 500 !important;
+      cursor: pointer;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      transition: background-color 0.15s, color 0.15s, border-color 0.15s !important;
+      box-shadow: none !important;
+      white-space: nowrap;
 
-      span {
+      span:not(.anticon) {
         margin-left: 0 !important;
+        line-height: 1 !important;
+      }
+
+      .anticon {
+        font-size: 12px !important;
+        margin: 0 !important;
       }
 
       &:hover {
         background: var(--accent-50) !important;
         color: var(--accent) !important;
+        border-color: rgba(91, 108, 255, 0.3) !important;
       }
 
-      /* 危险操作 */
+      // 危险操作 (删除等)
       &.ant-btn-dangerous {
         color: var(--bad) !important;
+        border-color: var(--line) !important;
 
         &:hover {
           background: var(--bad-bg) !important;
           color: var(--bad) !important;
+          border-color: var(--bad) !important;
         }
       }
     }
 
-    button.ant-btn-circle {
-      span {
-        margin: auto !important;
+    // ⋯ more 按钮 — 28×28 square ghost
+    .row-btn.more {
+      width: 28px !important;
+      height: 28px !important;
+      padding: 0 !important;
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--ink-700);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+
+      svg {
+        width: 14px;
+        height: 14px;
+        display: block;
+      }
+
+      &:hover {
+        background: var(--accent-50);
+        color: var(--accent);
+        border-color: rgba(91, 108, 255, 0.3);
       }
     }
 
-    /* 分割线 */
+    // 隐藏 divider — gap 已足够
     .ant-divider,
     .ant-divider-vertical {
-      margin: 0 2px;
-      border-color: var(--line-strong);
-    }
-
-    /* 更多按钮 */
-    .ant-btn-link > .anticon + span,
-    .ant-btn-link > span {
-      margin-left: 2px;
+      display: none !important;
     }
 
     &-popconfirm {
@@ -316,35 +351,56 @@
       }
     }
 
-    /* 下拉菜单样式 */
+    // ITEM 4: 下拉菜单 — .menu-pop 风格
     &-dropdown {
       .ant-dropdown-menu {
-        border-radius: 10px;
-        box-shadow: var(--shadow-pop);
-        padding: 5px;
-        border: 1px solid var(--line);
+        background: var(--surface) !important;
+        border: 1px solid var(--line) !important;
+        border-radius: 10px !important;
+        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.16) !important;
+        padding: 5px !important;
+        min-width: 128px;
       }
 
       .ant-dropdown-menu .ant-dropdown-menu-item-divider {
-        margin: 4px 6px;
-        background: var(--line);
+        height: 1px;
+        background: var(--line) !important;
+        margin: 4px 6px !important;
       }
 
       .ant-dropdown-menu .ant-dropdown-menu-item {
-        padding: 7px 10px;
-        font-size: 13px;
-        color: var(--ink-700);
-        border-radius: 7px;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 8px 10px !important;
+        font-size: 13px !important;
+        color: var(--ink-700) !important;
+        border-radius: 7px !important;
+        transition: background-color 0.15s !important;
 
         &:hover {
-          background: var(--surface-2);
+          background: var(--surface-2) !important;
+          color: var(--ink-700) !important;
+        }
+
+        // icon color
+        .anticon {
+          width: 14px;
+          height: 14px;
+          color: var(--ink-400);
+          font-size: 13px !important;
         }
 
         &.ant-dropdown-menu-item-danger {
-          color: var(--bad);
+          color: var(--bad) !important;
+
+          .anticon {
+            color: var(--bad) !important;
+          }
 
           &:hover {
-            background: var(--bad-bg);
+            background: var(--bad-bg) !important;
+            color: var(--bad) !important;
           }
         }
       }

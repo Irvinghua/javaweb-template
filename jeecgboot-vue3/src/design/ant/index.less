@@ -3,7 +3,8 @@
 // update-begin--author:liaozhiyang---date:20240130---for：【issues/5857】Button color类型颜色失效
 @import './btn.less';
 // update-end--author:liaozhiyang---date:20240130---for：【issues/5857】Button color类型颜色失效
-// @import './table.less';
+// UI redesign: Table 换皮 (ITEM 3)
+@import './table.less';
 // UI redesign: Modal / Drawer 换皮
 @import './modal-drawer.less';
 
@@ -229,13 +230,26 @@ html[data-theme='dark'] {
     margin-bottom: 14px !important;
   }
 
+  // ITEM 1: Label 垂直居中对齐 — 让 label cell 用 flex 垂直居中
+  > .jeecg-basic-form .ant-form-item {
+    align-items: center !important;
+  }
+
+  > .jeecg-basic-form .ant-form-item-label {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 !important;
+    // 固定宽度对齐 mockup .field > label { width: 84px; text-align: right }
+    min-width: 72px;
+  }
+
   // 字段标签 — 精确匹配 .field > label: 13px, ink-700, weight 500
   > .jeecg-basic-form .ant-form-item-label > label {
     font-size: 13px !important;
     color: var(--ink-700) !important;
     font-weight: 500 !important;
     line-height: 1.4;
-    height: auto;
+    height: auto !important;
     white-space: nowrap;
   }
 
@@ -258,16 +272,20 @@ html[data-theme='dark'] {
     transition: border-color 0.18s, box-shadow 0.18s, background-color 0.18s;
 
     &:hover {
-      border-color: rgba(42, 107, 239, 0.4) !important;
+      border-color: var(--accent) !important;
     }
+  }
 
-    &:focus,
-    &.ant-input-affix-wrapper-focused,
-    &.ant-picker-focused {
-      border-color: rgba(42, 107, 239, 0.4) !important;
-      box-shadow: 0 0 0 3px rgba(42, 107, 239, 0.12) !important;
-      background: var(--surface) !important;
-    }
+  // ITEM 1: Focus ring — white bg + accent border + 3px accent-50 glow
+  > .jeecg-basic-form .ant-input:focus,
+  > .jeecg-basic-form .ant-input-affix-wrapper-focused,
+  > .jeecg-basic-form .ant-input-affix-wrapper:focus-within,
+  > .jeecg-basic-form .ant-picker-focused,
+  > .jeecg-basic-form .ant-input-number-focused {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px var(--accent-50) !important;
+    background: var(--surface) !important;
+    outline: none !important;
   }
 
   // Select selector height fix
@@ -309,10 +327,10 @@ html[data-theme='dark'] {
     }
   }
 
-  // 选择器 hover/focus 穿透
+  // ITEM 1: 选择器 focus 穿透 (focused select)
   > .jeecg-basic-form .ant-select-focused:not(.ant-select-disabled) .ant-select-selector {
-    border-color: rgba(42, 107, 239, 0.4) !important;
-    box-shadow: 0 0 0 3px rgba(42, 107, 239, 0.12) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px var(--accent-50) !important;
     background: var(--surface) !important;
   }
 
@@ -323,15 +341,15 @@ html[data-theme='dark'] {
     border-radius: 10px !important;
     font-size: 13px !important;
     font-weight: 600 !important;
-    background: linear-gradient(135deg, #2a66ff, #1a56ff) !important;
+    background: linear-gradient(135deg, #2a66ff, var(--accent)) !important;
     border-color: transparent !important;
     color: #fff !important;
-    box-shadow: 0 6px 14px rgba(26, 86, 255, 0.25) !important;
+    box-shadow: 0 6px 14px rgba(91, 108, 255, 0.25) !important;
     transition: box-shadow 0.18s, opacity 0.18s !important;
 
     &:hover,
     &:focus {
-      box-shadow: 0 8px 18px rgba(26, 86, 255, 0.32) !important;
+      box-shadow: 0 8px 18px rgba(91, 108, 255, 0.32) !important;
       opacity: 0.95;
     }
   }

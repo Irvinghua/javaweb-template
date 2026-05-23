@@ -1,14 +1,15 @@
 @prefix-cls: ~'@{namespace}-basic-table';
 
 /* ============================================================
-   BasicTable 全局换皮 — 表头 / 行 / hover 等 (Task 6 ui-redesign)
-   对齐 jeecgboot-ui/pages/jeecg-page.css .data-table
+   ITEM 3: BasicTable 全局换皮 — 对齐 user-v2.html .data-table
+   jeecgboot-ui/pages/jeecg-page.css 精确值
    ============================================================ */
 
-/* 表头 */
-.ant-table-thead > tr > th {
+/* 表头 — surface-2 bg, ink-500 color, 600 weight, 13px, 12px 14px padding */
+.ant-table-wrapper .ant-table-thead > tr > th,
+.ant-table-wrapper .ant-table-thead > tr > td {
   background: var(--surface-2) !important;
-  color: var(--ink-700) !important;
+  color: var(--ink-500) !important;
   font-weight: 600 !important;
   font-size: 13px !important;
   padding: 12px 14px !important;
@@ -17,26 +18,33 @@
 
   &::before {
     /* 去掉 AntD 默认的列分隔竖线 */
-    background-color: var(--line) !important;
+    background-color: transparent !important;
+    width: 0 !important;
   }
 }
 
-/* 数据行 */
-.ant-table-tbody > tr > td {
-  padding: 12px 14px !important;
+/* 数据行 — ink-700, 13px, 13px 14px padding, --line border-bottom */
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  padding: 13px 14px !important;
   color: var(--ink-700) !important;
   font-size: 13px !important;
   border-bottom: 1px solid var(--line) !important;
+  white-space: nowrap;
 }
 
-/* 行 hover */
-.ant-table-tbody > tr.ant-table-row:hover > td,
-.ant-table-tbody > tr > td.ant-table-cell-row-hover {
+/* 最后一行无 border-bottom */
+.ant-table-wrapper .ant-table-tbody > tr:last-child > td {
+  border-bottom: 0 !important;
+}
+
+/* 行 hover — surface-2 */
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row:hover > td,
+.ant-table-wrapper .ant-table-tbody > tr > td.ant-table-cell-row-hover {
   background: var(--surface-2) !important;
 }
 
-/* 选中行 */
-.ant-table-tbody > tr.ant-table-row-selected > td {
+/* 选中行 — accent-50 bg */
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td {
   background: var(--accent-50) !important;
 }
 
@@ -50,9 +58,29 @@
   border-radius: 0 !important;
 }
 
+/* 去掉 ant-table-wrapper 外层 border */
+.ant-table-wrapper .ant-table {
+  border-radius: 0 !important;
+}
+
 /* 空状态 */
 .ant-table-placeholder {
   background: transparent !important;
+
+  .ant-table-cell {
+    border-bottom: 0 !important;
+  }
+}
+
+/* Checkbox 列 */
+.ant-table-wrapper .ant-table-selection-column {
+  padding: 12px 14px !important;
+}
+
+/* 覆盖 index.less 中对表头颜色的原有规则 */
+.ant-table-wrapper .ant-table-thead > tr > th {
+  color: var(--ink-500) !important;
+  font-weight: 600 !important;
 }
 
 // fix table unnecessary scrollbar
