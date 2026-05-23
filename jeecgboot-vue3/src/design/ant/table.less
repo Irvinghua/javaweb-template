@@ -183,25 +183,21 @@
   margin: 14px 0 0 !important;
 }
 
-/* 3d) 修复 AntD 表格 header/body 宽度不一致（body 比 header 短几像素 → 视觉右侧空隙）
-      —— AntD 用 scroll 模式时给 ant-table-body 留滚动条槽，要全部抹掉 */
+/* 3d) 表格滚动 —— 横向超宽时显示 H-scrollbar；纵向不预留 V-scrollbar 槽
+      （AntD 在 scroll.y 模式给 .ant-table-body 留 V-scrollbar 槽 → body 比 header 窄出现右侧空隙；
+       这里允许横向滚动但抑制纵向预留） */
 .jeecg-basic-table .ant-table-wrapper .ant-table-container,
 .jeecg-basic-table .ant-table-wrapper .ant-table-content,
-.jeecg-basic-table .ant-table-wrapper .ant-table-header,
 .jeecg-basic-table .ant-table-wrapper .ant-table-body {
-  overflow-x: visible !important;
-  overflow-y: visible !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
   scrollbar-gutter: auto !important;
-  width: 100% !important;
-  padding: 0 !important;
-  margin: 0 !important;
 }
 
-.jeecg-basic-table .ant-table-wrapper .ant-table-header table,
-.jeecg-basic-table .ant-table-wrapper .ant-table-body table,
-.jeecg-basic-table .ant-table-wrapper .ant-table-content table {
-  width: 100% !important;
-  min-width: 0 !important;
+.jeecg-basic-table .ant-table-wrapper .ant-table-header {
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* 3e) 干掉表格区任何左/右/上边线条 —— 包括 wrapper / container / header / body / table
