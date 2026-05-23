@@ -183,13 +183,50 @@
   margin: 14px 0 0 !important;
 }
 
-/* 3d) 干掉 AntD 表格容器自留的 overflow，避免右侧出现微小空隙
-      （AntD .ant-table-content { overflow:auto } 在 macOS 总会预留滚动条槽） */
+/* 3d) 修复 AntD 表格 header/body 宽度不一致（body 比 header 短几像素 → 视觉右侧空隙）
+      —— AntD 用 scroll 模式时给 ant-table-body 留滚动条槽，要全部抹掉 */
 .jeecg-basic-table .ant-table-wrapper .ant-table-container,
 .jeecg-basic-table .ant-table-wrapper .ant-table-content,
+.jeecg-basic-table .ant-table-wrapper .ant-table-header,
 .jeecg-basic-table .ant-table-wrapper .ant-table-body {
   overflow-x: visible !important;
+  overflow-y: visible !important;
   scrollbar-gutter: auto !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.jeecg-basic-table .ant-table-wrapper .ant-table-header table,
+.jeecg-basic-table .ant-table-wrapper .ant-table-body table,
+.jeecg-basic-table .ant-table-wrapper .ant-table-content table {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* 3e) 干掉表格区任何左/右/上边线条 —— 包括 wrapper / container / header / body / table
+      （仅保留 thead/tbody 单元格的 border-bottom 行线） */
+.jeecg-basic-table .ant-table-wrapper .ant-table,
+.jeecg-basic-table .ant-table-wrapper .ant-table-container,
+.jeecg-basic-table .ant-table-wrapper .ant-table-header,
+.jeecg-basic-table .ant-table-wrapper .ant-table-body,
+.jeecg-basic-table .ant-table-wrapper .ant-table-content,
+.jeecg-basic-table .ant-table-wrapper .ant-table-container > table,
+.jeecg-basic-table .ant-table-wrapper .ant-table-container > div > table {
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-top: 0 !important;
+}
+
+/* 3f) 干掉 AntD 固定列影子伪元素（用作竖向阴影分隔条，跟设计稿"无竖线"冲突） */
+.jeecg-basic-table .ant-table-wrapper .ant-table-cell-fix-left::after,
+.jeecg-basic-table .ant-table-wrapper .ant-table-cell-fix-left-last::after,
+.jeecg-basic-table .ant-table-wrapper .ant-table-cell-fix-right::after,
+.jeecg-basic-table .ant-table-wrapper .ant-table-cell-fix-right-first::after,
+.jeecg-basic-table .ant-table-wrapper .ant-table-container::before,
+.jeecg-basic-table .ant-table-wrapper .ant-table-container::after {
+  display: none !important;
+  box-shadow: none !important;
 }
 
 /* 6) 中和外层 ant-form-item-rest > ant-form-item 的 margin（rest 是 Vue 兼容包装） */
