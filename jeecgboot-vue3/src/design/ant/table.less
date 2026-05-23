@@ -125,19 +125,38 @@
 }
 
 /* ============================================================
-   FIX: 包裹 toolbar + 表格 + 分页 的容器（.ant-table-wrapper 内层）
-   按设计稿 .card.panel：white bg / 18px radius / shadow-card / padding 16px 20px 18px
+   FIX: 列表页布局 —— 对齐设计稿 .page + .card.filter-card + .card.panel
+   `.page { padding:22px 24px 28px; gap:16px }`
    ============================================================ */
 
-/* 1) JeecgBoot BasicTable 外层容器：纵向 flex 布局，14px 间隙
-      —— 让"搜索 card"与"表格 card"自然垂直分开 */
-.jeecg-basic-table {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+/* 0) Content 区域 padding —— 让卡片与侧边栏 / 顶栏 / 底部留出呼吸 */
+.jeecg-layout-content,
+.jeecg-layout-content.full {
+  padding: 22px 24px 28px !important;
 }
 
-/* 2) 表格 card：toolbar + 表头 + 数据 + 分页 一并装进 .ant-table-wrapper */
+/* 1) BasicTable 外层（同时挂 .jeecg-basic-table 与 .jeecg-basic-table-form-container 两个 class）
+      去掉它早前被当成单个 card 加的 bg/shadow/border-radius/padding —— 它只做 flex 布局 */
+.jeecg-basic-table,
+.jeecg-basic-table.jeecg-basic-table-form-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+/* 2) 搜索 card —— BasicForm 根元素 .jeecg-basic-form */
+.jeecg-basic-table > .jeecg-basic-form {
+  background: var(--surface) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--shadow-card) !important;
+  padding: 18px 22px !important;
+}
+
+/* 3) 表格 card —— toolbar + 表头 + 数据 + 分页 一并装进 .ant-table-wrapper */
 .jeecg-basic-table .ant-table-wrapper {
   background: var(--surface) !important;
   border-radius: 18px !important;
