@@ -156,29 +156,37 @@
   padding: 18px 22px !important;
 }
 
-/* 3) 表格 card —— toolbar + 表头 + 数据 + 分页 一并装进 .ant-table-wrapper */
+/* 3) 表格 card —— 横向 padding 改为 0，让表头/表体扩满到 card 左右边沿
+      （对齐设计稿：thead 灰底从 card 左边到 card 右边一气贯通） */
 .jeecg-basic-table .ant-table-wrapper {
   background: var(--surface) !important;
   border-radius: 18px !important;
   box-shadow: var(--shadow-card) !important;
-  padding: 16px 20px 18px !important;
+  padding: 16px 0 18px !important;
+  overflow: hidden !important; /* 让 thead 灰底跟 card 圆角自动剪裁齐平 */
 }
 
-/* 3) 内部 .ant-table-title (toolbar) 取消自带 padding/bg，让 card 控制 */
+/* 3a) toolbar 单独承担横向 20px padding（避免按钮贴 card 左右边） */
 .jeecg-basic-table .ant-table-wrapper .ant-table-title {
-  padding: 0 0 14px !important;
+  padding: 0 20px 14px !important;
   background: transparent !important;
 }
 
-/* 4) 表格本体 (.ant-table) 紧贴 card 内边距，无额外边距 */
+/* 3b) 表格本体扩满（cells 自有 14px padding，文字与表头/数据行左右边沿留出呼吸） */
 .jeecg-basic-table .ant-table-wrapper .ant-table {
   margin: 0 !important;
 }
 
-/* 5) 分页器贴近 card 底部，仅留 14px 上间距 */
+/* 3c) 分页器同样承担横向 20px padding，距表格底部 14px */
 .jeecg-basic-table .ant-table-wrapper .ant-table-pagination,
 .jeecg-basic-table .ant-table-wrapper .ant-pagination {
+  padding: 0 20px !important;
   margin: 14px 0 0 !important;
+}
+
+/* 3d) 警示条（已选中 N 项）也要承担横向 20px padding */
+.jeecg-basic-table .ant-table-wrapper .basic-table-header__alert-wrap {
+  padding: 0 20px !important;
 }
 
 /* 6) 中和外层 ant-form-item-rest > ant-form-item 的 margin（rest 是 Vue 兼容包装） */
