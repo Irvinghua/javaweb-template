@@ -124,6 +124,19 @@
   display: none !important;
 }
 
+/* 6) 中和 AntD 用于列宽测量的隐藏行 ant-table-measure-row
+      —— 它本身高度应为 0，但被我们对 tbody td 的 padding/font-size 规则撑成 26.5px，
+      在 thead 和首条数据行之间形成视觉"空白间隙"。
+      特异性要比上面 .ant-table-tbody > tr > td 高，所以挂在 tbody > tr.ant-table-measure-row 下。 */
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-measure-row,
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-measure-row > td {
+  height: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+  border: 0 !important;
+}
+
 // fix table unnecessary scrollbar
 .@{prefix-cls} {
   .hide-scrollbar-y {
