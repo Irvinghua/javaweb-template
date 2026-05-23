@@ -277,8 +277,8 @@ export function useListTable(tableProps: TableProps): [
       wrapperCol: {},
       // 是否显示 展开/收起 按钮
       showAdvancedButton: true,
-      // 超过指定列数默认折叠
-      autoAdvancedCol: 3,
+      // 超过指定列数默认折叠（设计稿要求：1 行 2 字段 + 操作按钮组，第 3 个起折叠进"高级筛选"）
+      autoAdvancedCol: 2,
       // 操作按钮配置
       actionColOptions: {
         ...adaptiveColProps,
