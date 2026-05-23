@@ -56,9 +56,8 @@
       immediate: false,
       formConfig: {
         schemas: packFormSchema,
-        labelCol: {
-          xxl: 8,
-        },
+        // 不覆盖 labelCol —— 让 useListPage 默认值（label 占 col 1/4 左右）生效，
+        // 否则 xxl:8 会让 label 抢走 1/3 col 宽，输入框只剩很窄一截
         actionColOptions: {
           xs: 24,
           sm: 8,

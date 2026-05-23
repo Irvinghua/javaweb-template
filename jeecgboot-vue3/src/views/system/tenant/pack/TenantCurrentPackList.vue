@@ -63,9 +63,7 @@
           immediate: false,
           formConfig: {
             schemas: packFormSchema,
-            labelCol: {
-              xxl: 8,
-            },
+            // 不覆盖 labelCol —— 让 useListPage 默认值生效，避免输入框过窄
             actionColOptions: {
               xs: 24,
               sm: 8,
