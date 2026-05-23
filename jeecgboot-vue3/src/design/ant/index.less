@@ -344,9 +344,11 @@ html[data-theme='dark'] {
   //   行1: [f1] [f2] [查询/重置/高级筛选 actionCol]    ← 保持不变
   //   ─────────────── dashed line（只此一条）───────────────
   //   行2+: [f3] [f4] [f5] ...                          ← 高级字段
+  // 注意：以前用 `.ant-row { overflow: hidden }` 配 `width: 200vw` 剪 dashed 线，
+  // 副作用是 AntD Select/DatePicker 的 popup 浮层也被剪了 —— 这里改用 width:100vw
+  // （足够横跨 row，且 dashed 线极淡，超出 row 卡片落到页面浅色背景上几乎不可见）
   > .jeecg-basic-form.jeecg-basic-form--advanced > .ant-row {
     position: relative;
-    overflow: hidden;
 
     /* actionCol 锁在第 1 行末（order 1），高级字段到第 2 行（order 2） */
     > .ant-col:last-of-type {
@@ -357,14 +359,15 @@ html[data-theme='dark'] {
       padding-top: 14px !important;
       margin-top: 10px !important;
     }
-    /* 只在第 1 个高级字段（DOM nth=3）上挂一条横向 dashed 线，往右延伸出 row 后被 overflow:hidden 剪掉
-       —— 保证无论高级字段有几行，分隔线只出现一次 */
+    /* 只在第 1 个高级字段（DOM nth=3）上挂一条横向 dashed 线，width:100vw 够覆盖 row 宽
+       —— 不剪裁父级以保留 dropdown popup */
     > .ant-col:nth-of-type(3):not(:last-of-type)::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
-      width: 200vw;
+      width: 100vw;
+      max-width: calc(100vw - 200px); /* 防止冲出 sidebar 之外 */
       border-top: 1px dashed var(--line);
       pointer-events: none;
     }
