@@ -83,6 +83,47 @@
   font-weight: 600 !important;
 }
 
+/* ============================================================
+   FIX: 仅行线、无竖线、无 thead/tbody 间隙、字体 13px / inherit
+   对齐 jeecg-page.css `table.data-table { border-collapse: collapse; font-size: 13px }`
+   ============================================================ */
+
+/* 1) border-collapse: 消除 thead 与 tbody 之间视觉间隙 + 防双重边框 */
+.ant-table-wrapper .ant-table table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+}
+
+/* 2) 所有单元格：去掉左右竖线 / 顶部线，仅保留 border-bottom 行线 */
+.ant-table-wrapper .ant-table-thead > tr > th,
+.ant-table-wrapper .ant-table-thead > tr > td,
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-right: 0 !important;
+  border-left: 0 !important;
+  border-top: 0 !important;
+  box-shadow: none !important; /* 防 AntD 用 inset shadow 模拟竖线 */
+}
+
+/* 3) tbody 首行不留顶部线（紧贴 thead 底部线） */
+.ant-table-wrapper .ant-table-tbody > tr:first-child > td {
+  border-top: 0 !important;
+}
+
+/* 4) 单元格字体大小 / 字体家族明确，避免继承到 AntD 默认 14px */
+.ant-table-wrapper .ant-table-thead > tr > th,
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  font-size: 13px !important;
+  font-family: inherit !important;
+}
+
+/* 5) 干掉 AntD 表头列右侧的小竖线 (::before) */
+.ant-table-wrapper .ant-table-thead > tr > th::before,
+.ant-table-wrapper .ant-table-thead > tr > th:not(:last-child)::before {
+  display: none !important;
+}
+
 // fix table unnecessary scrollbar
 .@{prefix-cls} {
   .hide-scrollbar-y {
