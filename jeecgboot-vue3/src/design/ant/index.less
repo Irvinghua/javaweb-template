@@ -340,12 +340,24 @@ html[data-theme='dark'] {
     background: #fff !important;
   }
 
-  // 「高级筛选」展开时：第 3 个 col 起（即除前 2 个常规字段 + 操作按钮列外的"高级字段"）
-  // 加 dashed 顶部分隔线 + 上间距，对齐设计稿 user-v2.html .filter-fields-advanced .ff-grid
-  > .jeecg-basic-form.jeecg-basic-form--advanced > .ant-row > .ant-col:nth-of-type(n+3):not(:last-of-type) {
-    border-top: 1px dashed var(--line) !important;
-    padding-top: 14px !important;
-    margin-top: 10px !important;
+  // 「高级筛选」展开后的设计稿布局：
+  //   行1: [f1] [f2] [查询/重置/高级筛选 actionCol]    ← 保持不变
+  //   ─────────────── dashed line ───────────────
+  //   行2: [f3] [f4] [f5] ...                         ← 高级字段
+  // 但 DOM 默认顺序是 [f1, f2, f3, ..., actionCol]，展开后 actionCol 跑到了最末，
+  // 导致行1变 3 个字段。用 flex order 强制 actionCol 在前 2 字段之后、高级字段之前。
+  > .jeecg-basic-form.jeecg-basic-form--advanced > .ant-row {
+    /* actionCol 是 row 内最后一个 col —— 把它 order 提前到 1，普通字段保持 0 */
+    > .ant-col:last-of-type {
+      order: 1 !important;
+    }
+    /* 高级字段（第 3 个 col 起、排除最后的 actionCol）—— order: 2 让它们到第 2 行 */
+    > .ant-col:nth-of-type(n+3):not(:last-of-type) {
+      order: 2 !important;
+      border-top: 1px dashed var(--line) !important;
+      padding-top: 14px !important;
+      margin-top: 10px !important;
+    }
   }
 
   // 查询按钮 — 精确匹配 .btn-primary
