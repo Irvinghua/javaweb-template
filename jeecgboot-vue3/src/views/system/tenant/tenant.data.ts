@@ -370,7 +370,7 @@ export const packFormSchema: FormSchema[] = [
     field: 'packName',
     label: '套餐包名',
     component: 'JInput',
-    colProps: { xxl: 8 },
+    colProps: { xs: 24, sm: 24, md: 12, lg: 8, xl: 8, xxl: 8 },
   },
 ];
 
@@ -380,7 +380,7 @@ export const defaultPackFormSchema: FormSchema[] = [
     field: 'packName',
     label: '默认套餐名',
     component: 'JInput',
-    colProps: { xxl: 8 },
+    colProps: { xs: 24, sm: 24, md: 12, lg: 8, xl: 8, xxl: 8 },
   },
 ];
 

@@ -340,6 +340,14 @@ html[data-theme='dark'] {
     background: #fff !important;
   }
 
+  // 「高级筛选」展开时：第 3 个 col 起（即除前 2 个常规字段 + 操作按钮列外的"高级字段"）
+  // 加 dashed 顶部分隔线 + 上间距，对齐设计稿 user-v2.html .filter-fields-advanced .ff-grid
+  > .jeecg-basic-form.jeecg-basic-form--advanced > .ant-row > .ant-col:nth-of-type(n+3):not(:last-of-type) {
+    border-top: 1px dashed var(--line) !important;
+    padding-top: 14px !important;
+    margin-top: 10px !important;
+  }
+
   // 查询按钮 — 精确匹配 .btn-primary
   > .jeecg-basic-form .form-action-submit-btn.ant-btn {
     height: 38px !important;
