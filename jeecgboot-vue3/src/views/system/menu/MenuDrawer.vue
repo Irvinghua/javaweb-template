@@ -278,18 +278,22 @@
     }
 
     // 控件：高度 38px / 字号 13px / 圆角 10px（与设计稿 .control 完全对齐）
-    .ant-input,
-    .ant-input-number-input,
-    .ant-input-affix-wrapper > input.ant-input {
-      font-size: 13px;
-    }
-    .ant-input,
+    // 注意：height + min-height 只能给「容器型」控件加，绝不能落到 affix-wrapper 内层的 input.ant-input
+    // 否则 min-height: 38px 会让内层 input（box-sizing: border-box）撑到 38px，
+    // 而 wrapper 38px 减去上下各 1px 边框后内容区只有 36px，内层 input 多出来的 2px
+    // 会盖住 wrapper 的下边框（symptom: 文字输入栏下边框缺一段；select/number 不受影响因为内层不是 .ant-input）
     .ant-input-affix-wrapper,
     .ant-input-number,
     .ant-select-single .ant-select-selector,
     .ant-tree-select .ant-select-selector {
       height: 38px;
       min-height: 38px;
+      border-radius: var(--radius-ctrl, 10px);
+      font-size: 13px;
+    }
+    // 没被 affix-wrapper 包裹的独立 .ant-input（裸 input、textarea 等）
+    .ant-input:not(.ant-input-affix-wrapper > input):not(textarea) {
+      height: 38px;
       border-radius: var(--radius-ctrl, 10px);
       font-size: 13px;
     }
@@ -303,12 +307,19 @@
     }
     .ant-input-number .ant-input-number-input {
       height: 36px;
+      font-size: 13px;
     }
-    // affix-wrapper 内层 input 撑满，撕掉自带 padding/border（沿用全局 search 区方案）
+    // affix-wrapper 内层 input —— 不能给 height / min-height，
+    // 让它走 flex 默认 stretch 跟随 wrapper 内容区高度（36px），
+    // 这样 wrapper 的 1px 下边框就不会被覆盖
     .ant-input-affix-wrapper > input.ant-input {
-      height: 100%;
+      height: auto;
+      min-height: 0;
       padding: 0;
       border: 0;
+      background: transparent;
+      box-shadow: none;
+      font-size: 13px;
     }
     .ant-input-affix-wrapper {
       padding: 0 12px;
