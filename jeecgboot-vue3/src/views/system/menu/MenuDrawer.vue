@@ -1,6 +1,21 @@
 <template>
-  <BasicDrawer v-bind="$attrs" @register="registerDrawer" showFooter :width="adaptiveWidth" :title="getTitle" @ok="handleSubmit">
-    <BasicForm @register="registerForm" class="menuForm" />
+  <BasicDrawer
+    v-bind="$attrs"
+    @register="registerDrawer"
+    showFooter
+    :width="adaptiveWidth"
+    :title="getTitle"
+    @ok="handleSubmit"
+    wrapClassName="menu-drawer-redesign"
+  >
+    <!-- UI Redesign: 自定义抽屉标题，带菜单图标，匹配设计稿 .dlg-title -->
+    <template #title>
+      <span class="menu-drawer-title">
+        <Icon icon="ant-design:menu-outlined" :size="18" />
+        <span class="menu-drawer-title__text">{{ getTitle }}</span>
+      </span>
+    </template>
+    <BasicForm @register="registerForm" class="menuForm menu-drawer-form" />
   </BasicDrawer>
 </template>
 <script lang="ts" setup>
@@ -11,6 +26,7 @@
   import { list, saveOrUpdateMenu } from './menu.api';
   import { useDrawerAdaptiveWidth } from '/@/hooks/jeecg/useAdaptiveWidth';
   import { useI18n } from "/@/hooks/web/useI18n";
+  import { Icon } from '/@/components/Icon';
   // 声明Emits
   const emit = defineEmits(['success', 'register']);
   const { adaptiveWidth } = useDrawerAdaptiveWidth();
@@ -19,14 +35,10 @@
   const menuType = ref(0);
   const isButton = (type) => type === 2;
   const [registerForm, { setProps, resetFields, setFieldsValue, updateSchema, validate, clearValidate }] = useForm({
-    labelCol: {
-      md: { span: 4 },
-      sm: { span: 6 },
-    },
-    wrapperCol: {
-      md: { span: 20 },
-      sm: { span: 18 },
-    },
+    // UI Redesign: 2 列网格布局；用 labelWidth 把所有标签固定 88px（与设计稿 .dlg-form .form-row > label width: 88px 对齐），
+    // 这样 span-2 字段的标签不会被拉宽到 1/3 行
+    baseColProps: { span: 12 },
+    labelWidth: 88,
     schemas: formSchema,
     showActionButtonGroup: false,
   });
@@ -137,3 +149,174 @@
     return data;
   }
 </script>
+
+<!-- ================================================== -->
+<!-- UI Redesign: 菜单表单专属换肤                       -->
+<!-- 设计稿参考: jeecgboot-ui/pages/menu.html              -->
+<!--   - 顶部 menuType 渲染为 .detail-tabs（下划线 tab）   -->
+<!--   - 表单 2 列网格                                      -->
+<!--   - 布尔字段渲染为 .seg 胶囊段控件                     -->
+<!-- ================================================== -->
+<style lang="less">
+  // 抽屉头：自定义标题
+  .menu-drawer-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-900);
+
+    .app-iconify,
+    svg {
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+  }
+
+  // BasicTitle 包裹下，避免外层 BasicTitle 额外样式干扰
+  .menu-drawer-redesign {
+    .jeecg-basic-title .menu-drawer-title {
+      gap: 8px;
+    }
+  }
+
+  // ----------------------------------------------------
+  // 菜单类型：顶部 tabs（设计稿 .detail-tabs）
+  // ----------------------------------------------------
+  .menu-drawer-form {
+    .menu-type-row {
+      margin-bottom: 18px;
+      padding-bottom: 0;
+      border-bottom: 1px solid var(--line);
+
+      // 隐藏标签列“菜单类型”
+      .ant-form-item-label {
+        display: none;
+      }
+
+      .ant-form-item-control-input-content {
+        // 让 RadioGroup 占满
+        > div {
+          width: 100%;
+        }
+      }
+
+      // 把 RadioButtonGroup 渲染成下划线 tab
+      .ant-radio-group {
+        display: inline-flex;
+        gap: 4px;
+        background: transparent;
+        border: 0;
+        padding: 0;
+        margin-bottom: -1px;
+      }
+
+      .ant-radio-button-wrapper {
+        height: auto;
+        line-height: 1.4;
+        padding: 10px 14px;
+        font-size: 13px;
+        color: var(--ink-500);
+        font-weight: 500;
+        background: transparent !important;
+        border: 0 !important;
+        border-bottom: 2px solid transparent !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+
+        &::before {
+          display: none !important;
+        }
+
+        &:hover {
+          color: var(--ink-900);
+        }
+
+        &-checked {
+          color: var(--accent) !important;
+          font-weight: 600 !important;
+          border-bottom-color: var(--accent) !important;
+          background: transparent !important;
+        }
+      }
+    }
+
+    // ----------------------------------------------------
+    // 表单整体：缩小 Form.Item 的下间距，标签字号对齐设计稿
+    // ----------------------------------------------------
+    .ant-form-item {
+      margin-bottom: 16px;
+    }
+
+    .ant-form-item-label > label {
+      font-size: 13px;
+      color: var(--ink-700);
+      font-weight: 500;
+      height: 34px;
+    }
+
+    // 必填星号：靠左、红色
+    .ant-form-item-label > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+      color: var(--bad);
+      margin-right: 2px;
+    }
+
+    // 控件高度统一 34px（与设计稿 .control 对齐）
+    .ant-input,
+    .ant-input-number,
+    .ant-select-single .ant-select-selector,
+    .ant-tree-select .ant-select-selector,
+    .ant-input-affix-wrapper {
+      min-height: 34px;
+    }
+    .ant-input-number {
+      width: 100%;
+    }
+
+    // ----------------------------------------------------
+    // 普通 RadioButtonGroup（非 menuType）→ 胶囊段控件 .seg
+    // 通过 :not(.menu-type-row) 排除顶部 tabs
+    // ----------------------------------------------------
+    .ant-form-item:not(.menu-type-row) {
+      .ant-radio-group {
+        display: inline-flex;
+        background: var(--surface-3);
+        border-radius: 999px;
+        padding: 3px;
+        gap: 2px;
+        border: 0;
+        height: 34px;
+        align-items: center;
+      }
+
+      .ant-radio-button-wrapper {
+        height: 26px;
+        line-height: 26px;
+        padding: 0 16px;
+        border: 0 !important;
+        background: transparent !important;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ink-500);
+        border-radius: 999px !important;
+        box-shadow: none !important;
+        transition: color var(--fast), background-color var(--fast);
+
+        &::before {
+          display: none !important;
+        }
+
+        &:hover {
+          color: var(--ink-900);
+        }
+
+        &-checked {
+          background: var(--surface) !important;
+          color: var(--accent) !important;
+          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1) !important;
+        }
+      }
+    }
+  }
+</style>

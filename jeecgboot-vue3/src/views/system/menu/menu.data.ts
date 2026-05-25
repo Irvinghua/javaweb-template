@@ -79,6 +79,15 @@ export const formSchema: FormSchema[] = [
     label: '菜单类型',
     component: 'RadioButtonGroup',
     defaultValue: 0,
+    // UI Redesign: 顶部 tab 切换，整行占满；disabledLabelWidth 让全局 labelWidth 失效，
+    // itemProps.wrapperCol span 24 占满整行；标签本身通过 CSS（.menu-type-row）隐藏
+    colProps: { span: 24 },
+    disabledLabelWidth: true,
+    itemProps: {
+      class: 'menu-type-row',
+      labelCol: { span: 0 },
+      wrapperCol: { span: 24 },
+    },
     componentProps: ({ formActionType, formModel }) => {
       return {
         options: [
@@ -187,12 +196,16 @@ export const formSchema: FormSchema[] = [
     field: 'redirect',
     label: '默认跳转地址',
     component: 'Input',
+    // UI Redesign: 设计稿中“默认跳转地址”跨两列
+    colProps: { span: 24 },
     ifShow: ({ values }) => isDir(values.menuType),
   },
   {
     field: 'perms',
     label: '授权标识',
     component: 'Input',
+    // UI Redesign: 设计稿中“授权标识”跨两列
+    colProps: { span: 24 },
     ifShow: ({ values }) => isButton(values.menuType),
     // dynamicRules: ({ model }) => {
     //   return [
@@ -221,8 +234,9 @@ export const formSchema: FormSchema[] = [
   },
   {
     field: 'permsType',
+    // UI Redesign: RadioGroup → RadioButtonGroup（保持 value '1'/'2' 不变），用于复用 .seg 胶囊样式
     label: '授权策略',
-    component: 'RadioGroup',
+    component: 'RadioButtonGroup',
     defaultValue: '1',
     helpMessage: ['可见/可访问(授权后可见/可访问)', '可编辑(未授权时禁用)'],
     componentProps: {
@@ -236,7 +250,7 @@ export const formSchema: FormSchema[] = [
   {
     field: 'status',
     label: '状态',
-    component: 'RadioGroup',
+    component: 'RadioButtonGroup',
     defaultValue: '1',
     componentProps: {
       options: [
@@ -262,69 +276,84 @@ export const formSchema: FormSchema[] = [
     defaultValue: 1,
     ifShow: ({ values }) => !isButton(values.menuType),
   },
+  // UI Redesign: 以下 6 个布尔字段由 Switch 换为 RadioButtonGroup（保留 value 类型与提交一致），
+  // 通过 CSS（.menu-drawer-form .ant-radio-group-solid）渲染成设计稿中的 .seg 胶囊按钮
   {
     field: 'route',
     label: '是否路由菜单',
-    component: 'Switch',
+    component: 'RadioButtonGroup',
     defaultValue: true,
     componentProps: {
-      checkedChildren: '是',
-      unCheckedChildren: '否',
+      options: [
+        { label: '是', value: true },
+        { label: '否', value: false },
+      ],
     },
     ifShow: ({ values }) => !isButton(values.menuType),
   },
   {
     field: 'hidden',
     label: '隐藏路由',
-    component: 'Switch',
-    defaultValue: 0,
+    component: 'RadioButtonGroup',
+    // 历史默认值 0 表示 false；antd Switch 此前会把 0 当 falsy 处理，这里显式使用 false 保持等价
+    defaultValue: false,
     componentProps: {
-      checkedChildren: '是',
-      unCheckedChildren: '否',
+      options: [
+        { label: '是', value: true },
+        { label: '否', value: false },
+      ],
     },
     ifShow: ({ values }) => !isButton(values.menuType),
   },
   {
     field: 'hideTab',
     label: '隐藏Tab',
-    component: 'Switch',
-    defaultValue: 0,
+    component: 'RadioButtonGroup',
+    defaultValue: false,
     componentProps: {
-      checkedChildren: '是',
-      unCheckedChildren: '否',
+      options: [
+        { label: '是', value: true },
+        { label: '否', value: false },
+      ],
     },
     ifShow: ({ values }) => !isButton(values.menuType),
   },
   {
     field: 'keepAlive',
     label: '是否缓存路由',
-    component: 'Switch',
+    component: 'RadioButtonGroup',
     defaultValue: false,
     componentProps: {
-      checkedChildren: '是',
-      unCheckedChildren: '否',
+      options: [
+        { label: '是', value: true },
+        { label: '否', value: false },
+      ],
     },
     ifShow: ({ values }) => !isButton(values.menuType),
   },
   {
     field: 'alwaysShow',
     label: '聚合路由',
-    component: 'Switch',
+    component: 'RadioButtonGroup',
     defaultValue: false,
     componentProps: {
-      checkedChildren: '是',
-      unCheckedChildren: '否',
+      options: [
+        { label: '是', value: true },
+        { label: '否', value: false },
+      ],
     },
     ifShow: ({ values }) => !isButton(values.menuType),
   },
   {
     field: 'internalOrExternal',
     label: '打开方式',
-    component: 'Switch',
+    component: 'RadioButtonGroup',
     defaultValue: false,
     componentProps: {
-      checkedChildren: '外部',
-      unCheckedChildren: '内部',
+      options: [
+        { label: '内部', value: false },
+        { label: '外部', value: true },
+      ],
     },
     ifShow: ({ values }) => !isButton(values.menuType),
   },
