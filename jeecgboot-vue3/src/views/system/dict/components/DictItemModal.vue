@@ -1,6 +1,13 @@
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" :title="getTitle" @ok="handleSubmit" width="800px">
-    <BasicForm @register="registerForm" >
+  <BasicModal
+    v-bind="$attrs"
+    @register="registerModal"
+    :title="getTitle"
+    @ok="handleSubmit"
+    :width="560"
+    destroyOnClose
+  >
+    <BasicForm @register="registerForm" class="redesign-form dict-item-form">
       <template #itemColor="{ model, field }">
         <div class="item-tool">
           <div
@@ -31,17 +38,12 @@
   const isUpdate = ref(true);
   //表单配置
   const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
+    // UI Redesign: 单列布局 + labelWidth 88 与设计稿 .dlg-form 对齐
     schemas: itemFormSchema,
     showActionButtonGroup: false,
     mergeDynamicData: props,
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 4 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 18 },
-    },
+    labelWidth: 88,
+    baseColProps: { span: 24 },
   });
   //表单赋值
   const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
@@ -58,7 +60,8 @@
   });
 
   //设置标题
-  const getTitle = computed(() => (!unref(isUpdate) ? '新增' : '编辑'));
+  // UI Redesign: 标题更具体，避免与外层 “新增字典” 混淆
+  const getTitle = computed(() => (!unref(isUpdate) ? '新增字典项' : '编辑字典项'));
 
   //表单提交事件
   async function handleSubmit() {
