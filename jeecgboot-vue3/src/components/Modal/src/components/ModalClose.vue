@@ -121,7 +121,9 @@
     display: flex;
     height: 30px;
     align-items: center;
-    gap: 4px;
+    // UI Redesign: 4px 太紧，hover 灰底 + hover 浅红 视觉上几乎贴边
+    // 8px 给两个按钮的 hover 圆角背景留出明显间距
+    gap: 8px;
     margin-top: 0;
 
     > span {

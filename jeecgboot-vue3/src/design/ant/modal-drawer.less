@@ -93,7 +93,10 @@
   .jeecg-basic-modal-close {
     display: flex;
     align-items: center;
-    gap: 4px;
+    // UI Redesign: 4px → 8px，让 fullscreen / close 两个按钮的 hover 圆角
+    // 背景（30px wide × radius 8px）有明显间距，不再视觉重叠
+    // 同 src/components/Modal/src/components/ModalClose.vue 保持一致
+    gap: 8px;
     height: 30px;
     margin-top: 0;
 
