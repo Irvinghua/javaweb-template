@@ -26,6 +26,31 @@
     }
   }
 
+  // textarea 所在行：让整行跟随 textarea 自然撑高，并把标签顶部对齐
+  // 双重根因：
+  //   (a) 上方第三节给 .ant-input-affix-wrapper 设了 height: 38px / min-height: 38px，
+  //       而 antd v4 把 textarea 也用 .ant-input-affix-wrapper 包了一层，
+  //       导致 76px 高的 textarea 把 38px 的外壳撑爆，textarea 物理溢出，
+  //       把下一行（"自动分配用户"）的位置视觉上盖住。
+  //   (b) align-items: center 会把 row 高度锁在 label 38px，row 不跟随 textarea。
+  // :has() 在 Chrome 105+ / Safari 15.4+ / Firefox 121+ 已普遍支持。
+  .ant-form-item:has(textarea) {
+    .ant-form-item-row {
+      align-items: flex-start;
+    }
+    // 让 label 视觉对齐到 textarea 的第一行（textarea padding-top 9px + 一点行高补偿）
+    .ant-form-item-label {
+      line-height: 1.4;
+      padding-top: 8px;
+    }
+    // 关键：解锁 textarea 外层 affix-wrapper 的 38px 高度限制，让它跟着 textarea 撑开
+    .ant-input-affix-wrapper {
+      height: auto;
+      min-height: 0;
+      padding: 8px 12px;
+    }
+  }
+
   // ----------------------------------------------------
   // == 二、标签（去掉固定 height，用 line-height 让 inline-flex 自适应居中）
   // ----------------------------------------------------
