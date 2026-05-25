@@ -112,9 +112,10 @@
 
   // ----------------------------------------------------
   // == 四、RadioButtonGroup → 设计稿 .seg 胶囊段控件
-  // == 例外：菜单弹窗 .menu-type-row（顶部 tab，由 MenuDrawer 自己覆盖）
+  // == 例外：标记成顶部 tab 切换的字段（class="form-tabs-row"）
+  // ==      由下方「五」专门渲染成 .detail-tabs 下划线 tab
   // ----------------------------------------------------
-  .ant-form-item:not(.menu-type-row) {
+  .ant-form-item:not(.form-tabs-row) {
     .ant-radio-group {
       display: inline-flex;
       background: var(--surface-3);
@@ -151,6 +152,74 @@
         background: var(--surface) !important;
         color: var(--accent) !important;
         box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1) !important;
+      }
+    }
+  }
+
+  // ----------------------------------------------------
+  // == 五、form-tabs-row：把 RadioButtonGroup 渲染成顶部下划线 tab
+  // == 设计稿: jeecgboot-ui/pages/jeecg-page.css .detail-tabs
+  // == 用法：在该 FormSchema 上加
+  // ==   colProps: { span: 24 },
+  // ==   disabledLabelWidth: true,
+  // ==   itemProps: { class: 'form-tabs-row', labelCol: { span: 0 }, wrapperCol: { span: 24 } }
+  // == 适用：menu.menuType / homeConfig.relationType / JDictSelectTag(type:'radioButton')
+  // ----------------------------------------------------
+  .form-tabs-row {
+    margin-bottom: 18px;
+    padding-bottom: 0;
+    border-bottom: 1px solid var(--line);
+
+    // 隐藏标签列
+    .ant-form-item-label {
+      display: none;
+    }
+
+    .ant-form-item-control-input-content {
+      // 让 RadioGroup 占满
+      > div {
+        width: 100%;
+      }
+    }
+
+    // RadioButtonGroup 整体抹掉胶囊样式
+    .ant-radio-group {
+      display: inline-flex;
+      gap: 4px;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      height: auto;
+      margin-bottom: -1px;
+      align-items: stretch;
+    }
+
+    .ant-radio-button-wrapper {
+      height: auto;
+      line-height: 1.4;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--ink-500);
+      font-weight: 500;
+      background: transparent !important;
+      border: 0 !important;
+      border-bottom: 2px solid transparent !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+
+      &::before {
+        display: none !important;
+      }
+
+      &:hover {
+        color: var(--ink-900);
+      }
+
+      &-checked {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+        border-bottom-color: var(--accent) !important;
+        background: transparent !important;
       }
     }
   }

@@ -80,11 +80,12 @@ export const formSchema: FormSchema[] = [
     component: 'RadioButtonGroup',
     defaultValue: 0,
     // UI Redesign: 顶部 tab 切换，整行占满；disabledLabelWidth 让全局 labelWidth 失效，
-    // itemProps.wrapperCol span 24 占满整行；标签本身通过 CSS（.menu-type-row）隐藏
+    // itemProps.wrapperCol span 24 占满整行；标签隐藏 + 下划线 tab 样式由 form-redesign.less
+    // 的 .form-tabs-row 提供（设计稿 .detail-tabs）
     colProps: { span: 24 },
     disabledLabelWidth: true,
     itemProps: {
-      class: 'menu-type-row',
+      class: 'form-tabs-row',
       labelCol: { span: 0 },
       wrapperCol: { span: 24 },
     },

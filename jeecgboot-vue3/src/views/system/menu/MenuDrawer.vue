@@ -155,9 +155,9 @@
 
 <!-- ================================================== -->
 <!-- UI Redesign: 菜单弹窗专属换肤                          -->
-<!-- 通用部分（字号/控件高度/段控件）由 .redesign-form 提供   -->
-<!-- 见 src/design/ant/form-redesign.less                  -->
-<!-- 本块只保留菜单特有: 抽屉头图标 + menuType 顶部下划线 tab -->
+<!-- 通用部分（字号/控件高度/段控件/.form-tabs-row 下划线 tab） -->
+<!-- 由 src/design/ant/form-redesign.less 提供              -->
+<!-- 本块只保留菜单特有: 抽屉头图标                          -->
 <!-- ================================================== -->
 <style lang="less">
   // 抽屉头：自定义标题
@@ -180,70 +180,6 @@
   .menu-drawer-redesign {
     .jeecg-basic-title .menu-drawer-title {
       gap: 8px;
-    }
-  }
-
-  // ----------------------------------------------------
-  // 菜单类型：顶部 tabs（设计稿 .detail-tabs）
-  // 注意：依赖 .redesign-form .ant-form-item:not(.menu-type-row) 在 form-redesign.less
-  // 里的“胶囊段控件”规则避开它，这里再把它重绘成下划线 tab
-  // ----------------------------------------------------
-  .menu-drawer-form {
-    .menu-type-row {
-      margin-bottom: 18px;
-      padding-bottom: 0;
-      border-bottom: 1px solid var(--line);
-
-      // 隐藏标签列“菜单类型”
-      .ant-form-item-label {
-        display: none;
-      }
-
-      .ant-form-item-control-input-content {
-        // 让 RadioGroup 占满
-        > div {
-          width: 100%;
-        }
-      }
-
-      // 把 RadioButtonGroup 渲染成下划线 tab
-      .ant-radio-group {
-        display: inline-flex;
-        gap: 4px;
-        background: transparent;
-        border: 0;
-        padding: 0;
-        margin-bottom: -1px;
-      }
-
-      .ant-radio-button-wrapper {
-        height: auto;
-        line-height: 1.4;
-        padding: 10px 14px;
-        font-size: 13px;
-        color: var(--ink-500);
-        font-weight: 500;
-        background: transparent !important;
-        border: 0 !important;
-        border-bottom: 2px solid transparent !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-
-        &::before {
-          display: none !important;
-        }
-
-        &:hover {
-          color: var(--ink-900);
-        }
-
-        &-checked {
-          color: var(--accent) !important;
-          font-weight: 600 !important;
-          border-bottom-color: var(--accent) !important;
-          background: transparent !important;
-        }
-      }
     }
   }
 </style>
