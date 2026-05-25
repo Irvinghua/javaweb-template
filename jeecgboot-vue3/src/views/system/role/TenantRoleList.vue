@@ -45,7 +45,9 @@
   
   const showFooter = ref(true);
   const [roleUserDrawer, { openDrawer: openRoleUserDrawer }] = useDrawer();
-  const [registerDrawer, { openDrawer }] = useDrawer();
+  // UI Redesign: 角色新增/编辑由抽屉改为居中弹窗（字段仅 3 个，不需要抽屉）；
+  // 变量名沿用 registerDrawer/openDrawer 以最小化业务文件改动
+  const [registerDrawer, { openModal: openDrawer }] = useModal();
   const [registerModal, { openModal }] = useModal();
   const [registerDesc, { openDrawer: openRoleDesc }] = useDrawer();
   

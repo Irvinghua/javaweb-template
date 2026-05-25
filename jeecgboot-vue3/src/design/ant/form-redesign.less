@@ -103,11 +103,16 @@
     padding: 0 12px;
   }
 
-  // textarea 圆角统一
+  // textarea —— 与设计稿 textarea.control 对齐
+  //   { height: auto; min-height: 76px; padding: 9px 12px; resize: vertical; line-height: 1.5 }
   textarea.ant-input {
+    height: auto;
+    min-height: 76px;
     border-radius: var(--radius-ctrl, 10px);
     font-size: 13px;
-    padding: 8px 12px;
+    padding: 9px 12px;
+    line-height: 1.5;
+    resize: vertical;
   }
 
   // ----------------------------------------------------
