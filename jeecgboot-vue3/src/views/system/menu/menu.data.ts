@@ -437,7 +437,8 @@ export const dataRuleFormSchema: FormSchema[] = [
       selectPlaceholder: '可选择系统变量',
       inputPlaceholder: '请输入',
       getPopupContainer: () => document.body,
-      selectWidth: '200px',
+      // UI Redesign: 200px 太宽，把输入栏挤到只剩很窄一段；140px 刚好放下「可选择系统变量」占位
+      selectWidth: '140px',
       options: [
         {
           label: '登录用户账号',

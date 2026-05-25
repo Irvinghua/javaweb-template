@@ -15,7 +15,7 @@
         <span class="menu-drawer-title__text">{{ getTitle }}</span>
       </span>
     </template>
-    <BasicForm @register="registerForm" class="menuForm menu-drawer-form" />
+    <BasicForm @register="registerForm" class="menuForm redesign-form menu-drawer-form" />
   </BasicDrawer>
 </template>
 <script lang="ts" setup>
@@ -154,11 +154,10 @@
 </script>
 
 <!-- ================================================== -->
-<!-- UI Redesign: 菜单表单专属换肤                       -->
-<!-- 设计稿参考: jeecgboot-ui/pages/menu.html              -->
-<!--   - 顶部 menuType 渲染为 .detail-tabs（下划线 tab）   -->
-<!--   - 表单 2 列网格                                      -->
-<!--   - 布尔字段渲染为 .seg 胶囊段控件                     -->
+<!-- UI Redesign: 菜单弹窗专属换肤                          -->
+<!-- 通用部分（字号/控件高度/段控件）由 .redesign-form 提供   -->
+<!-- 见 src/design/ant/form-redesign.less                  -->
+<!-- 本块只保留菜单特有: 抽屉头图标 + menuType 顶部下划线 tab -->
 <!-- ================================================== -->
 <style lang="less">
   // 抽屉头：自定义标题
@@ -186,6 +185,8 @@
 
   // ----------------------------------------------------
   // 菜单类型：顶部 tabs（设计稿 .detail-tabs）
+  // 注意：依赖 .redesign-form .ant-form-item:not(.menu-type-row) 在 form-redesign.less
+  // 里的“胶囊段控件”规则避开它，这里再把它重绘成下划线 tab
   // ----------------------------------------------------
   .menu-drawer-form {
     .menu-type-row {
@@ -241,131 +242,6 @@
           font-weight: 600 !important;
           border-bottom-color: var(--accent) !important;
           background: transparent !important;
-        }
-      }
-    }
-
-    // ----------------------------------------------------
-    // 表单整体：字号 / 控件高度 / 标签垂直居中 全部对齐设计稿
-    // 设计稿基线: .control { height: 38px; font-size: 13px; border-radius: 10px; padding: 0 12px }
-    //            .form-row > label { font-size: 13px; color: var(--ink-700); font-weight: 500 }
-    // ----------------------------------------------------
-    .ant-form-item {
-      margin-bottom: 16px;
-      // 标签与输入框垂直居中（默认 align-items: stretch → 标签视觉偏顶部）
-      .ant-form-item-row {
-        align-items: center;
-      }
-    }
-
-    // 标签：去掉固定 height、改用 line-height 让 inline-flex 自适应居中
-    .ant-form-item-label {
-      padding-bottom: 0;
-      line-height: 38px;
-      > label {
-        font-size: 13px;
-        color: var(--ink-700);
-        font-weight: 500;
-        height: 38px;
-        line-height: 1.4;
-      }
-    }
-
-    // 必填星号：靠左、红色
-    .ant-form-item-label > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
-      color: var(--bad);
-      margin-right: 2px;
-    }
-
-    // 控件：高度 38px / 字号 13px / 圆角 10px（与设计稿 .control 完全对齐）
-    // 注意：height + min-height 只能给「容器型」控件加，绝不能落到 affix-wrapper 内层的 input.ant-input
-    // 否则 min-height: 38px 会让内层 input（box-sizing: border-box）撑到 38px，
-    // 而 wrapper 38px 减去上下各 1px 边框后内容区只有 36px，内层 input 多出来的 2px
-    // 会盖住 wrapper 的下边框（symptom: 文字输入栏下边框缺一段；select/number 不受影响因为内层不是 .ant-input）
-    .ant-input-affix-wrapper,
-    .ant-input-number,
-    .ant-select-single .ant-select-selector,
-    .ant-tree-select .ant-select-selector {
-      height: 38px;
-      min-height: 38px;
-      border-radius: var(--radius-ctrl, 10px);
-      font-size: 13px;
-    }
-    // 没被 affix-wrapper 包裹的独立 .ant-input（裸 input、textarea 等）
-    .ant-input:not(.ant-input-affix-wrapper > input):not(textarea) {
-      height: 38px;
-      border-radius: var(--radius-ctrl, 10px);
-      font-size: 13px;
-    }
-    .ant-select-single .ant-select-selector .ant-select-selection-item,
-    .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
-      line-height: 36px;
-      font-size: 13px;
-    }
-    .ant-input-number {
-      width: 100%;
-    }
-    .ant-input-number .ant-input-number-input {
-      height: 36px;
-      font-size: 13px;
-    }
-    // affix-wrapper 内层 input —— 不能给 height / min-height，
-    // 让它走 flex 默认 stretch 跟随 wrapper 内容区高度（36px），
-    // 这样 wrapper 的 1px 下边框就不会被覆盖
-    .ant-input-affix-wrapper > input.ant-input {
-      height: auto;
-      min-height: 0;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      box-shadow: none;
-      font-size: 13px;
-    }
-    .ant-input-affix-wrapper {
-      padding: 0 12px;
-    }
-
-    // ----------------------------------------------------
-    // 普通 RadioButtonGroup（非 menuType）→ 胶囊段控件 .seg
-    // 通过 :not(.menu-type-row) 排除顶部 tabs
-    // ----------------------------------------------------
-    .ant-form-item:not(.menu-type-row) {
-      .ant-radio-group {
-        display: inline-flex;
-        background: var(--surface-3);
-        border-radius: 999px;
-        padding: 3px;
-        gap: 2px;
-        border: 0;
-        height: 34px;
-        align-items: center;
-      }
-
-      .ant-radio-button-wrapper {
-        height: 26px;
-        line-height: 26px;
-        padding: 0 16px;
-        border: 0 !important;
-        background: transparent !important;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--ink-500);
-        border-radius: 999px !important;
-        box-shadow: none !important;
-        transition: color var(--fast), background-color var(--fast);
-
-        &::before {
-          display: none !important;
-        }
-
-        &:hover {
-          color: var(--ink-900);
-        }
-
-        &-checked {
-          background: var(--surface) !important;
-          color: var(--accent) !important;
-          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1) !important;
         }
       }
     }
