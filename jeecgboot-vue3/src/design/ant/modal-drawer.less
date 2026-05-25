@@ -60,33 +60,57 @@
   // -------------------------------------------------------
   // == 关闭按钮 (.dlg-close)
   // -------------------------------------------------------
+  // 注意：BasicModal 会把右上角换成自定义的 .jeecg-basic-modal-close 组件
+  //   （含 fullscreen + close 两个 30px 按钮 + 8px gap = 68px），
+  //   外层 .ant-modal-close 不能再固定 width: 30px，否则内容溢出 5px
+  //   会让 close 按钮戳到弹窗右框外（甚至遮住右边框）。
+  //   这里 width: auto / 内部用 flex，让 wrapper 跟随内容自然撑宽，
+  //   right: 14px 锚定右边距不变。
   .ant-modal-close {
     top: 13px;
     right: 14px;
-    width: 30px;
+    width: auto;
     height: 30px;
-    border-radius: 8px;
-    display: flex;
+    border-radius: 0;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     color: var(--ink-400);
     background: transparent;
     transition: background-color var(--fast), color var(--fast);
 
+    // wrapper 本身不再做 hover 灰底（hover 效果由内部 .jeecg-basic-modal-close
+    // 的两个按钮各自负责，否则 wrapper 会画一个大灰块把两个按钮都罩住）
     &:hover {
-      background: var(--surface-3);
-      color: var(--ink-700);
+      background: transparent;
+      color: var(--ink-400);
     }
 
     .ant-modal-close-x {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 30px;
+      width: auto;
       height: 30px;
       font-size: 14px;
       line-height: 1;
     }
+  }
+
+  // antd 默认 X 单按钮场景（没有自定义 .jeecg-basic-modal-close 时）
+  // —— 仍需要 30×30 圆角 + 灰底 hover
+  .ant-modal-close-x > .anticon:only-child,
+  .ant-modal-close:not(:has(.jeecg-basic-modal-close)) {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ant-modal-close:not(:has(.jeecg-basic-modal-close)):hover {
+    background: var(--surface-3);
+    color: var(--ink-700);
   }
 
   // BasicModal 的自定义关闭区域（ModalClose 组件）
