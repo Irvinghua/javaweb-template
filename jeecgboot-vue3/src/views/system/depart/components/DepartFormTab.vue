@@ -1,6 +1,6 @@
 <template>
   <a-spin :spinning="loading">
-    <BasicForm @register="registerForm" >
+    <BasicForm @register="registerForm" class="redesign-form depart-form-tab">
       <template #depPostParentId="{ model, field }">
         <a-tree-select v-model:value="depPostValue" :treeData="treeData" allowClear treeCheckable @select="treeSelect">
           <template #title="{ orgCategory, title }">
@@ -50,8 +50,11 @@
 
   //注册表单
   const [registerForm, { resetFields, setFieldsValue, validate, updateSchema }] = useForm({
+    // UI Redesign: 单列布局 + labelWidth 88 与设计稿 .detail-form 对齐
     schemas: useBasicFormSchema(treeData).basicFormSchema,
     showActionButtonGroup: false,
+    labelWidth: 88,
+    baseColProps: { span: 24 },
   });
 
   const categoryOptions = computed(() => {

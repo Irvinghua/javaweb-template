@@ -1,12 +1,13 @@
 <template>
   <a-card :bordered="false" style="height: 100%">
-    <div class="j-table-operator" style="width: 100%;display: flex;align-items: center">
+    <div class="j-table-operator depart-tree-toolbar" style="width: 100%;display: flex;align-items: center">
+      <!-- UI Redesign: 仅 “新增” 主按钮，其余 添加下级 / 导入 / 导出 走默认 ghost 风格（对齐设计稿 .btn-ghost） -->
       <a-button type="primary" preIcon="ant-design:plus-outlined" @click="onAddDepart">新增</a-button>
-      <a-button type="primary" preIcon="ant-design:plus-outlined" @click="onAddChildDepart()">添加下级</a-button>
+      <a-button preIcon="ant-design:plus-outlined" @click="onAddChildDepart()">添加下级</a-button>
       <a-upload name="file" :showUploadList="false" :customRequest="onImportXls" v-if="!isTenantDepart">
-        <a-button type="primary" preIcon="ant-design:import-outlined">导入</a-button>
+        <a-button preIcon="ant-design:import-outlined">导入</a-button>
       </a-upload>
-      <a-button type="primary" preIcon="ant-design:export-outlined" @click="onExportXls" v-if="!isTenantDepart">导出</a-button>
+      <a-button preIcon="ant-design:export-outlined" @click="onExportXls" v-if="!isTenantDepart">导出</a-button>
       <template v-if="checkedKeys.length > 0">
         <a-dropdown>
           <template #overlay>
