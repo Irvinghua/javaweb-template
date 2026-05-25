@@ -35,10 +35,13 @@
   const menuType = ref(0);
   const isButton = (type) => type === 2;
   const [registerForm, { setProps, resetFields, setFieldsValue, updateSchema, validate, clearValidate }] = useForm({
-    // UI Redesign: 2 列网格布局；用 labelWidth 把所有标签固定 88px（与设计稿 .dlg-form .form-row > label width: 88px 对齐），
-    // 这样 span-2 字段的标签不会被拉宽到 1/3 行
+    // UI Redesign: 2 列网格布局；
+    // - labelWidth 88px 与设计稿 .dlg-form .form-row > label 对齐
+    // - rowProps.gutter [26, 0] 与设计稿 .dlg-form.cols-2 gap: 16px 26px 的列间距对齐
+    //   （行间距由 .ant-form-item margin-bottom 16px 提供）
     baseColProps: { span: 12 },
     labelWidth: 88,
+    rowProps: { gutter: [26, 0] },
     schemas: formSchema,
     showActionButtonGroup: false,
   });
@@ -243,17 +246,29 @@
     }
 
     // ----------------------------------------------------
-    // 表单整体：缩小 Form.Item 的下间距，标签字号对齐设计稿
+    // 表单整体：字号 / 控件高度 / 标签垂直居中 全部对齐设计稿
+    // 设计稿基线: .control { height: 38px; font-size: 13px; border-radius: 10px; padding: 0 12px }
+    //            .form-row > label { font-size: 13px; color: var(--ink-700); font-weight: 500 }
     // ----------------------------------------------------
     .ant-form-item {
       margin-bottom: 16px;
+      // 标签与输入框垂直居中（默认 align-items: stretch → 标签视觉偏顶部）
+      .ant-form-item-row {
+        align-items: center;
+      }
     }
 
-    .ant-form-item-label > label {
-      font-size: 13px;
-      color: var(--ink-700);
-      font-weight: 500;
-      height: 34px;
+    // 标签：去掉固定 height、改用 line-height 让 inline-flex 自适应居中
+    .ant-form-item-label {
+      padding-bottom: 0;
+      line-height: 38px;
+      > label {
+        font-size: 13px;
+        color: var(--ink-700);
+        font-weight: 500;
+        height: 38px;
+        line-height: 1.4;
+      }
     }
 
     // 必填星号：靠左、红色
@@ -262,16 +277,41 @@
       margin-right: 2px;
     }
 
-    // 控件高度统一 34px（与设计稿 .control 对齐）
+    // 控件：高度 38px / 字号 13px / 圆角 10px（与设计稿 .control 完全对齐）
     .ant-input,
+    .ant-input-number-input,
+    .ant-input-affix-wrapper > input.ant-input {
+      font-size: 13px;
+    }
+    .ant-input,
+    .ant-input-affix-wrapper,
     .ant-input-number,
     .ant-select-single .ant-select-selector,
-    .ant-tree-select .ant-select-selector,
-    .ant-input-affix-wrapper {
-      min-height: 34px;
+    .ant-tree-select .ant-select-selector {
+      height: 38px;
+      min-height: 38px;
+      border-radius: var(--radius-ctrl, 10px);
+      font-size: 13px;
+    }
+    .ant-select-single .ant-select-selector .ant-select-selection-item,
+    .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+      line-height: 36px;
+      font-size: 13px;
     }
     .ant-input-number {
       width: 100%;
+    }
+    .ant-input-number .ant-input-number-input {
+      height: 36px;
+    }
+    // affix-wrapper 内层 input 撑满，撕掉自带 padding/border（沿用全局 search 区方案）
+    .ant-input-affix-wrapper > input.ant-input {
+      height: 100%;
+      padding: 0;
+      border: 0;
+    }
+    .ant-input-affix-wrapper {
+      padding: 0 12px;
     }
 
     // ----------------------------------------------------
