@@ -128,7 +128,9 @@ export const formSchema: FormSchema[] = [
     component: 'JImageUpload',
     componentProps:{
       text:'logo'
-    }
+    },
+    // UI Redesign: 图片上传跨两列，避免半列宽塞不下上传按钮 + 缩略图
+    colProps: { span: 24 },
   },
   {
     field: 'trade',
@@ -151,7 +153,9 @@ export const formSchema: FormSchema[] = [
     componentProps: {
       placeholder: '请输入公司地址',
       rows: 4,
-    }
+    },
+    // UI Redesign: 省/市/区 三联级联，跨两列才放得下
+    colProps: { span: 24 },
   },
   {
     field: 'workPlace',
@@ -160,7 +164,9 @@ export const formSchema: FormSchema[] = [
     componentProps: {
       placeholder: '请输入工作地点',
       rows: 4,
-    }
+    },
+    // UI Redesign: 设计稿 .form-row span-2，textarea 跨两列
+    colProps: { span: 24 },
   },
 /*  {
     field: 'beginDate',
