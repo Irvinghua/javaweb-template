@@ -414,25 +414,27 @@ export const packMenuFormSchema: FormSchema[] = [
   {
     field: 'izSysn',
     label: '自动分配用户',
-    component: 'Switch',
+    // UI Redesign: Switch → RadioButtonGroup（保留 value 字符串 '1'/'0'，提交语义不变），
+    // 由 .redesign-form 渲染成设计稿 .seg 胶囊段控件，与其他页面 toggle 样式统一
+    component: 'RadioButtonGroup',
     componentProps: {
-      checkedValue: "1",
-      checkedChildren: '是',
-      unCheckedValue: "0",
-      unCheckedChildren: '否',
+      options: [
+        { label: '是', value: '1' },
+        { label: '否', value: '0' },
+      ],
     },
     defaultValue: "1",
     helpMessage: "默认会自动分配给用户，个性高级套餐，需要租户管理员手工分配人员(拥有更灵活性权限控制)"
-  },  
+  },
   {
     field: 'status',
     label: '开启状态',
-    component: 'Switch',
+    component: 'RadioButtonGroup',
     componentProps: {
-      checkedValue: '1',
-      checkedChildren: '开启',
-      unCheckedValue: '0',
-      unCheckedChildren: '关闭',
+      options: [
+        { label: '开启', value: '1' },
+        { label: '关闭', value: '0' },
+      ],
     },
     defaultValue: '1',
   },

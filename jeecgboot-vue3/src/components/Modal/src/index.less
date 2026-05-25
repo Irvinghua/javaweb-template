@@ -46,7 +46,10 @@
   }
 
   .ant-modal-body {
-    padding: 0;
+    // UI Redesign: body padding 由 modal-drawer.less 统一为 20px；这里若设 padding: 0
+    // 会让 jeecg-modal-wrapper 的 margin: -20px + scroll-container padding: 20px
+    // 的“抵消”链条变成“向外溢出”，最终表单贴住弹窗左右边框。
+    // 见 src/design/ant/modal-drawer.less 第 132-153 行。
 
     > .scrollbar > .scrollbar__bar.is-horizontal {
       display: none;
