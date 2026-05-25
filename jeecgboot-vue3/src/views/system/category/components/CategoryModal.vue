@@ -1,6 +1,13 @@
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose width="550px" :title="getTitle" @ok="handleSubmit">
-    <BasicForm @register="registerForm" />
+  <BasicModal
+    v-bind="$attrs"
+    @register="registerModal"
+    destroyOnClose
+    :width="560"
+    :title="getTitle"
+    @ok="handleSubmit"
+  >
+    <BasicForm @register="registerForm" class="redesign-form category-form" />
   </BasicModal>
 </template>
 <script lang="ts" setup>
@@ -17,16 +24,11 @@
   const isSubAdd = ref(false);
   //表单配置
   const [registerForm, { resetFields, setFieldsValue, validate, updateSchema }] = useForm({
+    // UI Redesign: 单列布局 + labelWidth 88 与设计稿 .dlg-form 对齐
     schemas: formSchema,
     showActionButtonGroup: false,
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 4 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 18 },
-    },
+    labelWidth: 88,
+    baseColProps: { span: 24 },
   });
   //表单赋值
   const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
@@ -51,7 +53,8 @@
     });
   });
   //设置标题
-  const getTitle = computed(() => (!unref(isUpdate) ? '新增字典' : '编辑字典'));
+  // UI Redesign: 该页面是“分类字典”，原标题“新增字典/编辑字典”与隔壁“数据字典”模糊重名
+  const getTitle = computed(() => (!unref(isUpdate) ? '新增分类' : '编辑分类'));
 
   /**
    * 根据pid获取展开的节点
