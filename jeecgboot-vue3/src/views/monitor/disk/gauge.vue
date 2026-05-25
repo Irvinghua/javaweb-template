@@ -14,7 +14,7 @@
         <div class="disk-stat">
           <span class="dot-mark" style="background: var(--accent)"></span>
           <span class="ds-label">磁盘总容量</span>
-          <span class="ds-value">{{ data.max ?? '--' }}</span>
+          <span class="ds-value">{{ formatBytes(data.max) }}</span>
         </div>
         <div class="disk-stat">
           <span class="dot-mark" style="background: #D97706"></span>
@@ -24,7 +24,7 @@
         <div class="disk-stat">
           <span class="dot-mark" style="background: var(--good, #15A34A)"></span>
           <span class="ds-label">可用空间</span>
-          <span class="ds-value">{{ data.rest ?? '--' }}</span>
+          <span class="ds-value">{{ formatBytes(data.rest) }}</span>
         </div>
       </div>
     </div>
@@ -103,11 +103,31 @@
     ],
   });
 
-  // 已使用空间 = total - rest（如果两者都有）
+  /**
+   * Bytes → 人类可读单位 (B / KB / MB / GB / TB / PB)
+   * - 入参可能是 number 或 number string；非数字时原样回显
+   * - 1024 进制，保留 2 位小数（小于 1KB 时显示整数 Byte）
+   */
+  function formatBytes(input: number | string | undefined | null): string {
+    if (input == null || input === '') return '--';
+    const n = typeof input === 'number' ? input : Number(input);
+    if (!Number.isFinite(n)) return String(input); // 已经是 "512GB" 这类字符串就别动它
+    if (n <= 0) return '0 B';
+    const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    const i = Math.min(Math.floor(Math.log(n) / Math.log(1024)), units.length - 1);
+    const value = n / Math.pow(1024, i);
+    // <1KB 整数显示，其它保留 2 位小数；末尾零去掉避免 "1.00 GB" 这种
+    const display = i === 0 ? String(Math.round(value)) : value.toFixed(2).replace(/\.?0+$/, '');
+    return `${display} ${units[i]}`;
+  }
+
+  // 已使用空间 = total - rest（两者都是字节数时优先精确计算，否则退化为百分比）
   const usedDisplay = computed(() => {
-    const max = props.data?.max;
-    const rest = props.data?.rest;
-    // max / rest 通常是带单位字符串（如 "512GB"），直接相减不可靠 —— 退化为显示 "已用 N%"
+    const max = Number(props.data?.max);
+    const rest = Number(props.data?.rest);
+    if (Number.isFinite(max) && Number.isFinite(rest) && max > 0) {
+      return formatBytes(max - rest);
+    }
     if (props.data?.restPPT != null) {
       return `${props.data.restPPT}%`;
     }
