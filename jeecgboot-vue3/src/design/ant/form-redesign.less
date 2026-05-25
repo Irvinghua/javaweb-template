@@ -16,6 +16,49 @@
 // =============================================================
 .redesign-form {
   // ----------------------------------------------------
+  // == 〇、字段太多时的分节标题（设计稿 .dlg-section-title）
+  // == 用法：在 FormSchema 里插一项
+  // ==   { field: '__section_xx__', label: '基本信息',
+  // ==     component: 'Divider', componentProps: { orientation: 'left' } }
+  // == FormItem 对 Divider 已自动套 <Col span={24}>，这里只刷外观
+  // ----------------------------------------------------
+  .ant-divider-horizontal.ant-divider-with-text {
+    margin: 4px 0 14px;
+    color: var(--ink-900);
+    font-size: 13px;
+    font-weight: 600;
+    border-top-color: transparent;
+
+    // 文字左右两侧的细分隔线
+    &::before,
+    &::after {
+      border-block-start: 1px solid var(--line);
+      border-top: 1px solid var(--line);
+    }
+
+    // orientation="left" 时左侧不要短横线，文字直接贴左
+    &.ant-divider-with-text-left::before {
+      width: 0;
+    }
+
+    .ant-divider-inner-text {
+      padding: 0 12px 0 0;
+      position: relative;
+      // 左侧色块装饰，模仿设计稿小色条
+      &::before {
+        content: '';
+        display: inline-block;
+        width: 3px;
+        height: 14px;
+        border-radius: 2px;
+        background: var(--accent);
+        margin-right: 8px;
+        vertical-align: -2px;
+      }
+    }
+  }
+
+  // ----------------------------------------------------
   // == 一、Form.Item 间距 + 行内垂直居中
   // ----------------------------------------------------
   .ant-form-item {

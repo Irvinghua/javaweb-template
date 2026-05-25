@@ -107,6 +107,20 @@ export const searchFormSchema: FormSchema[] = [
 ];
 
 export const formSchema: FormSchema[] = [
+  // UI Redesign: 字段顺序按设计稿 dlg-tenant-form 三组重排：
+  //   基本信息 (name / id / status / companyLogo)
+  //   公司信息 (trade / companySize / position / department)
+  //   地址信息 (companyAddress / houseNumber / workPlace[span-2])
+  // 三组之间用 Divider 当分节标题，无业务字段、不参与提交。
+  // ---- 基本信息 ----
+  {
+    field: '__section_basic__',
+    label: '基本信息',
+    component: 'Divider',
+    componentProps: { orientation: 'left' },
+    // 分节标题强制占满整行，否则会被 baseColProps span:12 截掉一半
+    colProps: { span: 24 },
+  },
   {
     field: 'name',
     label: '租户名称',
@@ -123,13 +137,32 @@ export const formSchema: FormSchema[] = [
     },
   },
   {
+    field: 'status',
+    label: '状态',
+    component: 'RadioButtonGroup',
+    defaultValue: 1,
+    componentProps: {
+      options: [
+        { label: '正常', value: 1 },
+        { label: '冻结', value: 0 },
+      ],
+    },
+  },
+  {
     field: 'companyLogo',
     label: '组织LOGO',
     component: 'JImageUpload',
     componentProps:{
       text:'logo'
     },
-    // UI Redesign: 图片上传跨两列，避免半列宽塞不下上传按钮 + 缩略图
+  },
+  // ---- 公司信息 ----
+  {
+    field: '__section_company__',
+    label: '公司信息',
+    component: 'Divider',
+    componentProps: { orientation: 'left' },
+    // 分节标题强制占满整行，否则会被 baseColProps span:12 截掉一半
     colProps: { span: 24 },
   },
   {
@@ -139,14 +172,41 @@ export const formSchema: FormSchema[] = [
     componentProps: {
       dictCode:'trade',
     }
-  }, {
+  },
+  {
     field: 'companySize',
     label: '公司规模',
     component: 'JDictSelectTag',
     componentProps: {
       dictCode:'company_size',
     }
-  }, {
+  },
+  {
+    field: 'position',
+    label: '职级',
+    component: 'JDictSelectTag',
+    componentProps:{
+      dictCode: 'company_rank'
+    }
+  },
+  {
+    field: 'department',
+    label: '部门',
+    component: 'JDictSelectTag',
+    componentProps:{
+      dictCode:'company_department'
+    }
+  },
+  // ---- 地址信息 ----
+  {
+    field: '__section_address__',
+    label: '地址信息',
+    component: 'Divider',
+    componentProps: { orientation: 'left' },
+    // 分节标题强制占满整行，否则会被 baseColProps span:12 截掉一半
+    colProps: { span: 24 },
+  },
+  {
     field: 'companyAddress',
     label: '公司地址',
     component: 'JAreaSelect',
@@ -154,8 +214,15 @@ export const formSchema: FormSchema[] = [
       placeholder: '请输入公司地址',
       rows: 4,
     },
-    // UI Redesign: 省/市/区 三联级联，跨两列才放得下
-    colProps: { span: 24 },
+  },
+  {
+    field: 'houseNumber',
+    label: '门牌号',
+    component: 'Input',
+    dynamicDisabled: true,
+    ifShow: ({ values }) => {
+      return values.id!=null;
+    },
   },
   {
     field: 'workPlace',
@@ -188,43 +255,6 @@ export const formSchema: FormSchema[] = [
       getPopupContainer: getAutoScrollContainer,
     },
   },*/
-  {
-    field: 'houseNumber',
-    label: '门牌号',
-    component: 'Input',
-    dynamicDisabled: true,
-    ifShow: ({ values }) => {
-      return values.id!=null;
-    },
-  },
-  {
-    field: 'position',
-    label: '职级',
-    component: 'JDictSelectTag',
-    componentProps:{
-      dictCode: 'company_rank'
-    }
-  },
-  {
-    field: 'department',
-    label: '部门',
-    component: 'JDictSelectTag',
-    componentProps:{
-      dictCode:'company_department'
-    }
-  },
-  {
-    field: 'status',
-    label: '状态',
-    component: 'RadioButtonGroup',
-    defaultValue: 1,
-    componentProps: {
-      options: [
-        { label: '正常', value: 1 },
-        { label: '冻结', value: 0 },
-      ],
-    },
-  },
 ];
 
 //定义用户表格列
