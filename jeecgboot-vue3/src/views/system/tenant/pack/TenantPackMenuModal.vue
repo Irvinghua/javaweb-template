@@ -22,10 +22,11 @@
   const emit = defineEmits(['register', 'success']);
   //表单配置
   const [registerForm, { resetFields, setFieldsValue, validate, setProps }] = useForm({
-    // UI Redesign: 单列布局 + labelWidth 88 与设计稿 .dlg-form 对齐
+    // UI Redesign: 单列布局；这里 labelWidth 加大到 120，因为 "自动分配用户" + help icon
+    // 6 字符 + 13px 字体 + 16px ⓘ ≈ 100px，再加点 padding 才不会被右侧 toggle 段控件遮住
     schemas: packMenuFormSchema,
     showActionButtonGroup: false,
-    labelWidth: 88,
+    labelWidth: 120,
     baseColProps: { span: 24 },
   });
   //租户
