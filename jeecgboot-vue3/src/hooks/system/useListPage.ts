@@ -311,8 +311,11 @@ export function useListTable(tableProps: TableProps): [
     actionColumn: {
       width: 120,
       title: '操作',
-      //是否锁定操作列取值 right ,left,false
-      fixed: false,
+      // UI Redesign: 默认锁定到右侧，避免多列窄表格挤压成 "编辑 …"。
+      // 取值 'right' / 'left' / false（不锁定）。业务页面可在自己的
+      // useListPage tableProps 里覆盖回 false。
+      fixed: 'right',
+      align: 'center',
       dataIndex: 'action',
       slots: { customRender: 'action' },
     },

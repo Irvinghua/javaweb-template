@@ -34,7 +34,7 @@ export const columns: BasicColumn[] = [
   {
     title: '图标',
     dataIndex: 'icon',
-    width: 50,
+    width: 70,
     customRender: ({ record }) => {
       return h(Icon, { icon: record.icon });
     },
@@ -43,18 +43,18 @@ export const columns: BasicColumn[] = [
     title: '组件',
     dataIndex: 'component',
     align: 'left',
-    width: 150,
+    width: 180,
   },
   {
     title: '路径',
     dataIndex: 'url',
     align: 'left',
-    width: 150,
+    width: 180,
   },
   {
     title: '排序',
     dataIndex: 'sortNo',
-    width: 50,
+    width: 80,
   },
 ];
 

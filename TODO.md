@@ -22,22 +22,24 @@ hold 住，未发现破坏性回归。
 
 ## 待处理
 
-### A. 多列窄表格 操作列空间不足（**UI 微调**）
+### A. 多列窄表格 操作列空间不足（**UI 微调**）— ✅ 已处理
 
 **现象**：列数较多的表格在默认列宽下，最右"操作"列被挤压。
 - 用户管理 10 列：操作列只剩 `编辑 ⋯`（"删除/详情/冻结"等折叠到 `⋯`，但展开按钮也很挤）
 - 菜单管理 7 列：操作列 + "排序" 列头都被截断（显示 `排…` / `编辑 ⋯`）
 
-**根因**：antd `Table` 默认每列均分剩余宽度，未对操作列设置固定宽度或 `fixed: 'right'`。
-旧版同样存在，不是本次重构引入。但既然要做收口，建议：
+**根因 + 处理**：
 
-1. 抽样表格 columns 配置补 `width: 120`（操作列）、`fixed: 'right'`；
-2. 关键列（如菜单名称、用户姓名）补 `minWidth: 140`；
-3. 整体走表格水平滚动条而不是挤压（已在 Task 6 阶段把 `.ant-table-body` 改成 `overflow-x: auto`，配套即可）。
+1. **真正的源头**在 `src/hooks/system/useListPage.ts` 默认 `actionColumn.fixed: false`
+   ——每个调 useListPage 的页面都拿到这个默认值。已改成 `fixed: 'right'` + `align: 'center'`。
+2. 加固在 `src/components/Table/src/hooks/useColumns.ts handleActionColumn`，
+   即使外部不传 `actionColumn.fixed`，默认也会注入 `fixed: 'right'`。
+3. 菜单管理 columns（`menu.data.ts`）的"图标 50 / 排序 50 / 组件 150 / 路径 150"
+   过窄，已调整为"图标 70 / 排序 80 / 组件 180 / 路径 180"。
 
-**优先级**：P2 — 影响体验，不影响功能。
+效果：操作列锁定在右侧、阴影提示，菜单/用户/角色/字典/职务等系统页统一受益。
 
-### B. 残留种子数据（**DB 数据清理，不属本 UI 任务**）
+### B. 残留种子数据（**DB 数据清理**）— ✅ 已处理
 
 裁剪了 AI / Online / JimuReport 模块代码后，数据库 seed 里还有引用：
 
@@ -46,12 +48,20 @@ hold 住，未发现破坏性回归。
 - `/system/notice` 列表里 "【重磅】JimuReport积木报表v2.0版本发布"、
   "JeecgBootv3.8.2 Online专项升级来袭，引领AI低代码平台新时代～" 等
 
-**根因**：种子 SQL（`db/*.sql` 或对应 mybatis-plus 初始化数据）里还有这些行。
+**处理**：新增 flyway 迁移
+`jeecg-boot/.../flyway/sql/mysql/V3.9.3_0__remove_ai_jimureport_seeds.sql`，
+内容包括：
 
-**处理**：跟模板裁剪一并交给后端 / 数据库初始化脚本，前端只是"显示出来了"。
-新仓库 fork 后第一次 init DB 前清掉对应行即可。
+- 删除 AI 字典定义（dict_code='ai_app_type'/'know_doc_type'/'model_type'/'model_provider'）
+  及其 dict_item；
+- 删除 AI 应用角色（role_code='aiadmin'）+ 角色关联 + 用户关联；
+- 删除 AI / OpenAPI 残留菜单权限（url/component 匹配 super/airag / dashboard/ai /
+  super/aiapp / views/openapi）+ 角色关联；
+- 删除 JimuReport / 积木报表 / Online 关键字的 sys_announcement 行 + 对应 send 记录；
+- 清理 sys_table_white_list 中残留的 ai_/airag_/jimu_ 表行。
 
-**优先级**：P3 — 仅是历史数据展示，不影响新 fork 项目的真实使用。
+迁移会在下次启动 jeecg-boot 时自动执行（位于 `src/main/resources/flyway/sql/mysql/`），
+覆盖既有数据库的清理 + 新 fork DB 初始化后的清理（fresh dump 里 V3.9.0~V3.9.3 全跑一遍）。
 
 ### C. 未抽查的页面（**Task 10 端到端再过一遍即可**）
 
