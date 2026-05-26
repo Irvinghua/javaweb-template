@@ -5,6 +5,25 @@
 // =============================================================
 
 // -------------------------------------------------------
+// == 〇、遮罩层（毛玻璃 frosted glass）
+// == 设计稿 .dlg-overlay / .drawer-overlay：
+// ==   background: rgba(15, 23, 42, .45)
+// ==   backdrop-filter: blur(6px)
+// == antd 默认是纯色 rgba(0,0,0,.45)，需要叠加 backdrop-filter
+// == 才能让弹窗背后内容呈毛玻璃质感。
+// ==
+// == 兼容性：backdrop-filter Safari 需要 -webkit- 前缀；旧浏览器无前缀时
+// == 自动退化为纯色遮罩（用户体验略降但不破坏功能）。
+// -------------------------------------------------------
+.ant-modal-mask,
+.ant-drawer-mask,
+.ant-image-preview-mask {
+  background: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+}
+
+// -------------------------------------------------------
 // == 一、Modal 整体容器
 // -------------------------------------------------------
 .ant-modal {
@@ -14,11 +33,6 @@
     box-shadow: 0 24px 64px -12px rgba(15, 23, 42, 0.28), 0 8px 24px rgba(15, 23, 42, 0.12);
     padding: 0;
     overflow: hidden;
-  }
-
-  // 遮罩动画：与设计稿 dlg-pop 一致
-  &-root .ant-modal-wrap {
-    // 使用 AntD 默认遮罩，但加上模糊效果
   }
 
   // -------------------------------------------------------
