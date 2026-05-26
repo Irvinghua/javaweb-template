@@ -509,7 +509,9 @@
 
       .ant-table-title {
         min-height: 40px;
-        padding: 0 0 8px 0 !important;
+        // UI Redesign: 按钮行（含 alert-wrap）→ 表格顶部的间距统一 14px，
+        // 对齐设计稿 .panel { gap: 14px }（jeecg-page.css）
+        padding: 0 0 14px 0 !important;
       }
 
       .ant-table.ant-table-bordered .ant-table-title {

@@ -127,7 +127,10 @@
     }
 
     &__alert-wrap {
-      margin-top: 10px;
+      // UI Redesign: 按钮行 → alert（文字提示）间距统一 14px，与按钮行 → 表格顶部一致
+      // (.ant-table-title padding-bottom 14px 是 alert 行 → 表格顶部的间距，
+      //  两个 14px 配合就保证 "有 alert" 和 "无 alert" 两种情形下视觉一致)
+      margin-top: 14px;
     }
 
     @media (max-width: @screen-lg) {

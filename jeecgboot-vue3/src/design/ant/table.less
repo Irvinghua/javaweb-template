@@ -163,7 +163,8 @@
   border-radius: 18px !important;
   box-shadow: var(--shadow-card) !important;
   padding: 16px 20px 18px !important;
-  overflow: hidden !important; /* 让 thead 灰底跟 card 圆角自动剪裁齐平；避免内部滚动条溢出 */
+  // overflow: hidden 让 thead 灰底跟 card 圆角剪裁齐平；body 内部有自己的纵向滚动（见 3d）
+  overflow: hidden !important;
 }
 
 /* 3a) toolbar 取消自带 padding，让 card padding 接管 */
@@ -183,14 +184,16 @@
   margin: 14px 0 0 !important;
 }
 
-/* 3d) 表格滚动 —— 横向超宽时显示 H-scrollbar；纵向不预留 V-scrollbar 槽
-      （AntD 在 scroll.y 模式给 .ant-table-body 留 V-scrollbar 槽 → body 比 header 窄出现右侧空隙；
-       这里允许横向滚动但抑制纵向预留） */
+/* 3d) 表格滚动 —— 让 antd 的 body 内部纵向滚动正常工作。
+      之前写 overflow-y: hidden 是为了消除右侧空隙，结果把 tbody 内容直接裁掉，
+      page size = 50 时只显示前几行且没有滚动条（用户提的 bug）。
+      改回 overflow-y: auto，让 antd 自动算的 body max-height 配合 tbody 内容显示滚动条；
+      横向用 auto（超宽时出现 H-scrollbar）。 */
 .jeecg-basic-table .ant-table-wrapper .ant-table-container,
 .jeecg-basic-table .ant-table-wrapper .ant-table-content,
 .jeecg-basic-table .ant-table-wrapper .ant-table-body {
   overflow-x: auto !important;
-  overflow-y: hidden !important;
+  overflow-y: auto !important;
   scrollbar-gutter: auto !important;
 }
 
