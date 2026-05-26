@@ -16,3 +16,10 @@ derby.log
 .cursor
 .history
 .claude
+
+## macOS
+.DS_Store
+**/.DS_Store
+
+## 仓库根目录的截图（UI 重构验证产物，不入库）
+/*.png
