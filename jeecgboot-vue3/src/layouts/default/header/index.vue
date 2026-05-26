@@ -1,44 +1,38 @@
 <template>
-  <Header :class="getHeaderClass">
-    <!-- left start -->
-    <div :class="`${prefixCls}-left`">
-      <!-- logo -->
-      <AppLogo v-if="getShowHeaderLogo || getIsMobile" :class="`${prefixCls}-logo`" :theme="getHeaderTheme" :style="getLogoWidth" />
+  <Header :class="[getHeaderClass, 'header-block']">
+    <!-- Main topbar row -->
+    <div class="header-main-row">
+      <!-- Mobile: sidebar trigger (tabs row is not shown on mobile) -->
       <LayoutTrigger
-        v-if="(getShowContent && getShowHeaderTrigger && !getSplit && !getIsMixSidebar) || getIsMobile"
+        v-if="getIsMobile"
         :theme="getHeaderTheme"
         :sider="false"
       />
-      <LayoutBreadcrumb v-if="getShowContent && getShowBread" :theme="getHeaderTheme" />
-      <!-- 欢迎语 -->
-      <span v-if="getShowContent && getShowBreadTitle && !getIsMobile" :class="[prefixCls, `${prefixCls}--${getHeaderTheme}`,'headerIntroductionClass']"> {{t('layout.header.welcomeIn')}} {{ title }} </span>
+
+      <!-- Tabs strip (flex-grows, contains collapse toggle as leftmost element) -->
+      <MultipleTabs v-if="!getIsMobile" class="header-tabs-slot" />
+
+      <!-- action  -->
+      <div :class="`${prefixCls}-action`">
+        <AppSearch :class="`${prefixCls}-action__item `" v-if="getShowSearch" />
+
+        <ErrorAction v-if="getUseErrorHandle" :class="`${prefixCls}-action__item error-action`" />
+
+        <Notify v-if="getShowNotice" :class="`${prefixCls}-action__item notify-item`" />
+
+        <FullScreen v-if="getShowFullScreen" :class="`${prefixCls}-action__item fullscreen-item`" />
+
+        <LockScreen v-if="getUseLockPage" />
+
+        <AppLocalePicker v-if="getShowLocalePicker" :reload="true" :showText="false" :class="`${prefixCls}-action__item`" />
+
+        <div class="top-divider"></div>
+
+        <UserDropDown :theme="getHeaderTheme" />
+      </div>
     </div>
-    <!-- left end -->
-
-    <!-- menu start -->
-    <div :class="`${prefixCls}-menu`" v-if="getShowTopMenu && !getIsMobile">
-      <LayoutMenu :isHorizontal="true" :theme="getHeaderTheme" :splitType="getSplitType" :menuMode="getMenuMode" />
-    </div>
-    <!-- menu-end -->
-
-    <!-- action  -->
-    <div :class="`${prefixCls}-action`">
-      <AppSearch :class="`${prefixCls}-action__item `" v-if="getShowSearch" />
-
-      <ErrorAction v-if="getUseErrorHandle" :class="`${prefixCls}-action__item error-action`" />
-
-      <Notify v-if="getShowNotice" :class="`${prefixCls}-action__item notify-item`" />
-
-      <FullScreen v-if="getShowFullScreen" :class="`${prefixCls}-action__item fullscreen-item`" />
-
-      <LockScreen v-if="getUseLockPage" />
-
-      <AppLocalePicker v-if="getShowLocalePicker" :reload="true" :showText="false" :class="`${prefixCls}-action__item`" />
-
-      <UserDropDown :theme="getHeaderTheme" />
-
-      <SettingDrawer v-if="getShowSetting" :class="`${prefixCls}-action__item`" />
-    </div>
+    <!-- Breadcrumb strip -->
+    <LayoutBreadcrumb v-if="!getIsMobile" :theme="getHeaderTheme" />
   </Header>
   <LoginSelect ref="loginSelectRef" @success="loginSelectOk"></LoginSelect>
 </template>
@@ -48,9 +42,8 @@
   import { propTypes } from '/@/utils/propTypes';
 
   import { Layout } from 'ant-design-vue';
-  import { AppLogo } from '/@/components/Application';
-  import LayoutMenu from '../menu/index.vue';
   import LayoutTrigger from '../trigger/index.vue';
+  import MultipleTabs from '../tabs/index.vue';
 
   import { AppSearch } from '/@/components/Application';
 
@@ -62,7 +55,8 @@
   import { SettingButtonPositionEnum } from '/@/enums/appEnum';
   import { AppLocalePicker } from '/@/components/Application';
 
-  import { UserDropDown, LayoutBreadcrumb, FullScreen, Notify, ErrorAction, LockScreen } from './components';
+  import { UserDropDown, FullScreen, Notify, ErrorAction, LockScreen } from './components';
+  import LayoutBreadcrumb from './components/Breadcrumb.vue';
   import { useAppInject } from '/@/hooks/web/useAppInject';
   import { useDesign } from '/@/hooks/web/useDesign';
 
@@ -78,10 +72,8 @@
     name: 'LayoutHeader',
     components: {
       Header: Layout.Header,
-      AppLogo,
       LayoutTrigger,
-      LayoutBreadcrumb,
-      LayoutMenu,
+      MultipleTabs,
       UserDropDown,
       AppLocalePicker,
       FullScreen,
@@ -90,6 +82,7 @@
       ErrorAction,
       LockScreen,
       LoginSelect,
+      LayoutBreadcrumb,
       SettingDrawer: createAsyncComponent(() => import('/@/layouts/default/setting/index.vue'), {
         loading: true,
       }),
@@ -185,30 +178,18 @@
       return {
         prefixCls,
         getHeaderClass,
-        getShowHeaderLogo,
         getHeaderTheme,
         getShowHeaderTrigger,
         getIsMobile,
-        getShowBreadTitle,
-        getShowBread,
-        getShowContent,
-        getSplitType,
-        getSplit,
-        getMenuMode,
-        getShowTopMenu,
         getShowLocalePicker,
         getShowFullScreen,
         getShowNotice,
         getUseErrorHandle,
-        getLogoWidth,
-        getIsMixSidebar,
-        getShowSettingButton,
         getShowSetting,
         getShowSearch,
         getUseLockPage,
         loginSelectOk,
         loginSelectRef,
-        title,
         t,
       };
     },
@@ -216,32 +197,42 @@
 </script>
 <style lang="less">
   @import './index.less';
-  //顶部欢迎语展示样式
   @prefix-cls: ~'@{namespace}-layout-header';
 
   .ant-layout .@{prefix-cls} {
-    display: flex;
-    padding: 0 8px;
-    // 代码逻辑说明: 【QQYUN-8762】顶栏高度
-    height: @header-height;
-    align-items: center;
+    display: block;
+    padding: 0;
+    height: auto;
+    align-items: unset;
+    gap: unset;
+
+    // Main row inside the block header
+    .header-main-row {
+      display: flex;
+      padding: 0 16px 0 8px;
+      height: @header-height;
+      align-items: center;
+      gap: 8px;
+    }
 
     .headerIntroductionClass {
       margin-right: 4px;
       margin-bottom: 2px;
-      border-bottom: 0px;
-      border-left: 0px;
+      border-bottom: 0;
+      border-left: 0;
+      font-size: 13px;
+      color: var(--ink-500);
     }
 
     &--light {
       .headerIntroductionClass {
-        color: #000;
+        color: var(--ink-500);
       }
     }
 
     &--dark {
       .headerIntroductionClass {
-        color: rgba(255, 255, 255, 1);
+        color: rgba(255, 255, 255, 0.8);
       }
       .anticon, .truncate {
         color: rgba(255, 255, 255, 1);

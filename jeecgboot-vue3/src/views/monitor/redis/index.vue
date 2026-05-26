@@ -32,10 +32,19 @@
   const loading = ref(false);
   let timer = null;
   const { createMessage } = useMessage();
+  // UI Redesign: 趋势图按设计稿重做
+  // - 折线由 10px 粗实线 → 2px 细线 + smooth
+  // - 区域填充由纯色 → 上深下浅纵向渐变 (top 0.32 → bottom 0.02)
+  // - 折点适度缩小，hover 才高亮，避免一堆大圆点遮挡线
   const key = reactive({
     title: {
       text: 'Redis Key 实时数量（个）',
+      left: 12,
+      top: 8,
+      textStyle: { fontSize: 13, fontWeight: 600 },
     },
+    grid: { left: 40, right: 24, top: 48, bottom: 32 },
+    tooltip: { trigger: 'axis' },
     xAxis: {
       type: 'category',
       boundaryGap: false,
@@ -48,13 +57,25 @@
       {
         data: [],
         type: 'line',
-        areaStyle: {
-          color: '#ff6987',
-        },
+        smooth: true,
+        showSymbol: false,
         lineStyle: {
-          color: '#dc143c',
-          width: 10,
+          color: '#DC2626',
+          width: 2,
           type: 'solid',
+        },
+        itemStyle: {
+          color: '#DC2626',
+        },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: 'rgba(220, 38, 38, 0.32)' },
+              { offset: 1, color: 'rgba(220, 38, 38, 0.02)' },
+            ],
+          },
         },
       },
     ],
@@ -62,7 +83,12 @@
   const memory = reactive({
     title: {
       text: 'Redis 内存实时占用情况（KB）',
+      left: 12,
+      top: 8,
+      textStyle: { fontSize: 13, fontWeight: 600 },
     },
+    grid: { left: 50, right: 24, top: 48, bottom: 32 },
+    tooltip: { trigger: 'axis' },
     xAxis: {
       type: 'category',
       boundaryGap: false,
@@ -75,13 +101,25 @@
       {
         data: [],
         type: 'line',
-        areaStyle: {
-          color: '#74bcff',
-        },
+        smooth: true,
+        showSymbol: false,
         lineStyle: {
-          color: '#1890ff',
-          width: 10,
+          color: '#5B6CFF',
+          width: 2,
           type: 'solid',
+        },
+        itemStyle: {
+          color: '#5B6CFF',
+        },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: 'rgba(91, 108, 255, 0.32)' },
+              { offset: 1, color: 'rgba(91, 108, 255, 0.02)' },
+            ],
+          },
         },
       },
     ],

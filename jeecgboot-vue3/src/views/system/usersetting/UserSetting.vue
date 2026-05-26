@@ -1,179 +1,202 @@
+<!--
+  账户设置（个人信息中心）外壳
+  UI Redesign: 按 jeecgboot-ui/pages/profile.html 重做布局：
+    - 左侧 232px 子菜单（.profile-sidenav，sticky，rounded button + brand-50 active）
+    - 右侧 .profile-content 区，动态渲染 BaseSetting / TenantSetting / AccountSetting / WeChatDingSetting
+  业务逻辑（settingList 来源、组件切换 activeKey、tenantSetting 自动定位）完全保留。
+-->
 <template>
   <ScrollContainer>
-    <div ref="wrapperRef" class="user-account-setting" :class="[prefixCls]">
-      <Tabs tab-position="left" :tabBarStyle="tabBarStyle" @tabClick="componentClick" v-model:activeKey="activeKey">
+    <div class="profile-layout" :class="prefixCls">
+      <!-- ===== 左侧子菜单 ===== -->
+      <aside class="profile-sidenav" role="tablist" aria-label="个人信息中心">
+        <button
+          v-for="item in componentList"
+          :key="item.key"
+          class="pn-item"
+          :class="{ active: activeKey === item.key }"
+          role="tab"
+          :aria-selected="activeKey === item.key"
+          @click="componentClick(item.key)"
+        >
+          <Icon :icon="item.icon" :size="18" />
+          <span>{{ item.name }}</span>
+        </button>
+      </aside>
+
+      <!-- ===== 右侧内容区 ===== -->
+      <div class="profile-content">
         <template v-for="item in componentList" :key="item.key">
-          <TabPane>
-            <template #tab>
-                <span style="display:flex;align-items: center;cursor: pointer">
-                  <!--<Icon :icon="item.icon" class="icon-font-color"/>-->
-                  <span style="width: 30px">
-                    <img v-if="activeKey === item.key || isDark" :src="item.img2" style="height: 18px"/>
-                    <img v-else :src="item.img1" style="height: 16px"/>
-                  </span>
-                  {{item.name}}
-                </span>
-            </template>
-            <component :is="item.component" v-if="activeKey === item.key && !item.isSlot" />
-            <slot name="component" v-if="activeKey === item.key && item.isSlot" />
-          </TabPane>
+          <template v-if="activeKey === item.key">
+            <component :is="item.component" v-if="!item.isSlot" />
+            <slot name="component" v-if="item.isSlot" />
+          </template>
         </template>
-      </Tabs>
+      </div>
     </div>
   </ScrollContainer>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted, provide, computed } from "vue";
-import { Tabs } from "ant-design-vue";
-import { ScrollContainer } from "/@/components/Container";
-import { settingList } from "./UserSetting.data";
-import BaseSetting from "./BaseSetting.vue";
-import AccountSetting from "./AccountSetting.vue";
-import TenantSetting from "./TenantSetting.vue";
-import WeChatDingSetting from './WeChatDingSetting.vue';
-import { useRouter } from "vue-router";
-import { useDesign } from '/@/hooks/web/useDesign';
-import {useRootSetting} from "/@/hooks/setting/useRootSetting";
-import {ThemeEnum} from "/@/enums/appEnum";
-export default defineComponent({
-  components: {
-    ScrollContainer,
-    Tabs,
-    TabPane: Tabs.TabPane,
-    BaseSetting,
-    AccountSetting,
-    TenantSetting,
-    WeChatDingSetting,
-  },
-  props:{
-    componentList:{
-      type:Array,
-      default:settingList
-    }
-  },
-  setup() {
-    const { prefixCls } = useDesign('user-account-setting-container');
-    const { getDarkMode} = useRootSetting();
-    const isDark = computed(() => getDarkMode.value === ThemeEnum.DARK);
-    const activeKey = ref<string>('1');
-    //是否为vip
-    const showVip = ref<boolean>(false);
-    //vip编码
-    const vipCode = ref<string>('');
-    const router = useRouter();
-    const componentList = computed(()=>{
-      if(showVip.value){
-        return settingList;
-      }
-      return settingList.filter((item)=> item.component != 'MyVipSetting');
-    })
+  import { ref, defineComponent, onMounted, computed } from 'vue';
+  import { ScrollContainer } from '/@/components/Container';
+  import { Icon } from '/@/components/Icon';
+  import { settingList } from './UserSetting.data';
+  import BaseSetting from './BaseSetting.vue';
+  import AccountSetting from './AccountSetting.vue';
+  import TenantSetting from './TenantSetting.vue';
+  import WeChatDingSetting from './WeChatDingSetting.vue';
+  import { useRouter } from 'vue-router';
+  import { useDesign } from '/@/hooks/web/useDesign';
 
-    /**
-     * 组件标题点击事件,解决第二次不加载数据
-     * @param key
-     */
-    function componentClick(key) {
-      activeKey.value = key;
-    }
-
-    function goToMyTeantPage(){
-      //update-begin---author:wangshuai ---date:20230721  for：【QQYUN-5726】邀请加入租户加个按钮直接跳转过去------------
-      //如果请求参数包含我的租户，直接跳转过去
-      let query = router.currentRoute.value.query;
-      if(query && query.page === 'tenantSetting'){
-        activeKey.value = "2";
-      }
-      //update-end---author:wangshuai ---date:20230721  for：【QQYUN-5726】邀请加入租户加个按钮直接跳转过去------------
-    }
-    
-    onMounted(()=>{
-      goToMyTeantPage();
-    })
-    
-    return {
-      prefixCls,
-      settingList,
-      tabBarStyle: {
-        width: "220px",
-        marginBottom: "200px"
+  export default defineComponent({
+    components: {
+      ScrollContainer,
+      Icon,
+      BaseSetting,
+      AccountSetting,
+      TenantSetting,
+      WeChatDingSetting,
+    },
+    props: {
+      componentList: {
+        type: Array,
+        default: settingList,
       },
-      componentClick,
-      activeKey,
-      isDark
-    };
-  }
-});
+    },
+    setup() {
+      const { prefixCls } = useDesign('user-account-setting-container');
+      const activeKey = ref<string>('1');
+      // 是否为 vip（保留旧逻辑，当前没有 vip 套餐时过滤掉 MyVipSetting）
+      const showVip = ref<boolean>(false);
+      const router = useRouter();
+      const componentList = computed(() => {
+        if (showVip.value) {
+          return settingList;
+        }
+        return settingList.filter((item) => item.component != 'MyVipSetting');
+      });
+
+      function componentClick(key) {
+        activeKey.value = key;
+      }
+
+      function goToMyTeantPage() {
+        // 代码逻辑说明: 【QQYUN-5726】邀请加入租户加个按钮直接跳转过去
+        const query = router.currentRoute.value.query;
+        if (query && query.page === 'tenantSetting') {
+          activeKey.value = '2';
+        }
+      }
+
+      onMounted(() => {
+        goToMyTeantPage();
+      });
+
+      return {
+        prefixCls,
+        componentList,
+        componentClick,
+        activeKey,
+      };
+    },
+  });
 </script>
+
 <style lang="less" scoped>
-.user-account-setting {
-  margin: 20px;
-
-  .base-title {
-    padding-left: 0;
+  // ----------------------------------------------------
+  // UI Redesign: 设计稿 profile.html .profile-layout
+  // ----------------------------------------------------
+  .profile-layout {
+    display: grid;
+    grid-template-columns: 232px 1fr;
+    gap: 16px;
+    align-items: start;
+    padding: 22px 24px;
   }
 
-  //tabs弹窗左边样式
-  :deep(.ant-tabs-nav){
-    height: 260px;
+  // 左侧子菜单 ----------------------------------------------
+  .profile-sidenav {
+    background: var(--surface, #fff);
+    border-radius: var(--radius-card, 18px);
+    box-shadow: var(--shadow-card, 0 2px 12px rgba(15, 23, 42, 0.05));
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: sticky;
+    top: 22px;
   }
-  //tabs弹窗右边边样式
-  :deep(.ant-tabs-content-holder){
-    position: relative;
-    left: 12px;
-    height: auto !important;
-  }
-}
-//tab点击样式
-:deep(.ant-tabs-tab-active){
-  border-radius: 0 20px 20px 0;
-  background-color: #1294f7!important;
-  color: #fff!important;
-  .icon-font-color{
-    color: #fff;
-  }
-}
-:deep(.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn){
-  color: white !important;
-}
-:deep(.ant-tabs-ink-bar){
-  visibility: hidden;
-}
-:deep(.ant-tabs-nav-list){
-  padding-top:14px;
-  padding-right:14px;
-}
 
-.vip-height{
-  //tabs弹窗左边样式
-  :deep(.ant-tabs-nav){
-    height: 310px !important;
-  }
-}
-.vip-background{
-  :deep(.ant-tabs-content-holder){
+  .pn-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    color: var(--ink-700);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 0;
     background: transparent;
-  }
-  :deep(.ant-tabs-tabpane){
-    padding-left: 0 !important;
-  }
-}
-</style>
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    transition: background-color 0.16s ease, color 0.16s ease;
 
-<style lang="less">
-@prefix-cls: ~'@{namespace}-user-account-setting-container';
+    .app-iconify,
+    :deep(.app-iconify) {
+      color: var(--ink-500);
+      flex-shrink: 0;
+    }
 
-.@{prefix-cls} {
-  .ant-tabs-tab-active {
-    background-color: @item-active-bg;
+    &:hover {
+      background: var(--surface-2, #f7f8fb);
+      color: var(--ink-900);
+
+      .app-iconify,
+      :deep(.app-iconify) {
+        color: var(--ink-700);
+      }
+    }
+
+    &.active {
+      background: var(--accent-50, rgba(91, 108, 255, 0.08));
+      color: var(--accent-600, #4f5edb);
+      font-weight: 600;
+
+      .app-iconify,
+      :deep(.app-iconify) {
+        color: var(--accent, #5b6cff);
+      }
+    }
   }
-  //tabs弹窗左边样式
- .ant-tabs-nav{
-    background-color: @component-background;
+
+  // 右侧内容区 ----------------------------------------------
+  .profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
   }
-  //tabs弹窗右边边样式
-  .ant-tabs-content-holder{
-    background: @component-background;
+
+  // 响应式：窄屏左导航横向滚动
+  @media (max-width: 960px) {
+    .profile-layout {
+      grid-template-columns: 1fr;
+    }
+    .profile-sidenav {
+      flex-direction: row;
+      overflow-x: auto;
+      position: static;
+      padding: 8px;
+      gap: 4px;
+    }
+    .pn-item {
+      flex-shrink: 0;
+      width: auto;
+      padding: 9px 14px;
+    }
   }
-}
 </style>

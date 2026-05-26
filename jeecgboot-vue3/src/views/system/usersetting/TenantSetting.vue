@@ -1,94 +1,113 @@
+<!--
+  UI Redesign: 我的组织 (Tenant Setting)
+  按 profile.html "Tab 2：我的组织" 设计稿重做：
+    .tenant-redesign 外层
+    .org-tile-list 列表，每项 .org-tile (rounded card with hover lift)
+      .org-tile-head：org-tile-logo (gradient square) + org-tile-title (name + tag + houseNumber + copy) + status + toggle
+      .org-tile-body (展开)：.org-card-block 组织名片 + .org-tile-foot 操作按钮
+  业务逻辑（drownClick / copyClick / cancelApplyClick / joinOrRefuseClick / footerClick / 各弹窗）保持不变
+-->
 <template>
-  <div class="tenant-padding" :class="[`${prefixCls}`]">
-    <div class="my-tenant">
-      <span style="flex: 1">我的组织</span>
-      <span class="invited" @click="invitedClick">我的受邀信息<span class="approved-count" v-if="invitedCount>0">{{invitedCount}}</span></span>
-    </div>
-    <div class="tenant-list" v-if="dataSource.length>0">
-      <div v-for="item in dataSource" class="tenant-list-item" @click="drownClick(item)">
-        <div class="tenant-title">
-          <div class="item-left">
-            <div class="item-name">{{ item.name }}</div>
-            <div class="vip-message">
-              <div class="item-house" @click.stop="copyClick(item.houseNumber)">
-                <span>
-                  组织门牌号：{{ item.houseNumber }}
-                  <Icon icon="ant-design:copy-outlined" style="font-size: 13px; margin-left: 2px" />
+  <div :class="[`${prefixCls}`, 'tenant-redesign']">
+    <div class="card org-card">
+      <div class="org-card-head">
+        <h2>我的组织</h2>
+        <span class="spacer"></span>
+        <span class="invited-trigger" @click="invitedClick">
+          <Icon icon="ant-design:mail-outlined" :size="14" />
+          我的受邀信息
+          <span class="approved-count" v-if="invitedCount > 0">{{ invitedCount }}</span>
+        </span>
+      </div>
+
+      <div class="org-tile-list" v-if="dataSource.length > 0">
+        <div
+          v-for="item in dataSource"
+          :key="item.tenantUserId"
+          class="org-tile"
+          :class="{ open: item.show }"
+        >
+          <div class="org-tile-head" @click="drownClick(item)">
+            <div class="org-tile-logo">{{ getInitial(item.name) }}</div>
+            <div class="org-tile-title">
+              <div class="name">
+                <span class="name-text">{{ item.name }}</span>
+                <span class="tag tag-blue" v-if="item.userTenantStatus === '3'">待审核</span>
+                <span class="tag tag-orange" v-else-if="item.userTenantStatus === '5'">受邀</span>
+              </div>
+              <div class="id-line" v-if="item.houseNumber">
+                <span>组织门牌号：{{ item.houseNumber }}</span>
+                <span class="copy" @click.stop="copyClick(item.houseNumber)" title="复制门牌号">
+                  <Icon icon="ant-design:copy-outlined" :size="13" />
                 </span>
               </div>
             </div>
+
+            <!-- 状态操作区 -->
+            <div class="org-tile-actions" @click.stop>
+              <template v-if="item.userTenantStatus === '3'">
+                <a class="link-action danger" @click="cancelApplyClick(item.tenantUserId)">取消申请</a>
+              </template>
+              <template v-else-if="item.userTenantStatus === '5'">
+                <a class="link-action" @click="joinOrRefuseClick(item.tenantUserId, '1')">加入</a>
+                <a class="link-action danger" @click="joinOrRefuseClick(item.tenantUserId, '4')">拒绝</a>
+              </template>
+            </div>
+
+            <button class="org-tile-toggle" aria-label="展开">
+              <Icon icon="ant-design:down-outlined" :size="14" />
+            </button>
           </div>
-          <div class="item-right">
-            <span v-if="item.userTenantStatus === '3'">
-              <span class="pointer examine">待审核</span>
-              <span class="pointer cancel-apply" @click.stop="cancelApplyClick(item.tenantUserId)">取消申请</span>
-            </span>
-            <span v-else-if="item.userTenantStatus === '5'">
-              <span class="pointer examine" @click="joinOrRefuseClick(item.tenantUserId,'1')">加入</span>
-              <span class="pointer cancel-apply" @click.stop="joinOrRefuseClick(item.tenantUserId,'4')">拒绝</span>
-            </span>
-            <div v-else style="width: 75px"></div>
-            <span style="margin-left: 24px">
-              <Icon v-if="item.show" icon="ant-design:down-outlined" style="font-size: 13px; color: #707070" />
-              <Icon v-else icon="ant-design:right-outlined" style="font-size: 13px; color: #707070" />
-            </span>
-          </div>
-        </div>
-        <div class="item-content" v-show="item.show">
-          <div class="content-box">
-            <div class="content-name"> 组织名片 </div>
-            <div class="content-desc">
-              <div class="flex-flow">
-                <div class="content-des-text">姓名</div>
-                <div style="font-size: 13px;color: #000000">
-                  {{ userDetail.realname }}
+
+          <div class="org-tile-body">
+            <div class="otb-inner">
+              <div class="org-card-block">
+                <div class="card-key">组织名片</div>
+                <div class="rows">
+                  <div class="row">
+                    <span class="label">姓名</span>
+                    <span class="value">{{ userDetail.realname }}</span>
+                  </div>
+                  <div class="row">
+                    <span class="label">部门</span>
+                    <span class="value" :class="{ empty: !userDetail.orgCodeTxt }">
+                      {{ userDetail.orgCodeTxt || '未填写' }}
+                    </span>
+                  </div>
+                  <div class="row">
+                    <span class="label">职位</span>
+                    <span class="value" :class="{ empty: !userDetail.postText }">
+                      {{ userDetail.postText || '未填写' }}
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div class="flex-flow">
-                <div class="content-des-text">部门</div>
-                <div style="font-size: 13px">
-                  {{ userDetail.orgCodeTxt ? userDetail.orgCodeTxt : '未填写' }}
-                </div>
-              </div>
-              <div class="flex-flow">
-                <div class="content-des-text">职业</div>
-                <div style="font-size: 13px">
-                  {{ userDetail.postText ? userDetail.postText : '未填写' }}
-                </div>
+              <div class="org-tile-foot">
+                <button
+                  class="link-btn-2"
+                  :disabled="item.userTenantStatus === '3'"
+                  @click="footerClick('editTenant', item)"
+                >
+                  <Icon icon="ant-design:idcard-outlined" :size="14" />
+                  <span>查看租户名片</span>
+                </button>
+                <button
+                  class="link-btn-2 danger"
+                  :disabled="item.userTenantStatus === '3'"
+                  @click="footerClick('exitTenant', item)"
+                >
+                  <Icon icon="ant-design:export-outlined" :size="14" />
+                  <span>退出租户</span>
+                </button>
               </div>
             </div>
           </div>
-          <div class="footer-box">
-            <span
-              v-if="item.userTenantStatus !== '3'"
-              @click.stop="footerClick('editTenant', item)"
-              class="font-color333 flex-center margin-right40 font-size13 pointer"
-            >
-              <Icon icon="ant-design:edit-outlined" class="footer-icon" />
-              <span>查看租户名片</span>
-            </span>
-            <span v-else class="font-color9e flex-center margin-right40 font-size13">
-              <Icon icon="ant-design:edit-outlined" class="footer-icon" />
-              <span>查看租户名片</span>
-            </span>
-            <span
-              v-if="item.userTenantStatus !== '3'"
-              @click.stop="footerClick('exitTenant', item)"
-              class="font-color333 flex-center margin-right40 font-size13 pointer"
-            >
-              <Icon icon="ant-design:export-outlined" class="footer-icon" />
-              <span>退出租户</span>
-            </span>
-            <span v-else class="font-color9e flex-center margin-right40 font-size13">
-              <Icon icon="ant-design:export-outlined" class="footer-icon" />
-              <span>退出租户</span>
-            </span>
-          </div>
         </div>
       </div>
+      <a-empty v-else description="暂无数据" style="padding: 60px 20px;" />
     </div>
-    <a-empty v-else description="暂无数据" style="position: relative;top: 50px;"/>
   </div>
+
   <a-modal v-model:open="tenantVisible" width="400px" wrapClassName="edit-tenant-setting">
     <template #title>
       <div style="font-size: 17px; font-weight: 700">查看名片</div>
@@ -162,7 +181,7 @@
         </a-row>
       </div>
   </a-modal>
-  
+
   <!-- begin 我的受邀信息 -->
   <a-modal title="我的受邀信息" v-model:open="invitedVisible" :footer="null">
       <a-row :span="24" class="invited-row">
@@ -191,16 +210,13 @@
 import { onMounted, ref, unref } from "vue";
 import { getTenantListByUserId, cancelApplyTenant, exitUserTenant, changeOwenUserTenant, agreeOrRefuseJoinTenant } from "./UserSetting.api";
 import { useUserStore } from "/@/store/modules/user";
-import { CollapseContainer } from "/@/components/Container";
-import { getFileAccessHttpUrl, userExitChangeLoginTenantId } from "/@/utils/common/compUtils";
-import headerImg from "/@/assets/images/header.jpg";
+import { userExitChangeLoginTenantId } from "/@/utils/common/compUtils";
 import {useMessage} from "/@/hooks/web/useMessage";
-import { initDictOptions } from '/@/utils/dict';
-import { uniqWith } from 'lodash-es';
 import { Modal } from 'ant-design-vue';
 import UserSelect from '/@/components/Form/src/jeecg/components/userSelect/index.vue';
 import {router} from "/@/router";
 import { useDesign } from '/@/hooks/web/useDesign';
+import { Icon } from '/@/components/Icon';
 
 const { prefixCls } = useDesign('j-user-tenant-setting-container');
 //数据源
@@ -216,12 +232,24 @@ const tenantVisible = ref<boolean>(false);
 //用户数据
 const userData = ref<any>([]);
 //用户
+// UserInfo 类型未声明 workNo / orgCodeTxt / postText，但运行时存在 — 走 any 跳过 TS 报错
+const userInfoAny: any = userStore.getUserInfo;
 const userDetail = ref({
-  realname: userStore.getUserInfo.realname,
-  workNo: userStore.getUserInfo.workNo,
-  orgCodeTxt: userStore.getUserInfo.orgCodeTxt,
-  postText: userStore.getUserInfo.postText,
+  realname: userInfoAny.realname,
+  workNo: userInfoAny.workNo,
+  orgCodeTxt: userInfoAny.orgCodeTxt,
+  postText: userInfoAny.postText,
 });
+
+/**
+ * 取组织名称首字符作为 logo 内容
+ */
+function getInitial(name: string): string {
+  if (!name) return '?';
+  const trimmed = name.trim();
+  return trimmed.charAt(0).toUpperCase();
+}
+
 /**
  * 初始化租户数据
  */
@@ -258,7 +286,7 @@ const userDetail = ref({
   function setInitedValue() {
     dataSource.value = [];
     invitedList.value = [];
-    invitedCount.value = 0;  
+    invitedCount.value = 0;
   }
 
   /**
@@ -318,23 +346,10 @@ const userDetail = ref({
   };
 
   /**
-   * 获取部门文本
-   * @param value
-   */
-  function getDepartText(value) {
-    let arr = departOptions.value.filter((item) => {
-      item.value == value;
-    });
-    if (arr && arr.length > 0) {
-      return arr[0].label;
-    }
-    return '未填写';
-  };
-
-  /**
    * 底部文本点击事件
    */
   function footerClick(type, item) {
+    if (item.userTenantStatus === '3') return;
     userData.value = item;
     //编辑组织名片
     if (type === 'editTenant') {
@@ -448,7 +463,7 @@ const userDetail = ref({
       }
     })
   }
-  
+
   //邀请数量
   const invitedCount = ref<number>(0);
   //受邀信息
@@ -478,215 +493,328 @@ const userDetail = ref({
 </script>
 
 <style lang="less" scoped>
-.tenant-padding{
-  padding: 30px 40px 0 20px;
-}
-.my-tenant{
-  display: flex;
-  font-size: 17px;
-  font-weight: 700!important;
-  /*begin 兼容暗夜模式*/
-  color: @text-color;
-  /*end 兼容暗夜模式*/
-  margin-bottom: 20px;
-  .invited{
-    font-size: 14px;
-    text-align: right;
-    cursor: pointer;
+  // ----------------------------------------------------
+  // UI Redesign: profile.html .org-card / .org-tile
+  // ----------------------------------------------------
+  .tenant-redesign {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
-}
-.tenant-list{
-  box-sizing: border-box;
-  flex: 1;
-  min-height: 0;
-  overflow-x: hidden;
-}
-.tenant-list-item{
-  /*begin 兼容暗夜模式*/
-  border: 1px solid @border-color-base;
-  /*end 兼容暗夜模式*/
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-  overflow: hidden;
-  padding: 0 25px;
-  width: 100%;
-  .item-name{
+
+  .card {
+    background: var(--surface, #fff);
+    border-radius: var(--radius-card, 18px);
+    box-shadow: var(--shadow-card, 0 2px 12px rgba(15, 23, 42, 0.05));
+    overflow: hidden;
+  }
+
+  .org-card-head {
+    display: flex;
     align-items: center;
-    box-sizing: border-box;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--line, rgba(15, 23, 42, 0.07));
+
+    h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-900);
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .invited-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--accent-600, #4f5edb);
+      cursor: pointer;
+      transition: opacity 0.15s;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+
+    .approved-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 9px;
+      background: #fde4e4;
+      color: #d33;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 2px;
+    }
+  }
+
+  // ---------- Tile ----------
+  .org-tile {
+    margin: 16px 20px;
+    border: 1px solid var(--line, rgba(15, 23, 42, 0.07));
+    border-radius: 14px;
+    background: var(--surface, #fff);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    }
+  }
+
+  .org-tile-head {
+    padding: 18px 22px;
     display: flex;
-    justify-content: space-between;
-    padding: 14px 0;
+    align-items: center;
+    gap: 14px;
     cursor: pointer;
-    font-size:17px;
-    /*begin 兼容暗夜模式*/
-    color: @text-color;
-    /*end 兼容暗夜模式*/
-    font-weight: 700!important;
-  }
-}
-.tenant-list-item:hover{
-  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.2);
-}
-.pointer {
-  cursor: pointer;
-}
-
-.examine {
-  color: #2c9cff;
-  font-size: 13px;
-}
-
-.cancel-apply {
-  margin-left: 24px;
-  color: red;
-  font-size: 13px;
-}
-
-.item-content {
-  transition: ease-in 2s;
-
-  .content-box {
-    /*begin 兼容暗夜模式*/
-    border-top: 1px solid @border-color-base;
-    /*end 兼容暗夜模式*/
-    box-sizing: border-box;
-    display: flex;
-    padding: 24px 0;
   }
 
-  .content-name {
-    /*begin 兼容暗夜模式*/
-    color: @text-color;
-    /*end 兼容暗夜模式*/
-    text-align: center;
-    width: 100px;
-    font-size: 13px;
+  .org-tile-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #5995ff, var(--accent, #5b6cff));
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
   }
 
-  .content-desc {
+  .org-tile-title {
     flex: 1;
     min-width: 0;
+
+    .name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink-900);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .name-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .id-line {
+      margin-top: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--ink-500);
+
+      .copy {
+        cursor: pointer;
+        color: var(--ink-400);
+        display: inline-flex;
+        padding: 2px 4px;
+        border-radius: 5px;
+        transition: background-color 0.15s, color 0.15s;
+
+        &:hover {
+          background: var(--surface-3, #eef0f5);
+          color: var(--accent-600);
+        }
+      }
+    }
   }
 
-  .content-des-text {
-    /*begin 兼容暗夜模式*/
-    color: @text-color;
-    /*end 兼容暗夜模式*/
-    text-align: left;
-    width: 76px;
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 7px;
+    border-radius: 10px;
+    font-size: 10.5px;
+    font-weight: 500;
+    line-height: 1;
+
+    &.tag-blue {
+      background: rgba(91, 108, 255, 0.1);
+      color: var(--accent-600);
+    }
+
+    &.tag-orange {
+      background: #fff4e5;
+      color: #e58a00;
+    }
+  }
+
+  .org-tile-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .link-action {
+    color: var(--accent-600, #4f5edb);
     font-size: 13px;
-  }
-}
-
-.flex-flow {
-  display: flex;
-  min-width: 0;
-}
-
-.flex-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 0;
-}
-
-.footer-box {
-  /*begin 兼容暗夜模式*/
-  border-top: 1px solid @border-color-base;
-  /*end 兼容暗夜模式*/
-  box-sizing: border-box;
-  display: flex;
-  padding: 24px 0;
-  color: #757575;
-}
-
-.margin-right40 {
-  margin-right: 40px;
-}
-
-/*begin 兼容暗夜模式*/
-.font-color333 {
-  color: @text-color;
-  font-weight: normal;
-}
-
-.font-color9e {
-  color: @text-color;
-}
-
-.font-color75 {
-  color: @text-color;
-}
-/*end 兼容暗夜模式*/
-
-.font-size13 {
-  font-size: 13px;
-}
-
-.footer-icon {
-  font-size: 13px !important;
-  margin-right: 13px;
-  position: relative;
-  top: 0px;
-}
-:deep(.edit-tenant-setting) {
-  color: #0a8fe9;
-}
-.margin-top6 {
-  margin-top: 6px;
-}
-.margin-bottom-16 {
-  margin-bottom: 16px;
-}
-.item-right {
-  align-items: center;
-  display: flex;
-  .buy-margin{
-    margin-left: 10px;
-    width: 66px;
-    border-radius: 20px;
-    background: rgba(255, 154, 0, 1);
-    height: 28px;
-    line-height: 28px;
     cursor: pointer;
-    text-align: center;
-    span{
-      font-size: 14px;
-      font-weight: 400;
-      color: #ffffff;
+
+    &.danger {
+      color: #e5484d;
+    }
+
+    &:hover {
+      text-decoration: underline;
     }
   }
-  .ordinary-user{
-    margin-left: 10px;
-    width: 66px;
-    span{
-      font-size: 14px;
-      font-weight: 400;
-      color: #9e9e9e;
+
+  .org-tile-toggle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-500);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background-color 0.15s, transform 0.25s ease;
+    padding: 0;
+    flex-shrink: 0;
+
+    &:hover {
+      background: var(--surface-2, #f7f8fb);
+      color: var(--ink-900);
     }
   }
-}
-.tenant-title {
-  align-items: center;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: space-between;
-  padding: 24px 0;
-  .vip-message{
+
+  .org-tile.open .org-tile-toggle {
+    transform: rotate(180deg);
+  }
+
+  // ---------- Body (expand/collapse) ----------
+  .org-tile-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .org-tile.open .org-tile-body {
+    grid-template-rows: 1fr;
+  }
+
+  .org-tile-body > .otb-inner {
+    overflow: hidden;
+  }
+
+  .otb-inner {
+    padding: 0 22px 18px;
+  }
+
+  // ---------- Card block (组织名片) ----------
+  .org-card-block {
+    border-top: 1px solid var(--line);
+    padding: 16px 0 18px;
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 0;
+
+    .card-key {
+      color: var(--ink-500);
+      font-size: 13px;
+      padding-top: 5px;
+    }
+
+    .rows {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 14px;
+      align-items: center;
+      padding: 5px 0;
+
+      .label {
+        color: var(--ink-500);
+        font-size: 13px;
+      }
+
+      .value {
+        color: var(--ink-900);
+        font-size: 14px;
+        font-weight: 600;
+
+        &.empty {
+          color: var(--ink-400);
+          font-weight: 400;
+        }
+      }
+    }
+  }
+
+  // ---------- Tile foot (操作按钮) ----------
+  .org-tile-foot {
+    border-top: 1px solid var(--line);
+    padding: 14px 0 2px;
     display: flex;
-    .vip-message-margin{
-      margin-right: 20px;
+    gap: 24px;
+
+    .link-btn-2 {
+      background: transparent;
+      border: 0;
+      color: var(--accent-600, #4f5edb);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 0;
+      transition: opacity 0.15s;
+
+      &:hover:not(:disabled) {
+        opacity: 0.8;
+      }
+
+      &:disabled {
+        color: var(--ink-400);
+        cursor: not-allowed;
+      }
+
+      &.danger:not(:disabled) {
+        color: #e5484d;
+      }
     }
   }
+</style>
+
+<style lang="less">
+// 退出/受邀弹窗保留旧样式（这些 Modal 内的 class 全局可见，scoped 不生效）
+.cancellation {
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.change-owen{
+
+.change-owen {
   font-size: 14px;
   font-weight: 700;
 }
-// 代码逻辑说明: 被邀弹窗样式------------
-.approved-count{
+
+.approved-count {
   background: #ffd2d2;
   border-radius: 19px;
   color: red;
@@ -694,79 +822,37 @@ const userDetail = ref({
   font-weight: 500;
   height: 19px;
   line-height: 18px;
-  margin-left: 8px;
   min-width: 19px;
   padding: 0 6px;
   text-align: center;
 }
 
-.invited-row{
+.invited-row {
   padding: 10px 34px;
 }
-.invited-row-list{
+.invited-row-list {
   padding: 0px 34px;
-  .common{
-    color: #1e88e5;
+
+  .common {
+    color: var(--accent-600, #4f5edb);
     cursor: pointer;
   }
-  .refuse{
+
+  .refuse {
     color: red;
     margin-left: 20px;
   }
 }
-.pointer{
-  cursor: pointer;
+
+.margin-top6 {
+  margin-top: 6px;
 }
-</style>
 
-<style lang="less">
-  // 代码逻辑说明: [issues/563]暗色主题部分失效
-@prefix-cls: ~'@{namespace}-j-user-tenant-setting-container';
-/*begin 兼容暗夜模式*/
-.@{prefix-cls} {
-
-  .my-tenant{
-    color: @text-color;
-  }
-
-  .tenant-list-item{
-    border: 1px solid @border-color-base;
-
-    .item-name{
-      color: @text-color;
-    }
-  }
-
-  .item-content {
-
-    .content-box {
-      border-top: 1px solid @border-color-base;
-    }
-
-    .content-name {
-      color: @text-color;
-    }
-
-    .content-des-text {
-      color: @text-color;
-    }
-  }
-  .footer-box {
-    border-top: 1px solid @border-color-base;
-  }
-
-  /*begin 兼容暗夜模式*/
-  .font-color333 {
-    color: @text-color;
-  }
-
-  .font-color9e {
-    color: @text-color;
-  }
-
-  .font-color75 {
-    color: @text-color;
-  }
+.margin-bottom-16 {
+  margin-bottom: 16px;
 }
-/*end 兼容暗夜模式*/
+
+.font-color75 {
+  color: var(--ink-500);
+}
 </style>

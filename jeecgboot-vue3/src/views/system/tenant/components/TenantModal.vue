@@ -1,6 +1,21 @@
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" :title="title" @ok="handleSubmit" width="700px">
-    <BasicForm @register="registerForm" />
+  <BasicModal
+    v-bind="$attrs"
+    @register="registerModal"
+    :title="title"
+    @ok="handleSubmit"
+    :width="720"
+    destroyOnClose
+    wrapClassName="tenant-form-redesign"
+  >
+    <!-- UI Redesign: 自定义弹窗标题，带建筑图标，匹配设计稿 .dlg-title -->
+    <template #title>
+      <span class="tenant-form-title">
+        <Icon icon="ant-design:bank-outlined" :size="18" />
+        <span class="tenant-form-title__text">{{ title }}</span>
+      </span>
+    </template>
+    <BasicForm @register="registerForm" class="redesign-form tenant-form" />
   </BasicModal>
 </template>
 <script lang="ts" setup>
@@ -9,14 +24,21 @@
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { formSchema } from '../tenant.data';
   import { saveOrUpdateTenant, getTenantById } from '../tenant.api';
+  import { Icon } from '/@/components/Icon';
   // Emits声明
   const emit = defineEmits(['register', 'success']);
   const isUpdate = ref(true);
   //表单配置
   const [registerForm, { resetFields, setFieldsValue, validate, updateSchema }] = useForm({
-    // labelWidth: 150,
+    // UI Redesign:
+    // - 2 列网格布局 (baseColProps span 12)，与设计稿 .dlg-form.cols-2 一致
+    // - rowProps.gutter [26, 0] 对齐 .cols-2 gap: 16px 26px 的列间距（行间距由 .ant-form-item margin-bottom 提供）
+    // - labelWidth: 88 与设计稿 .form-row > label 对齐
     schemas: formSchema,
     showActionButtonGroup: false,
+    labelWidth: 88,
+    baseColProps: { span: 12 },
+    rowProps: { gutter: [26, 0] },
   });
   //表单赋值
   const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
@@ -55,3 +77,25 @@
     }
   }
 </script>
+
+<!-- ================================================== -->
+<!-- UI Redesign: 租户弹窗专属换肤                          -->
+<!-- 通用部分（字号 / 控件高度 / 段控件）由 .redesign-form 提供 -->
+<!-- 本块只保留：弹窗标题图标                                -->
+<!-- ================================================== -->
+<style lang="less">
+  .tenant-form-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-900);
+
+    .app-iconify,
+    svg {
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+  }
+</style>

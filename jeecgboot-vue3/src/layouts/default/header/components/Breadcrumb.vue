@@ -154,40 +154,98 @@
 
   .@{prefix-cls} {
     display: flex;
-    padding: 0 8px;
+    padding: 0 22px;
+    margin-top: 4px;
+    margin-bottom: 4px;
     align-items: center;
+    min-height: 18px;
+
+    .ant-breadcrumb {
+      font-size: 12px;
+      color: var(--ink-500);
+    }
 
     .ant-breadcrumb-link {
+      font-size: 12px;
+      color: var(--ink-500);
+
       .anticon {
         margin-right: 4px;
         margin-bottom: 2px;
+        color: var(--ink-400);
+      }
+
+      a {
+        color: var(--ink-500);
+        text-decoration: none;
+
+        &:hover {
+          color: var(--accent);
+        }
       }
     }
-    // 代码逻辑说明: 【QQYUN-8922】面包屑样式调整
+
+    .ant-breadcrumb-separator {
+      color: var(--ink-300);
+      font-size: 11px;
+      margin: 0 5px;
+    }
+
+    // Last item (current page)
+    .ant-breadcrumb-link:last-child,
+    .ant-breadcrumb ol li:last-child .ant-breadcrumb-link {
+      color: var(--ink-900);
+      font-weight: 500;
+    }
+
+    // ---- Light theme ----
     &--light {
       .ant-breadcrumb-link {
-        color: rgba(0, 0, 0, 0.85);
+        color: var(--ink-500);
+
         a {
-          color: rgba(0, 0, 0, 0.85);
+          color: var(--ink-500);
 
           &:hover {
-            color: @primary-color;
+            color: var(--accent);
           }
         }
       }
       .ant-breadcrumb-separator,
       .anticon {
-        color: rgba(0, 0, 0, 0.85);
+        color: var(--ink-300);
+      }
+    }
+
+    // ---- Dark header (when header is dark theme) ----
+    &--dark {
+      .ant-breadcrumb-link {
+        color: rgba(255, 255, 255, 0.75);
+
+        a {
+          color: rgba(255, 255, 255, 0.75);
+
+          &:hover {
+            color: #fff;
+          }
+        }
+      }
+      .ant-breadcrumb-separator,
+      .anticon {
+        color: rgba(255, 255, 255, 0.5);
       }
     }
   }
+
   html[data-theme='dark'] {
     .@{prefix-cls} {
       &--dark {
         .ant-breadcrumb-link {
           color: rgba(255, 255, 255, 0.85);
+
           a {
             color: rgba(255, 255, 255, 0.85);
+
             &:hover {
               color: @white;
             }
@@ -195,18 +253,21 @@
         }
         .ant-breadcrumb-separator,
         .anticon {
-          color: rgba(255, 255, 255, 0.85);
+          color: rgba(255, 255, 255, 0.5);
         }
       }
     }
   }
+
   html[data-theme='light'] {
     .@{prefix-cls} {
       &--dark {
         .ant-breadcrumb-link {
           color: rgba(255, 255, 255, 1);
+
           a {
             color: rgba(255, 255, 255, 1);
+
             &:hover {
               color: @white;
             }
@@ -214,7 +275,7 @@
         }
         .ant-breadcrumb-separator,
         .anticon {
-          color: rgba(255, 255, 255, 1);
+          color: rgba(255, 255, 255, 0.6);
         }
       }
     }

@@ -1,0 +1,681 @@
+// =============================================================
+// == UI Redesign: Modal + Drawer 全局换皮
+// == 只改头 / 体 / 底样式，不碰业务逻辑
+// == 设计稿参考: jeecgboot-ui/pages/jeecg-page.css .dlg-* / .drawer-*
+// =============================================================
+
+// -------------------------------------------------------
+// == 〇、遮罩层（毛玻璃 frosted glass）
+// == 设计稿 .dlg-overlay / .drawer-overlay：
+// ==   background: rgba(15, 23, 42, .45)
+// ==   backdrop-filter: blur(6px)
+// == antd 默认是纯色 rgba(0,0,0,.45)，需要叠加 backdrop-filter
+// == 才能让弹窗背后内容呈毛玻璃质感。
+// ==
+// == 兼容性：backdrop-filter Safari 需要 -webkit- 前缀；旧浏览器无前缀时
+// == 自动退化为纯色遮罩（用户体验略降但不破坏功能）。
+// -------------------------------------------------------
+.ant-modal-mask,
+.ant-drawer-mask,
+.ant-image-preview-mask {
+  background: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+}
+
+// -------------------------------------------------------
+// == 一、Modal 整体容器
+// -------------------------------------------------------
+.ant-modal {
+  .ant-modal-content {
+    background: var(--surface);
+    border-radius: var(--radius-card);
+    box-shadow: 0 24px 64px -12px rgba(15, 23, 42, 0.28), 0 8px 24px rgba(15, 23, 42, 0.12);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  // -------------------------------------------------------
+  // == 头部 (.dlg-head)
+  // -------------------------------------------------------
+  .ant-modal-header {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 18px 0 20px;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    margin: 0;
+    background: var(--surface);
+  }
+
+  .ant-modal-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-900);
+    line-height: 1.4;
+    flex: 1;
+    min-width: 0;
+
+    // BasicTitle 内部结构
+    .basic-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-900);
+    }
+
+    .base-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-900);
+    }
+  }
+
+  // -------------------------------------------------------
+  // == 关闭按钮 (.dlg-close)
+  // -------------------------------------------------------
+  // 注意：BasicModal 会把右上角换成自定义的 .jeecg-basic-modal-close 组件
+  //   （含 fullscreen + close 两个 30px 按钮 + 8px gap = 68px），
+  //   外层 .ant-modal-close 不能再固定 width: 30px，否则内容溢出 5px
+  //   会让 close 按钮戳到弹窗右框外（甚至遮住右边框）。
+  //   这里 width: auto / 内部用 flex，让 wrapper 跟随内容自然撑宽，
+  //   right: 14px 锚定右边距不变。
+  .ant-modal-close {
+    top: 13px;
+    right: 14px;
+    width: auto;
+    height: 30px;
+    border-radius: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: var(--ink-400);
+    background: transparent;
+    transition: background-color var(--fast), color var(--fast);
+
+    // wrapper 本身不再做 hover 灰底（hover 效果由内部 .jeecg-basic-modal-close
+    // 的两个按钮各自负责，否则 wrapper 会画一个大灰块把两个按钮都罩住）
+    &:hover {
+      background: transparent;
+      color: var(--ink-400);
+    }
+
+    .ant-modal-close-x {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: auto;
+      height: 30px;
+      font-size: 14px;
+      line-height: 1;
+    }
+  }
+
+  // antd 默认 X 单按钮场景（没有自定义 .jeecg-basic-modal-close 时）
+  // —— 仍需要 30×30 圆角 + 灰底 hover
+  .ant-modal-close-x > .anticon:only-child,
+  .ant-modal-close:not(:has(.jeecg-basic-modal-close)) {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ant-modal-close:not(:has(.jeecg-basic-modal-close)):hover {
+    background: var(--surface-3);
+    color: var(--ink-700);
+  }
+
+  // BasicModal 的自定义关闭区域（ModalClose 组件）
+  .jeecg-basic-modal-close {
+    display: flex;
+    align-items: center;
+    // UI Redesign: 4px → 8px，让 fullscreen / close 两个按钮的 hover 圆角
+    // 背景（30px wide × radius 8px）有明显间距，不再视觉重叠
+    // 同 src/components/Modal/src/components/ModalClose.vue 保持一致
+    gap: 8px;
+    height: 30px;
+    margin-top: 0;
+
+    > span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      color: var(--ink-400);
+      font-size: 14px;
+      margin-left: 0;
+      padding: 0;
+      transition: background-color var(--fast), color var(--fast);
+
+      &:hover {
+        background: var(--surface-3);
+        color: var(--ink-700);
+      }
+
+      &:last-child:hover {
+        color: var(--bad);
+        background: var(--bad-bg);
+      }
+    }
+
+    &--can-full > span {
+      margin-left: 0;
+    }
+  }
+
+  // -------------------------------------------------------
+  // == 主体 (.dlg-body)
+  // -------------------------------------------------------
+  .ant-modal-body {
+    padding: 20px;
+    background: var(--surface);
+    color: var(--ink-700);
+    font-size: 14px;
+
+    // BasicModal 使用 ModalWrapper 包裹，body 内 padding 由 wrapper 处理
+    > .jeecg-modal-wrapper {
+      margin: -20px;
+
+      > .jeecg-modal-content > .scroll-container {
+        padding: 20px;
+      }
+    }
+
+    // 无滚动容器时的直接 scrollbar
+    > .scrollbar {
+      > .scrollbar__wrap {
+        padding: 20px;
+      }
+    }
+  }
+
+  // -------------------------------------------------------
+  // == 底部 (.dlg-foot)
+  // -------------------------------------------------------
+  .ant-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 13px 20px;
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 0;
+    margin: 0;
+
+    // 隐藏原有 button 之间的 margin（改用 gap）
+    .ant-btn + .ant-btn {
+      margin-left: 0;
+    }
+
+    // 取消按钮 → ghost 风格
+    .ant-btn:not(.ant-btn-primary):not(.ant-btn-dangerous) {
+      border-radius: 8px;
+      border-color: var(--line-strong);
+      color: var(--ink-700);
+      background: var(--surface-2);
+      font-size: 13px;
+      height: 34px;
+      padding: 0 16px;
+
+      &:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-50);
+      }
+    }
+
+    // 确定按钮 → primary
+    .ant-btn-primary {
+      border-radius: 8px;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      height: 34px;
+      padding: 0 18px;
+      box-shadow: 0 1px 4px rgba(91, 108, 255, 0.28);
+
+      &:hover {
+        background: var(--accent-600);
+        border-color: var(--accent-600);
+      }
+    }
+
+    // 危险按钮（删除确认）
+    .ant-btn-dangerous,
+    .ant-btn-dangerous.ant-btn-primary {
+      border-radius: 8px;
+      height: 34px;
+      padding: 0 18px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+  }
+}
+
+// -------------------------------------------------------
+// == 二、确认/删除弹窗 (Modal.confirm)
+// -------------------------------------------------------
+.ant-modal-confirm {
+  .ant-modal-body {
+    padding: 0 !important;
+  }
+
+  .ant-modal-confirm-body-wrapper {
+    padding: 0;
+  }
+
+  .ant-modal-confirm-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 22px 22px 6px;
+
+    // 确认图标 (.confirm-icon)
+    > .anticon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      font-size: 20px;
+      margin: 0;
+
+      &.anticon-exclamation-circle,
+      &.anticon-question-circle {
+        background: var(--warn-bg);
+        color: var(--warn);
+      }
+
+      &.anticon-close-circle,
+      &.anticon-delete {
+        background: var(--bad-bg);
+        color: var(--bad);
+      }
+
+      &.anticon-check-circle {
+        background: var(--good-bg);
+        color: var(--good);
+      }
+
+      &.anticon-info-circle {
+        background: var(--accent-50);
+        color: var(--accent);
+      }
+    }
+
+    .ant-modal-confirm-paragraph {
+      flex: 1;
+      min-width: 0;
+      padding-top: 2px;
+    }
+
+    .ant-modal-confirm-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-900);
+      margin: 0 0 5px;
+    }
+
+    .ant-modal-confirm-content {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--ink-500);
+      margin: 0;
+    }
+  }
+
+  .ant-modal-confirm-btns {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 12px 20px 18px;
+    border-top: 1px solid var(--line);
+    margin: 0;
+
+    .ant-btn + .ant-btn {
+      margin-left: 0;
+    }
+
+    .ant-btn:not(.ant-btn-primary):not(.ant-btn-dangerous) {
+      border-radius: 8px;
+      border-color: var(--line-strong);
+      color: var(--ink-700);
+      background: var(--surface-2);
+      font-size: 13px;
+      height: 34px;
+      padding: 0 16px;
+
+      &:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-50);
+      }
+    }
+
+    .ant-btn-primary {
+      border-radius: 8px;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      height: 34px;
+      padding: 0 18px;
+
+      &:hover {
+        background: var(--accent-600);
+        border-color: var(--accent-600);
+      }
+    }
+
+    .ant-btn-dangerous,
+    .ant-btn-dangerous.ant-btn-primary {
+      border-radius: 8px;
+      height: 34px;
+      padding: 0 18px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+  }
+}
+
+// Popconfirm 按钮对齐
+.ant-popconfirm {
+  .ant-popover-inner {
+    border-radius: 12px;
+    box-shadow: var(--shadow-pop);
+  }
+
+  .ant-popconfirm-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 10px;
+
+    .ant-btn + .ant-btn {
+      margin-left: 0;
+    }
+
+    .ant-btn:not(.ant-btn-primary) {
+      border-radius: 8px;
+      height: 32px;
+      font-size: 13px;
+      border-color: var(--line-strong);
+      color: var(--ink-700);
+      background: var(--surface-2);
+
+      &:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-50);
+      }
+    }
+
+    .ant-btn-primary {
+      border-radius: 8px;
+      height: 32px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+
+      &:hover {
+        background: var(--accent-600);
+        border-color: var(--accent-600);
+      }
+    }
+  }
+}
+
+// -------------------------------------------------------
+// == 三、Drawer 整体容器
+// -------------------------------------------------------
+.ant-drawer {
+  // 整体抽屉面板
+  .ant-drawer-content {
+    background: var(--surface);
+  }
+
+  .ant-drawer-content-wrapper {
+    box-shadow: -16px 0 48px rgba(15, 23, 42, 0.18);
+  }
+
+  // -------------------------------------------------------
+  // == 头部 (.dlg-head for Drawer)
+  // -------------------------------------------------------
+  .ant-drawer-header {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    min-height: 56px;
+    padding: 0 18px 0 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 0;
+    flex-shrink: 0;
+  }
+
+  .ant-drawer-header-title {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+    flex-direction: row-reverse; // close button right, title left
+  }
+
+  .ant-drawer-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-900);
+    flex: 1;
+    min-width: 0;
+
+    // BasicTitle 内的文字
+    .basic-title,
+    .jeecg-basic-drawer-header {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-900);
+    }
+  }
+
+  // -------------------------------------------------------
+  // == 关闭按钮 (.dlg-close for Drawer)
+  // -------------------------------------------------------
+  .ant-drawer-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    color: var(--ink-400);
+    background: transparent;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    order: 1;
+    transition: background-color var(--fast), color var(--fast);
+
+    &:hover {
+      background: var(--surface-3);
+      color: var(--ink-700);
+    }
+  }
+
+  // -------------------------------------------------------
+  // == 主体 (.dlg-body for Drawer)
+  // -------------------------------------------------------
+  .ant-drawer-body {
+    padding: 0;
+    background: var(--surface);
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  // BasicDrawer 使用 ScrollContainer，scrollbar__wrap 内加内距
+  .jeecg-basic-drawer {
+    .ant-drawer-body {
+      .scrollbar__wrap {
+        padding: 20px !important;
+      }
+    }
+  }
+}
+
+// BasicDrawer 类名下的 antd 抽屉覆盖
+.jeecg-basic-drawer {
+  .ant-drawer-header {
+    height: 56px;
+    min-height: 56px;
+    padding: 0 18px 0 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ant-drawer-body {
+    height: calc(100% - 56px);
+    padding: 0;
+
+    .scrollbar__wrap {
+      padding: 20px !important;
+      margin-bottom: 0 !important;
+    }
+
+    > .scrollbar > .scrollbar__bar.is-horizontal {
+      display: none;
+    }
+  }
+}
+
+// -------------------------------------------------------
+// == 四、Drawer 底部 (.dlg-foot for Drawer)
+// -------------------------------------------------------
+.jeecg-basic-drawer-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 13px 20px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+
+  // 覆盖旧的 line-height 撑高方式
+  height: auto !important;
+  line-height: 1 !important;
+
+  > * {
+    margin-right: 0;
+  }
+
+  .ant-btn:not(.ant-btn-primary):not(.ant-btn-dangerous) {
+    border-radius: 8px;
+    border-color: var(--line-strong);
+    color: var(--ink-700);
+    background: var(--surface-2);
+    font-size: 13px;
+    height: 34px;
+    padding: 0 16px;
+
+    &:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-50);
+    }
+  }
+
+  .ant-btn-primary {
+    border-radius: 8px;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    height: 34px;
+    padding: 0 18px;
+    box-shadow: 0 1px 4px rgba(91, 108, 255, 0.28);
+
+    &:hover {
+      background: var(--accent-600);
+      border-color: var(--accent-600);
+    }
+  }
+
+  .ant-btn-dangerous,
+  .ant-btn-dangerous.ant-btn-primary {
+    border-radius: 8px;
+    height: 34px;
+    padding: 0 18px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+// -------------------------------------------------------
+// == 五、BasicTitle 组件（头部标题共用）
+// -------------------------------------------------------
+.jeecg-basic-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-900);
+
+  // 标题左侧色块 (BasicTitle 的装饰线)
+  &__line {
+    width: 3px;
+    height: 16px;
+    border-radius: 2px;
+    background: var(--accent);
+    display: inline-block;
+    flex-shrink: 0;
+  }
+}
+
+// DrawerHeader 标题
+.jeecg-basic-drawer-header {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-900);
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--ink-500);
+    transition: background-color var(--fast), color var(--fast);
+
+    &:hover {
+      background: var(--surface-3);
+      color: var(--ink-700);
+    }
+  }
+
+  &__toolbar {
+    padding-right: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}

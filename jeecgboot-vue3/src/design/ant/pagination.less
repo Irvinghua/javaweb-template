@@ -1,3 +1,149 @@
+/* ============================================================
+   Pagination 全局换皮 (Task 6 ui-redesign)
+   对齐 jeecgboot-ui/pages/jeecg-page.css .pagination / .pager
+   ============================================================ */
+
+// ⚠️ 选择器同时命中普通版 .ant-pagination 和 antd 注入的小号版 .ant-pagination-mini，
+// 否则 BasicTable 默认走 mini，antd 自带的 mini 规则把页码缩到 24×24，导致
+// 数字在按钮里偏下、与设计稿 32×32 不一致；选择器加 !important 强制覆盖。
+.ant-pagination,
+.ant-pagination.ant-pagination-mini {
+  /* 整体：右对齐，间距 */
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-size: 13px !important;
+  color: var(--ink-500) !important;
+
+  /* 页码项 & 前/后翻页 */
+  .ant-pagination-prev,
+  .ant-pagination-next,
+  .ant-pagination-item {
+    min-width: 32px !important;
+    height: 32px !important;
+    line-height: 1 !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--line) !important;
+    background: var(--surface) !important;
+    margin: 0 2px !important;
+    // 用 flex 把数字真正垂直 + 水平居中，line-height 在不同 antd 版本里高度算法不一致，
+    // 之前 anchor 用 line-height: 30px 撑高超过容器，导致文字看起来"贴底"
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+
+    a, button {
+      color: var(--ink-700) !important;
+      font-size: 13px !important;
+      line-height: 1 !important;
+      // 让 anchor 自己也居中（antd mini 的 a 会带 margin-top:1px 把数字推下来）
+      margin: 0 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-width: 100%;
+      height: 100%;
+    }
+
+    &:hover:not(.ant-pagination-disabled) {
+      border-color: var(--accent) !important;
+
+      a {
+        color: var(--accent-600) !important;
+      }
+
+      .ant-pagination-item-link {
+        color: var(--accent) !important;
+        border-color: var(--accent) !important;
+      }
+    }
+  }
+
+  /* 当前激活页码 */
+  .ant-pagination-item-active {
+    background: var(--accent) !important;
+    border-color: transparent !important;
+    border-radius: 8px !important;
+
+    a {
+      color: #fff !important;
+    }
+
+    &:hover a {
+      color: #fff !important;
+    }
+  }
+
+  /* 省略号 */
+  .ant-pagination-jump-prev,
+  .ant-pagination-jump-next {
+    .ant-pagination-item-container .ant-pagination-item-ellipsis {
+      color: var(--ink-400);
+    }
+  }
+
+  /* 每页条数选择器 —— 加大宽度，避免 "10 条/页" / "50 条/页" 这类文字被截断 */
+  .ant-pagination-options {
+    margin-left: 8px !important;
+
+    .ant-select {
+      min-width: 110px !important;
+    }
+
+    .ant-select-selector {
+      height: 32px !important;
+      min-width: 110px !important;
+      border-radius: 8px !important;
+      border: 1px solid var(--line) !important;
+      background: var(--surface) !important;
+      font-size: 13px !important;
+      padding: 0 28px 0 12px !important;
+    }
+
+    .ant-select-selection-item {
+      line-height: 30px !important;
+      color: var(--ink-700) !important;
+      font-size: 13px !important;
+    }
+  }
+
+  /* 快速跳转 */
+  .ant-pagination-options-quick-jumper {
+    color: var(--ink-500) !important;
+    font-size: 13px !important;
+
+    input {
+      height: 32px !important;
+      border-radius: 8px !important;
+      border: 1px solid var(--line) !important;
+      background: var(--surface) !important;
+      color: var(--ink-700) !important;
+      font-size: 13px !important;
+      padding: 0 8px !important;
+      width: 48px !important;
+      text-align: center !important;
+
+      &:focus {
+        border-color: var(--accent) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 2px rgba(91, 108, 255, 0.12) !important;
+      }
+    }
+  }
+
+  /* disabled */
+  .ant-pagination-disabled {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+  }
+}
+
+// 删除（让旧的 &.mini 自定义 24px 版本失效）：原本下方有 .ant-pagination.mini 块把
+// items 改成 22px 行高 + 极小内距，对应旧 jeecg/antd-v3 时期的样式。
+// 这里通过上面 .ant-pagination, .ant-pagination.ant-pagination-mini 的 !important
+// 已经覆盖；保留旧的 &.mini 块当作历史参考也可以，但更安全是把它整段注释掉。
+
 html[data-theme='dark'] {
   .ant-pagination {
     &.mini {
@@ -28,71 +174,9 @@ html[data-theme='dark'] {
   }
 }
 
-.ant-pagination {
-  &.mini {
-    .ant-pagination-prev,
-    .ant-pagination-next {
-      font-size: 12px;
-      color: @text-color-base;
-      border: 1px solid;
-    }
-
-    .ant-pagination-prev:hover,
-    .ant-pagination-next:hover,
-    .ant-pagination-item:focus,
-    .ant-pagination-item:hover {
-      a {
-        color: @primary-color;
-      }
-    }
-
-    .ant-pagination-prev,
-    .ant-pagination-next,
-    .ant-pagination-item {
-      margin: 0 4px !important;
-      //update-begin---author:scott ---date:2022-09-30  for：【美化】Table分页页面默认背景色丑，去掉-----------
-      //background-color: #f4f4f5 !important;
-      //update-end---author:scott ---date::2022-09-30  for：【美化】Table分页页面默认背景色丑，去掉------------
-      border: none;
-      border-radius: none !important;
-
-      a {
-        margin-top: 1px;
-        color: #606266;
-      }
-
-      &:last-child {
-        margin-right: 0 !important;
-      }
-    }
-
-    .ant-pagination-item-active {
-      background-color: @primary-color !important;
-      border: none;
-      border-radius: none !important;
-
-      a {
-        color: @white !important;
-      }
-    }
-
-    .ant-pagination-options {
-      margin-left: 12px;
-    }
-
-    .ant-pagination-options-quick-jumper input {
-      height: 22px;
-      margin: 0 6px;
-      line-height: 22px;
-      text-align: center;
-    }
-
-    .ant-select-arrow {
-      color: @border-color-shallow-dark;
-    }
-  }
-
-  &-disabled {
-    display: none !important;
-  }
+// UI Redesign: 历史 .ant-pagination.mini { ... } 块（旧 jeecg/antd-v3 时期样式）
+// 已被上方 .ant-pagination, .ant-pagination.ant-pagination-mini 统一规则覆盖。
+// 此处保留 disabled 隐藏行为，其余规则全部移除避免冲突。
+.ant-pagination-disabled {
+  display: none !important;
 }

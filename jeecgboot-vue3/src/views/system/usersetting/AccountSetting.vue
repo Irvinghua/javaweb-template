@@ -1,32 +1,74 @@
+<!--
+  UI Redesign: 账号安全 (Account Setting)
+  按 profile.html "Tab 3：账号安全" 设计稿重做：
+    .sec-card 卡片，内部多行 .sec-row
+    每行：sec-icon (40×40 圆角图标) + sec-meta (label + desc) + sec-value + tag + link-action
+  业务逻辑（updatePhone / bindPhone / updateEmail / updatePassWord）保持不变
+-->
 <template>
-  <div :class="[`${prefixCls}`]">
-    <div class="my-account">账户</div>
-    <div class="account-row-item clearfix">
-      <div class="account-label gray-75">手机</div>
-      <span class="gray" v-if="userDetail.phoneText">{{ userDetail.phoneText}}</span>
-      <span class="pointer blue-e5 phone-margin" @click="updatePhone" v-if="userDetail.phone">修改</span>
-      <span class="pointer blue-e5 phone-margin" @click="bindPhone" v-else>绑定</span>
-      <!--      <span class="pointer blue-e5" @click="unbindPhone" v-if="userDetail.phone">解绑?</span>-->
-      <!--      <span class="pointer blue-e5" @click="unbindPhone" v-else>绑定?</span>-->
-    </div>
-    <div class="account-row-item clearfix">
-      <div class="account-label gray-75">邮箱</div>
-      <span class="gray">{{ userDetail.email ? userDetail.email : '未填写' }}</span>
-      <span class="pointer blue-e5 phone-margin" @click="updateEmail">修改</span>
-      <!--      <span class="pointer blue-e5" @click="unbindEmail" v-if="userDetail.email">解绑?</span>-->
-      <!--      <span class="pointer blue-e5" @click="unbindEmail" v-else>绑定?</span>-->
-      <!--      <span class="pointer blue-e5" style="margin-left:5px" @click="checkEmail" v-if="userDetail.email">验证?</span>-->
-    </div>
-    <div class="account-row-item">
-      <div class="account-label gray-75">密码</div>
-      <Icon icon="ant-design:lock-outlined" style="color: #9e9e9e" />
-      <span class="pointer blue-e5" style="margin-left: 10px" @click="updatePassWord">修改</span>
-    </div>
+  <div :class="[`${prefixCls}`, 'account-security-redesign']">
+    <div class="card sec-wrapper">
+      <div class="block-title">账户安全 <span class="sub">绑定常用联系方式以确保账户安全</span></div>
 
-    <!--    <div class="account-row-item clearfix">-->
-    <!--      <div class="account-label gray-75">账户注销?</div>-->
-    <!--      <span style="color: red" class="pointer" @click="cancellation">注销?</span>-->
-    <!--    </div>-->
+      <div class="sec-card">
+        <!-- 手机 -->
+        <div class="sec-row">
+          <div class="sec-row__main">
+            <span class="sec-icon sec-icon--phone">
+              <Icon icon="ant-design:mobile-outlined" :size="20" />
+            </span>
+            <div class="sec-meta">
+              <div class="sec-label">手机</div>
+              <div class="sec-desc">用于登录、找回密码及接收安全通知</div>
+            </div>
+          </div>
+          <span class="sec-value" :class="{ empty: !userDetail.phoneText }">
+            {{ userDetail.phoneText || '未绑定' }}
+          </span>
+          <span class="sec-tag" :class="userDetail.phone ? 'sec-tag--green' : 'sec-tag--gray'">
+            {{ userDetail.phone ? '已绑定' : '未绑定' }}
+          </span>
+          <a class="link-action" @click="updatePhone" v-if="userDetail.phone">修改</a>
+          <a class="link-action" @click="bindPhone" v-else>绑定</a>
+        </div>
+
+        <!-- 邮箱 -->
+        <div class="sec-row">
+          <div class="sec-row__main">
+            <span class="sec-icon sec-icon--mail">
+              <Icon icon="ant-design:mail-outlined" :size="20" />
+            </span>
+            <div class="sec-meta">
+              <div class="sec-label">邮箱</div>
+              <div class="sec-desc">用于接收账户通知与重要邮件</div>
+            </div>
+          </div>
+          <span class="sec-value" :class="{ empty: !userDetail.email }">
+            {{ userDetail.email || '未填写' }}
+          </span>
+          <span class="sec-tag" :class="userDetail.email ? 'sec-tag--green' : 'sec-tag--gray'">
+            {{ userDetail.email ? '已绑定' : '未绑定' }}
+          </span>
+          <a class="link-action" @click="updateEmail">{{ userDetail.email ? '修改' : '绑定' }}</a>
+        </div>
+
+        <!-- 密码 -->
+        <div class="sec-row">
+          <div class="sec-row__main">
+            <span class="sec-icon sec-icon--lock">
+              <Icon icon="ant-design:lock-outlined" :size="20" />
+            </span>
+            <div class="sec-meta">
+              <div class="sec-label">登录密码</div>
+              <div class="sec-desc">建议定期更换密码以保障账户安全</div>
+            </div>
+          </div>
+          <span class="sec-value">••••••••</span>
+          <span class="sec-tag sec-tag--orange">建议更新</span>
+          <a class="link-action" @click="updatePassWord">修改</a>
+        </div>
+      </div>
+    </div>
   </div>
 
   <UserReplacePhoneModal @register="registerModal" @success="initUserDetail" />
@@ -48,6 +90,7 @@
   import { useModal } from '/@/components/Modal';
   import { WechatFilled } from '@ant-design/icons-vue';
   import { useDesign } from '/@/hooks/web/useDesign';
+  import { Icon } from '/@/components/Icon';
 
   const { prefixCls } = useDesign('j-user-account-setting-container');
 
@@ -87,10 +130,10 @@
       record: { phone: userDetail.value.phone, username: userDetail.value.username, id: userDetail.value.id, phoneText: userDetail.value.phoneText },
     });
   }
-  
+
   /**
    * 绑定手机号
-   */ 
+   */
   function bindPhone() {
     openModal(true, {
       record: { username: userDetail.value.username, id: userDetail.value.id },
@@ -160,62 +203,179 @@
     initUserDetail();
   });
 </script>
-<style lang="less">
-    // 代码逻辑说明: [issues/563]暗色主题部分失效
-  @prefix-cls: ~'@{namespace}-j-user-account-setting-container';
+<style lang="less" scoped>
+  // ----------------------------------------------------
+  // UI Redesign: profile.html .sec-card
+  // ----------------------------------------------------
+  .account-security-redesign {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-  .@{prefix-cls}{
-     padding: 30px 40px 0 20px;
-    .account-row-item {
-      align-items: center;
-      /*begin 兼容暗夜模式*/
-      border-bottom: 1px solid @border-color-base;
-      /*end 兼容暗夜模式*/
-      box-sizing: border-box;
-      display: flex;
-      height: 71px;
-      position: relative;
+  .card {
+    background: var(--surface, #fff);
+    border-radius: var(--radius-card, 18px);
+    box-shadow: var(--shadow-card, 0 2px 12px rgba(15, 23, 42, 0.05));
+  }
+
+  .sec-wrapper {
+    padding: 22px 28px 4px;
+  }
+
+  .block-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-900);
+    margin-bottom: 4px;
+
+    &::before {
+      content: '';
+      width: 3px;
+      height: 14px;
+      border-radius: 2px;
+      background: var(--accent, #5b6cff);
     }
 
-    .account-label {
-      text-align: left;
-      width: 160px;
+    .sub {
+      font-size: 12px;
+      color: var(--ink-400);
+      font-weight: 400;
+      margin-left: 4px;
+    }
+  }
+
+  .sec-card {
+    padding: 0;
+  }
+
+  .sec-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line, rgba(15, 23, 42, 0.07));
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  .sec-row__main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .sec-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+
+    &--phone {
+      background: var(--accent-50, rgba(91, 108, 255, 0.08));
+      color: var(--accent-600, #4f5edb);
     }
 
-    .gray-75 {
-      /*begin 兼容暗夜模式*/
-      color: @text-color !important;
-      /*end 兼容暗夜模式*/
+    &--mail {
+      background: #fff1e5;
+      color: #ea580c;
     }
 
-    .pointer {
-      cursor: pointer;
+    &--lock {
+      background: #fef3c7;
+      color: #d97706;
+    }
+  }
+
+  .sec-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .sec-label {
+    color: var(--ink-900);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .sec-desc {
+    color: var(--ink-500);
+    font-size: 12.5px;
+  }
+
+  .sec-value {
+    color: var(--ink-900);
+    font-size: 14px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+
+    &.empty {
+      color: var(--ink-400);
+      font-weight: 400;
+    }
+  }
+
+  .sec-tag {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+
+    &--green {
+      background: #e8f7ee;
+      color: #15a052;
     }
 
-    .blue-e5 {
-      color: #1e88e5;
+    &--gray {
+      background: var(--surface-2, #f7f8fb);
+      color: var(--ink-500);
     }
 
-    .phone-margin {
-      margin-left: 24px;
-      margin-right: 24px;
+    &--orange {
+      background: #fff4e5;
+      color: #e58a00;
+    }
+  }
+
+  .link-action {
+    color: var(--accent-600, #4f5edb);
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 0.15s;
+
+    &:hover {
+      color: var(--accent, #5b6cff);
+      text-decoration: underline;
+    }
+  }
+
+  // Responsive: collapse value/tag under meta on narrow screens
+  @media (max-width: 700px) {
+    .sec-row {
+      grid-template-columns: 1fr auto;
+      gap: 10px 12px;
     }
 
-    .clearfix:after {
-      clear: both;
-    }
-
-    .clearfix:before {
-      content: "";
-      display: table;
-    }
-    .my-account{
-      font-size: 17px;
-      font-weight: 700!important;
-      /*begin 兼容暗夜模式*/
-      color: @text-color;
-      /*end 兼容暗夜模式*/
-      margin-bottom: 20px;
+    .sec-value,
+    .sec-tag {
+      grid-column: 1 / -1;
+      justify-self: start;
     }
   }
 </style>

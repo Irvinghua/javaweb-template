@@ -67,6 +67,14 @@ export const formSchema: FormSchema[] = [
       dictCode: 'relation_type',
       type: 'radioButton',
     },
+    // UI Redesign: 渲染成弹窗顶部下划线 tab（设计稿 .detail-tabs），整行占满，标签隐藏
+    colProps: { span: 24 },
+    disabledLabelWidth: true,
+    itemProps: {
+      class: 'form-tabs-row',
+      labelCol: { span: 0 },
+      wrapperCol: { span: 24 },
+    },
   },
   {
     label: '角色编码',
@@ -120,10 +128,15 @@ export const formSchema: FormSchema[] = [
   {
     label: '是否开启',
     field: 'status',
-    component: 'JSwitch',
+    // UI Redesign: JSwitch → RadioButtonGroup（保持 value 字符串 '1' / '0' 不变），
+    // 由 .redesign-form 渲染成设计稿 .seg 胶囊段控件
+    component: 'RadioButtonGroup',
     defaultValue: '1',
     componentProps: {
-      options: ['1', '0'],
+      options: [
+        { label: '开启', value: '1' },
+        { label: '关闭', value: '0' },
+      ],
     },
   },
 ];

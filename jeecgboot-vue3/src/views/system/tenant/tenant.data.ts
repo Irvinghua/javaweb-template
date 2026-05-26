@@ -107,6 +107,20 @@ export const searchFormSchema: FormSchema[] = [
 ];
 
 export const formSchema: FormSchema[] = [
+  // UI Redesign: 字段顺序按设计稿 dlg-tenant-form 三组重排：
+  //   基本信息 (name / id / status / companyLogo)
+  //   公司信息 (trade / companySize / position / department)
+  //   地址信息 (companyAddress / houseNumber / workPlace[span-2])
+  // 三组之间用 Divider 当分节标题，无业务字段、不参与提交。
+  // ---- 基本信息 ----
+  {
+    field: '__section_basic__',
+    label: '基本信息',
+    component: 'Divider',
+    componentProps: { orientation: 'left' },
+    // 分节标题强制占满整行，否则会被 baseColProps span:12 截掉一半
+    colProps: { span: 24 },
+  },
   {
     field: 'name',
     label: '租户名称',
@@ -123,12 +137,33 @@ export const formSchema: FormSchema[] = [
     },
   },
   {
+    field: 'status',
+    label: '状态',
+    component: 'RadioButtonGroup',
+    defaultValue: 1,
+    componentProps: {
+      options: [
+        { label: '正常', value: 1 },
+        { label: '冻结', value: 0 },
+      ],
+    },
+  },
+  {
     field: 'companyLogo',
     label: '组织LOGO',
     component: 'JImageUpload',
     componentProps:{
       text:'logo'
-    }
+    },
+  },
+  // ---- 公司信息 ----
+  {
+    field: '__section_company__',
+    label: '公司信息',
+    component: 'Divider',
+    componentProps: { orientation: 'left' },
+    // 分节标题强制占满整行，否则会被 baseColProps span:12 截掉一半
+    colProps: { span: 24 },
   },
   {
     field: 'trade',
@@ -137,21 +172,57 @@ export const formSchema: FormSchema[] = [
     componentProps: {
       dictCode:'trade',
     }
-  }, {
+  },
+  {
     field: 'companySize',
     label: '公司规模',
     component: 'JDictSelectTag',
     componentProps: {
       dictCode:'company_size',
     }
-  }, {
+  },
+  {
+    field: 'position',
+    label: '职级',
+    component: 'JDictSelectTag',
+    componentProps:{
+      dictCode: 'company_rank'
+    }
+  },
+  {
+    field: 'department',
+    label: '部门',
+    component: 'JDictSelectTag',
+    componentProps:{
+      dictCode:'company_department'
+    }
+  },
+  // ---- 地址信息 ----
+  {
+    field: '__section_address__',
+    label: '地址信息',
+    component: 'Divider',
+    componentProps: { orientation: 'left' },
+    // 分节标题强制占满整行，否则会被 baseColProps span:12 截掉一半
+    colProps: { span: 24 },
+  },
+  {
     field: 'companyAddress',
     label: '公司地址',
     component: 'JAreaSelect',
     componentProps: {
       placeholder: '请输入公司地址',
       rows: 4,
-    }
+    },
+  },
+  {
+    field: 'houseNumber',
+    label: '门牌号',
+    component: 'Input',
+    dynamicDisabled: true,
+    ifShow: ({ values }) => {
+      return values.id!=null;
+    },
   },
   {
     field: 'workPlace',
@@ -160,7 +231,9 @@ export const formSchema: FormSchema[] = [
     componentProps: {
       placeholder: '请输入工作地点',
       rows: 4,
-    }
+    },
+    // UI Redesign: 设计稿 .form-row span-2，textarea 跨两列
+    colProps: { span: 24 },
   },
 /*  {
     field: 'beginDate',
@@ -182,43 +255,6 @@ export const formSchema: FormSchema[] = [
       getPopupContainer: getAutoScrollContainer,
     },
   },*/
-  {
-    field: 'houseNumber',
-    label: '门牌号',
-    component: 'Input',
-    dynamicDisabled: true,
-    ifShow: ({ values }) => {
-      return values.id!=null;
-    },
-  },
-  {
-    field: 'position',
-    label: '职级',
-    component: 'JDictSelectTag',
-    componentProps:{
-      dictCode: 'company_rank'
-    }
-  },
-  {
-    field: 'department',
-    label: '部门',
-    component: 'JDictSelectTag',
-    componentProps:{
-      dictCode:'company_department'
-    }
-  },
-  {
-    field: 'status',
-    label: '状态',
-    component: 'RadioButtonGroup',
-    defaultValue: 1,
-    componentProps: {
-      options: [
-        { label: '正常', value: 1 },
-        { label: '冻结', value: 0 },
-      ],
-    },
-  },
 ];
 
 //定义用户表格列
@@ -370,7 +406,7 @@ export const packFormSchema: FormSchema[] = [
     field: 'packName',
     label: '套餐包名',
     component: 'JInput',
-    colProps: { xxl: 8 },
+    colProps: { xs: 24, sm: 24, md: 12, lg: 8, xl: 8, xxl: 8 },
   },
 ];
 
@@ -380,7 +416,7 @@ export const defaultPackFormSchema: FormSchema[] = [
     field: 'packName',
     label: '默认套餐名',
     component: 'JInput',
-    colProps: { xxl: 8 },
+    colProps: { xs: 24, sm: 24, md: 12, lg: 8, xl: 8, xxl: 8 },
   },
 ];
 
@@ -414,25 +450,27 @@ export const packMenuFormSchema: FormSchema[] = [
   {
     field: 'izSysn',
     label: '自动分配用户',
-    component: 'Switch',
+    // UI Redesign: Switch → RadioButtonGroup（保留 value 字符串 '1'/'0'，提交语义不变），
+    // 由 .redesign-form 渲染成设计稿 .seg 胶囊段控件，与其他页面 toggle 样式统一
+    component: 'RadioButtonGroup',
     componentProps: {
-      checkedValue: "1",
-      checkedChildren: '是',
-      unCheckedValue: "0",
-      unCheckedChildren: '否',
+      options: [
+        { label: '是', value: '1' },
+        { label: '否', value: '0' },
+      ],
     },
     defaultValue: "1",
     helpMessage: "默认会自动分配给用户，个性高级套餐，需要租户管理员手工分配人员(拥有更灵活性权限控制)"
-  },  
+  },
   {
     field: 'status',
     label: '开启状态',
-    component: 'Switch',
+    component: 'RadioButtonGroup',
     componentProps: {
-      checkedValue: '1',
-      checkedChildren: '开启',
-      unCheckedValue: '0',
-      unCheckedChildren: '关闭',
+      options: [
+        { label: '开启', value: '1' },
+        { label: '关闭', value: '0' },
+      ],
     },
     defaultValue: '1',
   },

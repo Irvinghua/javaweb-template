@@ -15,6 +15,12 @@ export function useTableForm(
     const { submitButtonOptions, autoSubmitOnEnter} = formConfig || {};
     return {
       showAdvancedButton: true,
+      // 默认搜索区布局：1 行 2 个搜索字段 + 操作按钮组（查询/重置/高级筛选），
+      // 第 3 个起自动折叠进"高级筛选"。每字段 1/3 宽度（span 8），
+      // 2 字段 + actionCol(8) = 24，刚好一行。
+      // 页面通过 formConfig.autoAdvancedCol / baseColProps 可覆盖此默认。
+      autoAdvancedCol: 2,
+      baseColProps: { xs: 24, sm: 24, md: 12, lg: 8, xl: 8, xxl: 8 },
       ...formConfig,
       submitButtonOptions: { loading: unref(getLoading), ...submitButtonOptions },
       compact: true,

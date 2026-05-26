@@ -3,20 +3,28 @@
     <div class="btnArea" style="width: 100%" :style="{ textAlign: actionColOpt.style.textAlign }">
       <FormItem>
         <slot name="submitBefore"></slot>
-        <Button type="primary" class="mr-2" v-bind="getSubmitBtnOptions" @click="submitAction" v-if="showSubmitButton">
+        <Button type="primary" class="mr-2 form-action-submit-btn" v-bind="getSubmitBtnOptions" @click="submitAction" v-if="showSubmitButton">
           {{ getSubmitBtnOptions.text }}
         </Button>
 
         <slot name="resetBefore"></slot>
-        <Button type="default" class="mr-2" v-bind="getResetBtnOptions" @click="resetAction" v-if="showResetButton">
+        <Button type="default" class="mr-2 form-action-reset-btn" v-bind="getResetBtnOptions" @click="resetAction" v-if="showResetButton">
           {{ getResetBtnOptions.text }}
         </Button>
 
         <slot name="advanceBefore"></slot>
-        <Button type="link" size="small" @click="toggleAdvanced" v-if="showAdvancedButton && !hideAdvanceBtn">
-          {{ isAdvanced ? t('component.form.putAway') : t('component.form.unfold') }}
-          <BasicArrow class="ml-1" :expand="!isAdvanced" up />
-        </Button>
+        <button
+          v-if="showAdvancedButton && !hideAdvanceBtn"
+          class="form-filter-toggle"
+          :class="{ 'is-expanded': isAdvanced }"
+          type="button"
+          @click="toggleAdvanced"
+        >
+          高级筛选
+          <svg class="form-filter-toggle__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
         <slot name="advanceAfter"></slot>
       </FormItem>
     </div>
@@ -132,6 +140,68 @@
       .ant-btn-link {
         padding-left: 0;
       }
+    }
+  }
+
+  /* 查询/重置按钮美化 */
+  :deep(.form-action-submit-btn) {
+    background: linear-gradient(135deg, var(--accent), var(--accent-600));
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(91, 108, 255, 0.28);
+    font-weight: 500;
+    transition: box-shadow var(--fast), opacity var(--fast);
+
+    &:hover,
+    &:focus {
+      box-shadow: 0 6px 16px rgba(91, 108, 255, 0.38);
+      opacity: 0.92;
+    }
+  }
+
+  :deep(.form-action-reset-btn) {
+    background: var(--surface);
+    border-color: var(--line-strong);
+    color: var(--ink-700);
+    font-weight: 500;
+    transition: background-color var(--fast), color var(--fast);
+
+    &:hover,
+    &:focus {
+      background: var(--surface-2);
+      color: var(--ink-900);
+      border-color: var(--line-strong);
+    }
+  }
+
+  /* 高级筛选切换按钮 */
+  .form-filter-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: 0;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0 6px;
+    font-family: inherit;
+    line-height: 1;
+    transition: opacity var(--fast);
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &__chevron {
+      width: 13px;
+      height: 13px;
+      transition: transform var(--norm);
+      flex-shrink: 0;
+    }
+
+    &.is-expanded &__chevron {
+      transform: rotate(180deg);
     }
   }
 </style>

@@ -3,7 +3,12 @@
 // update-begin--author:liaozhiyang---date:20240130---for：【issues/5857】Button color类型颜色失效
 @import './btn.less';
 // update-end--author:liaozhiyang---date:20240130---for：【issues/5857】Button color类型颜色失效
-// @import './table.less';
+// UI redesign: Table 换皮 (ITEM 3)
+@import './table.less';
+// UI redesign: Modal / Drawer 换皮
+@import './modal-drawer.less';
+// UI redesign: 弹窗/抽屉里 BasicForm 共用换皮（任意 BasicForm 加 class="redesign-form" 即生效）
+@import './form-redesign.less';
 
 // TODO beta.11 fix
 .ant-col {
@@ -210,3 +215,209 @@ html[data-theme='dark'] {
   }
 }
 // update-end--author:liaozhiyang---date:20240605---for：【TV360X-189】统一只读样式
+
+// =====================================================
+// == UI重设计: 搜索区（BasicForm query filter card） ==
+// =====================================================
+// 目标: BasicTable 内的 BasicForm（source="table-query"）
+// class 路径: .jeecg-basic-table-form-container > .jeecg-basic-form
+.jeecg-basic-table-form-container {
+  // 筛选区卡片外观 — 匹配 .filter-card 精确值
+  > .jeecg-basic-form,
+  > .table-search-area-hidden {
+    background: var(--surface) !important;
+    border-radius: var(--radius-card) !important;
+    box-shadow: var(--shadow-card) !important;
+    padding: 14px 18px !important;
+    margin-bottom: 14px !important;
+  }
+
+  // ITEM 1: Label 垂直居中对齐 — 让 label cell 用 flex 垂直居中
+  > .jeecg-basic-form .ant-form-item {
+    align-items: center !important;
+  }
+
+  > .jeecg-basic-form .ant-form-item-label {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 !important;
+    // 固定宽度对齐 mockup .field > label { width: 84px; text-align: right }
+    min-width: 72px;
+  }
+
+  // 字段标签 — 精确匹配 .field > label: 13px, ink-700, weight 500
+  > .jeecg-basic-form .ant-form-item-label > label {
+    font-size: 13px !important;
+    color: var(--ink-700) !important;
+    font-weight: 500 !important;
+    line-height: 1.4;
+    height: auto !important;
+    white-space: nowrap;
+  }
+
+  // 去掉 ant 给 label 加的必填星号颜色覆盖
+  > .jeecg-basic-form .ant-form-item-label > label.ant-form-item-required::before {
+    color: var(--bad);
+  }
+
+  // 输入框 / 选择器外观 — 精确匹配 .control: h38, radius 10px, surface-3, border line, font-13
+  > .jeecg-basic-form .ant-input,
+  > .jeecg-basic-form .ant-input-affix-wrapper,
+  > .jeecg-basic-form .ant-select:not(.ant-select-customize-input) .ant-select-selector,
+  > .jeecg-basic-form .ant-picker,
+  > .jeecg-basic-form .ant-input-number {
+    height: 38px;
+    border-radius: 10px !important;
+    border-color: var(--line) !important;
+    background: var(--surface-3) !important;
+    font-size: 13px;
+    transition: border-color 0.18s, box-shadow 0.18s, background-color 0.18s;
+
+    &:hover {
+      border-color: rgba(91, 108, 255, 0.3) !important;
+    }
+  }
+
+  // Focus ring — 设计稿 .control:focus 精确值: 软主色边框 (40%) + 浅主色光晕 (12%)
+  > .jeecg-basic-form .ant-input:focus,
+  > .jeecg-basic-form .ant-input-affix-wrapper-focused,
+  > .jeecg-basic-form .ant-input-affix-wrapper:focus-within,
+  > .jeecg-basic-form .ant-picker-focused,
+  > .jeecg-basic-form .ant-input-number-focused {
+    border-color: rgba(91, 108, 255, 0.4) !important;
+    box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.12) !important;
+    background: #fff !important;
+    outline: none !important;
+  }
+
+  // Select selector height fix
+  > .jeecg-basic-form .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    height: 38px !important;
+    line-height: 36px !important;
+    display: flex;
+    align-items: center;
+    padding: 0 12px !important;
+  }
+
+  > .jeecg-basic-form .ant-select:not(.ant-select-customize-input) .ant-select-selection-item,
+  > .jeecg-basic-form .ant-select:not(.ant-select-customize-input) .ant-select-selection-placeholder {
+    line-height: 36px !important;
+    font-size: 13px;
+  }
+
+  // Date picker height fix
+  > .jeecg-basic-form .ant-picker {
+    display: flex;
+    align-items: center;
+    padding: 0 12px !important;
+
+    .ant-picker-input > input {
+      font-size: 13px;
+    }
+  }
+
+  // Input affix height fix —— 内部 <input> 必须填满外层 wrapper（38px），
+  // 否则会出现内层 ~20px / 外层 38px 高度不一致的视觉缺陷
+  > .jeecg-basic-form .ant-input-affix-wrapper {
+    padding: 0 12px !important;
+    display: flex;
+    align-items: center;
+
+    > input.ant-input {
+      height: 100% !important;
+      width: 100%;
+      background: transparent !important;
+      border: 0 !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+      outline: none !important;
+      font-size: 13px;
+    }
+  }
+
+  // 选择器 focus 穿透 (focused select) — 软主色边框 + 浅光晕，匹配 .control:focus
+  > .jeecg-basic-form .ant-select-focused:not(.ant-select-disabled) .ant-select-selector {
+    border-color: rgba(91, 108, 255, 0.4) !important;
+    box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.12) !important;
+    background: #fff !important;
+  }
+
+  // 「高级筛选」展开后的设计稿布局：
+  //   行1: [f1] [f2] [查询/重置/高级筛选 actionCol]    ← 保持不变
+  //   ─────────────── dashed line（只此一条）───────────────
+  //   行2+: [f3] [f4] [f5] ...                          ← 高级字段
+  // 注意：以前用 `.ant-row { overflow: hidden }` 配 `width: 200vw` 剪 dashed 线，
+  // 副作用是 AntD Select/DatePicker 的 popup 浮层也被剪了 —— 这里改用 width:100vw
+  // （足够横跨 row，且 dashed 线极淡，超出 row 卡片落到页面浅色背景上几乎不可见）
+  > .jeecg-basic-form.jeecg-basic-form--advanced > .ant-row {
+    position: relative;
+
+    /* actionCol 锁在第 1 行末（order 1），高级字段到第 2 行（order 2） */
+    > .ant-col:last-of-type {
+      order: 1 !important;
+    }
+    > .ant-col:nth-of-type(n+3):not(:last-of-type) {
+      order: 2 !important;
+      padding-top: 14px !important;
+      margin-top: 10px !important;
+    }
+    /* 只在第 1 个高级字段（DOM nth=3）上挂一条横向 dashed 线，width:100vw 够覆盖 row 宽
+       —— 不剪裁父级以保留 dropdown popup */
+    > .ant-col:nth-of-type(3):not(:last-of-type)::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      max-width: calc(100vw - 200px); /* 防止冲出 sidebar 之外 */
+      border-top: 1px dashed var(--line);
+      pointer-events: none;
+    }
+  }
+
+  // 查询按钮 — 精确匹配 .btn-primary
+  > .jeecg-basic-form .form-action-submit-btn.ant-btn {
+    height: 38px !important;
+    padding: 0 16px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    background: linear-gradient(135deg, #2a66ff, var(--accent)) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    box-shadow: 0 6px 14px rgba(91, 108, 255, 0.25) !important;
+    transition: box-shadow 0.18s, opacity 0.18s !important;
+
+    &:hover,
+    &:focus {
+      box-shadow: 0 8px 18px rgba(91, 108, 255, 0.32) !important;
+      opacity: 0.95;
+    }
+  }
+
+  // 重置按钮 — 精确匹配 .btn-ghost
+  > .jeecg-basic-form .form-action-reset-btn.ant-btn {
+    height: 38px !important;
+    padding: 0 16px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    background: var(--surface) !important;
+    border-color: var(--line) !important;
+    color: var(--ink-700) !important;
+    box-shadow: none !important;
+    transition: background-color 0.18s, color 0.18s !important;
+
+    &:hover,
+    &:focus {
+      background: var(--surface-2) !important;
+      color: var(--ink-900) !important;
+      border-color: var(--line) !important;
+    }
+  }
+
+  // Form item spacing
+  > .jeecg-basic-form .ant-form-item {
+    margin-bottom: 12px !important;
+  }
+}

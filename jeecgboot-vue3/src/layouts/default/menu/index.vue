@@ -53,6 +53,9 @@
         getIsSidebarType,
         getSplit,
       } = useMenuSetting();
+
+      // expose getCollapsed for renderMenu to use
+      const collapsedRef = getCollapsed;
       const { getShowLogo } = useRootSetting();
 
       const { prefixCls } = useDesign('layout-menu');
@@ -142,21 +145,50 @@
         return <AppLogo showTitle={!unref(getCollapsed)} class={unref(getLogoClass)} theme={unref(getComputedMenuTheme)} />;
       }
 
+      // Paths that belong to 系统设置 group
+      const SETTINGS_PATHS = ['/isystem', '/mytenant', '/monitor', '/message'];
+
       function renderMenu() {
         const { menus, ...menuProps } = unref(getCommonProps);
         // console.log(menus);
         if (!menus || !menus.length) return null;
-        return !props.isHorizontal ? (
-          <SimpleMenu {...menuProps} isSplitMenu={unref(getSplit)} items={menus} />
-        ) : (
-          <BasicMenu
-            {...(menuProps as any)}
-            isHorizontal={props.isHorizontal}
-            type={unref(getMenuType)}
-            showLogo={unref(getIsShowLogo)}
-            mode={unref(getComputedMenuMode as any)}
-            items={menus}
-          />
+
+        if (props.isHorizontal) {
+          return (
+            <BasicMenu
+              {...(menuProps as any)}
+              isHorizontal={props.isHorizontal}
+              type={unref(getMenuType)}
+              showLogo={unref(getIsShowLogo)}
+              mode={unref(getComputedMenuMode as any)}
+              items={menus}
+            />
+          );
+        }
+
+        // Vertical sidebar — split into main/settings groups
+        const isCollapsed = unref(getCollapsed);
+        const mainMenus = menus.filter((item) => !SETTINGS_PATHS.includes(item.path));
+        const settingsMenus = menus.filter((item) => SETTINGS_PATHS.includes(item.path));
+
+        const groupTitle = (title: string) =>
+          !isCollapsed ? <div class="nav-group-title">{title}</div> : null;
+
+        return (
+          <div class="sidebar-menu-groups">
+            {mainMenus.length > 0 && (
+              <div class="nav-section">
+                {groupTitle('主菜单')}
+                <SimpleMenu {...menuProps} isSplitMenu={unref(getSplit)} items={mainMenus} />
+              </div>
+            )}
+            {settingsMenus.length > 0 && (
+              <div class="nav-section nav-section--settings">
+                {groupTitle('系统设置')}
+                <SimpleMenu {...menuProps} isSplitMenu={unref(getSplit)} items={settingsMenus} />
+              </div>
+            )}
+          </div>
         );
       }
 
@@ -178,8 +210,40 @@
   }
 </style>
 <style lang="less">
+  // Sidebar group headers and section layout
+  .sidebar-menu-groups {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav-section {
+    display: flex;
+    flex-direction: column;
+
+    &--settings {
+      margin-top: 14px;
+      padding-top: 6px;
+      border-top: 1px solid var(--line);
+    }
+  }
+
+  .nav-group-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-400);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 14px 14px 8px;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+</style>
+<style lang="less">
   @prefix-cls: ~'@{namespace}-layout-menu';
   @logo-prefix-cls: ~'@{namespace}-app-logo';
+  @menu-prefix-cls: ~'@{namespace}-menu';
 
   .@{prefix-cls} {
     &-logo {
@@ -196,6 +260,118 @@
       .@{logo-prefix-cls} {
         &__title {
           opacity: 1;
+        }
+      }
+    }
+  }
+
+  // Redesign override: when app-logo renders in dark mode inside fixed sidebar,
+  // force light colors so it's always readable on white background.
+  .jeecg-layout-sideBar--fixed .jeecg-app-logo {
+    background: var(--surface) !important;
+
+    &.dark .jeecg-app-logo__title {
+      color: var(--ink-900) !important;
+      font-weight: 700;
+    }
+  }
+
+  // Redesign override: when sidebar menu uses dark class (from cached user settings),
+  // force light redesign colors so sidebar always looks like the design spec.
+  // This only applies inside the sidebar sider container (fixed layout sider).
+  .jeecg-layout-sideBar--fixed {
+    .@{menu-prefix-cls}-dark.@{menu-prefix-cls}-vertical {
+      background-color: var(--surface) !important;
+
+      // submenu parent container
+      .jeecg-simple-menu__parent,
+      .@{menu-prefix-cls}-submenu,
+      .@{menu-prefix-cls}-submenu-nested {
+        background-color: var(--surface) !important;
+      }
+
+      .@{menu-prefix-cls}-item,
+      .@{menu-prefix-cls}-submenu-title {
+        color: var(--ink-700) !important;
+
+        &:hover {
+          background-color: var(--surface-2) !important;
+          color: var(--ink-900) !important;
+        }
+      }
+
+      // Active leaf item (top-level)
+      > .@{menu-prefix-cls}-item-active:not(.@{menu-prefix-cls}-submenu) {
+        background-color: var(--accent-50) !important;
+        color: var(--accent) !important;
+        font-weight: 600;
+        position: relative;
+
+        &::before {
+          content: '' !important;
+          position: absolute;
+          left: -14px;
+          top: 10px;
+          bottom: 10px;
+          width: 3px;
+          border-radius: 0 3px 3px 0;
+          background-color: var(--accent) !important;
+        }
+
+        &::after {
+          display: none !important;
+        }
+      }
+
+      // Parent with active child
+      .@{menu-prefix-cls}-child-item-active > .@{menu-prefix-cls}-submenu-title,
+      .@{menu-prefix-cls}-submenu-active > .@{menu-prefix-cls}-submenu-title,
+      .@{menu-prefix-cls}-opened > .@{menu-prefix-cls}-submenu-title {
+        background-color: var(--surface-2) !important;
+        color: var(--ink-900) !important;
+      }
+
+      // Nested sub-items (children of submenu)
+      .@{menu-prefix-cls}-submenu .@{menu-prefix-cls}-item,
+      .@{menu-prefix-cls}-submenu-nested .@{menu-prefix-cls}-item {
+        color: var(--ink-600) !important;
+
+        &:hover {
+          background-color: var(--surface-2) !important;
+          color: var(--ink-900) !important;
+        }
+
+        &.@{menu-prefix-cls}-item-active {
+          background-color: var(--accent-50) !important;
+          color: var(--accent) !important;
+          font-weight: 600;
+
+          &::after {
+            display: none !important;
+          }
+        }
+      }
+
+      // Collapsed state
+      &.@{menu-prefix-cls}-collapse {
+        background-color: var(--surface) !important;
+
+        > .@{menu-prefix-cls}-item-active,
+        > .@{menu-prefix-cls}-submenu-active {
+          background-color: var(--accent-50) !important;
+          position: relative;
+
+          &::before {
+            content: '' !important;
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            border-radius: 0 3px 3px 0;
+            background-color: var(--accent) !important;
+          }
         }
       }
     }

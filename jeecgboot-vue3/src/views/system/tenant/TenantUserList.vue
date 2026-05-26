@@ -75,7 +75,9 @@
   const { createMessage, createConfirm } = useMessage();
 
   //注册drawer
-  const [registerDrawer, { openDrawer }] = useDrawer();
+  // UI Redesign: TenantUserDrawer 内部已改为居中 Modal（字段不多不需要抽屉）。
+  // 变量名 registerDrawer/openDrawer 沿用，最小化调用点改动
+  const [registerDrawer, { openModal: openDrawer }] = useModal();
   //离职代理人model
   const [registerQuitAgentModal, { openModal: openQuitAgentModal }] = useModal();
   //离职用户列表model

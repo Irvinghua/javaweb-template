@@ -97,6 +97,11 @@ function handleActionColumn(propsRef: ComputedRef<BasicTableProps>, columns: Bas
   const hasIndex = columns.findIndex((column) => column.flag === ACTION_COLUMN_FLAG);
   if (hasIndex === -1) {
     columns.push({
+      // UI Redesign: 默认锁定到右侧 + 居中 + 默认标题，避免多列表格挤压成 "编辑 …"
+      // 调用方仍可在 actionColumn 里覆盖任意字段（包括 useListPage 默认配置）
+      title: '操作',
+      align: 'center',
+      fixed: 'right',
       ...columns[hasIndex],
       ...actionColumn,
       flag: ACTION_COLUMN_FLAG,

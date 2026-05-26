@@ -1,77 +1,93 @@
+<!--
+  UI Redesign: 按 profile.html 设计稿重做，三张卡片：
+    1) .profile-hero —— 头像 + 姓名 + 标签 + 使用天数 / 上次登录
+    2) .info-section —— 详细资料 + 联系信息 双栏 + 底部编辑按钮
+    3) .sign-section —— 个性签名（上传 + 开启状态）
+  业务逻辑（getUserData / updateAvatar / editRealName / openEditModal / 上传 / 开关）保持不变
+-->
 <template>
-  <div class="account-padding" :class="[`${prefixCls}`]">
-    <div class="user-setting-top">
-      <div class="account-avatar">
+  <div :class="[`${prefixCls}`, 'base-setting-redesign']">
+    <!-- ===== Hero ===== -->
+    <div class="card profile-hero">
+      <div class="avatar-xl">
         <CropperAvatar
           :uploadApi="uploadImg"
           :showBtn="false"
           :value="avatar"
           :btnProps="{ preIcon: 'ant-design:cloud-upload-outlined' }"
           @change="updateAvatar"
-          width="80"
+          width="84"
         />
-        <div class="account-right border-bottom">
-          <div v-if="!isEdit">
-            <span class="font-size-17 account-name">{{ userInfo.realname }}</span>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-name">
+          <template v-if="!isEdit">
+            <span class="hero-name__text">{{ userInfo.realname }}</span>
             <a-tooltip content="编辑姓名">
-              <Icon class="pointer font-size-17 gray-bd account-icon" icon="ant-design:edit-outlined"
-                    @click="editHandleClick" />
+              <button class="icon-edit" @click="editHandleClick" aria-label="编辑姓名">
+                <Icon icon="ant-design:edit-outlined" :size="13" />
+              </button>
             </a-tooltip>
-          </div>
-          <div v-else>
-            <a-input ref="accountNameEdit" :maxlength="100" v-model:value="userInfo.realname" @blur="editRealName" />
-          </div>
-          <div class="use-day">
-            使用：<span>{{userInfo.createTimeText}}</span>
-          </div>
+          </template>
+          <template v-else>
+            <a-input ref="accountNameEdit" :maxlength="100" v-model:value="userInfo.realname" @blur="editRealName" style="max-width: 220px" />
+          </template>
+        </div>
+        <div class="hero-sub" v-if="userInfo.createTimeText">
+          已使用本平台 <b>{{ userInfo.createTimeText }}</b>
         </div>
       </div>
     </div>
-    <div class="account-data border-bottom">
-      <!-- 详细资料 -->
-      <div class="account-detail">
-        <div class="font-size-15 font-bold font-color-gray" style="margin-bottom: 16px">详细资料</div>
-        <div class="margin-bottom-10 font-size-13">
-          <span class="gray-75 item-label">生日</span>
-          <span class="gray-3">{{ userInfo.birthday }}</span>
+
+    <!-- ===== 详细资料 + 联系信息 ===== -->
+    <div class="card info-section">
+      <div class="info-grid-2">
+        <div>
+          <div class="block-title">详细资料 <span class="sub">基础个人信息</span></div>
+          <div class="kv-row">
+            <span class="k">生日</span>
+            <span class="v" :class="{ empty: !userInfo.birthday || userInfo.birthday === '未填写' }">{{ userInfo.birthday || '未填写' }}</span>
+          </div>
+          <div class="kv-row">
+            <span class="k">性别</span>
+            <span class="v" :class="{ empty: !userInfo.sexText }">{{ userInfo.sexText || '未填写' }}</span>
+          </div>
+          <div class="kv-row last">
+            <span class="k">职位</span>
+            <span class="v" :class="{ empty: !userInfo.postText }">{{ userInfo.postText || '未填写' }}</span>
+          </div>
         </div>
-        <div class="margin-bottom-10 font-size-13">
-          <span class="gray-75 item-label">性别</span>
-          <span class="gray-3">{{ userInfo.sexText }}</span>
-        </div>
-        <div class="margin-bottom-10 nowarp font-size-13">
-          <span class="gray-75 item-label">职位</span>
-          <span class="gray-3">{{ userInfo.postText ? userInfo.postText : "未填写" }}</span>
-        </div>
-        <div class="font-size-13">
-          <span class="item-label"></span>
-          <span class="item-label pointer" style="color:#1e88e5" @click="openEditModal">编辑</span>
+        <div>
+          <div class="block-title">联系信息 <span class="sub">便于他人联系到您</span></div>
+          <div class="kv-row">
+            <span class="k">邮箱</span>
+            <span class="v" :class="{ empty: !userInfo.email }">{{ userInfo.email || '未填写' }}</span>
+          </div>
+          <div class="kv-row last">
+            <span class="k">手机</span>
+            <span class="v" :class="{ empty: !userInfo.phone }">{{ userInfo.phone || '未填写' }}</span>
+          </div>
         </div>
       </div>
-      <!-- 联系信息 -->
-      <div class="account-info">
-        <div class="font-size-15 font-bold font-color-gray" style="margin-bottom: 16px">联系信息</div>
-        <div class="margin-bottom-10 font-size-13">
-          <span class="gray-75 item-label">邮箱</span>
-          <span class="gray-3">{{ userInfo.email ? userInfo.email : "未填写" }}</span>
-        </div>
-        <div class="margin-bottom-10 font-size-13">
-          <span class="gray-75 item-label">手机</span>
-          <span class="gray-3">{{ userInfo.phone ? userInfo.phone : "未填写" }}</span>
-        </div>
+      <div class="section-foot">
+        <a-button type="primary" ghost @click="openEditModal">
+          <template #icon><Icon icon="ant-design:edit-outlined" /></template>
+          编辑资料
+        </a-button>
       </div>
     </div>
-    <div class="account-data">
-      <!-- 个性签名 -->
-      <div class="account-detail">
-        <div class="font-size-15 font-bold font-color-gray" style="margin-bottom: 16px">个性签名</div>
-        <div class="font-size-13 flex">
-          <span class="gray-75 item-label">签名</span>
+
+    <!-- ===== 个性签名 ===== -->
+    <div class="card sign-section">
+      <div class="block-title">个性签名 <span class="sub">用于工单、合同等场景的电子签名</span></div>
+      <div class="sign-row">
+        <label>签名图片</label>
+        <div class="sign-row__body">
           <a-upload
-            accept="jpg,jpeg,png"  
+            accept="jpg,jpeg,png"
             :max-count="1"
             :multiple="false"
-            name = "file"
+            name="file"
             :headers="uploadHeader"
             :action="uploadUrl"
             v-model:fileList="uploadFileList"
@@ -79,26 +95,28 @@
             @change="handleChange"
             list-type="picture-card"
             @preview="handlePreview"
+            class="sign-upload"
           >
-            <div v-if="uploadVisible">
-              <UploadOutlined></UploadOutlined>
+            <div v-if="uploadVisible" class="uz-inner">
+              <UploadOutlined />
               <div class="ant-upload-text">上传</div>
             </div>
           </a-upload>
           <a-modal :width="500" :open="previewVisible" :footer="null" @cancel="handleCancel">
             <img alt="example" style="width: 100%" :src="previewImage" />
           </a-modal>
+          <div class="sign-tips">
+            <div>建议尺寸 <b>200×80</b>，大小不超过 1M，格式为 PNG 或 JPEG</div>
+            <div>方法一：手写后扫描成图片上传</div>
+            <div>方法二：使用在线生成工具 <a href="http://www.diyiziti.com/qianming" target="_blank">在线生成签名</a></div>
+          </div>
         </div>
-        <div style="font-size: 12px;color:#93a6aa" class="margin-bottom-10">
-          <p>建议上传尺寸为200*80，大小不超过1M且格式为png或jpeg的图片</p>
-          <p>生成签名方法一：手写扫描进行上传。</p>
-          <p>生成签名方法二：使用在线转换，生成后进行上传。
-            <a href="http://www.diyiziti.com/qianming" target="_blank">http://www.diyiziti.com/qianming</a>
-          </p>
-        </div>
-        <div class="margin-bottom-10 font-size-13 flex" style="margin-top: 10px">
-          <span class="gray-75 item-label">开启状态</span>
-          <a-switch v-model:checked="userInfo.signEnable" :checkedValue="1" :unCheckedValue="0" @change="handleEnableSignChange"></a-switch>
+      </div>
+      <div class="sign-row sign-row--switch">
+        <label>开启状态</label>
+        <div class="sign-row__body">
+          <a-switch v-model:checked="userInfo.signEnable" :checkedValue="1" :unCheckedValue="0" @change="handleEnableSignChange" />
+          <span class="sign-row__hint">开启后，签名将自动加载到流程审批等场景</span>
         </div>
       </div>
     </div>
@@ -402,149 +420,261 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="less">
-    // 代码逻辑说明: [issues/563]暗色主题部分失效
-  @prefix-cls: ~'@{namespace}-j-base-setting-container';
+<style lang="less" scoped>
+  // ----------------------------------------------------
+  // UI Redesign: profile.html .profile-hero / .info-section / .sign-section
+  // ----------------------------------------------------
+  .base-setting-redesign {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-  .@{prefix-cls}{
-    .user-setting-top {
-      padding-top: 40px;
-      width: 100%;
-      border-bottom: 1px solid @border-color-base;
-      display: flex;
-      padding-bottom: 40px;
+  .card {
+    background: var(--surface, #fff);
+    border-radius: var(--radius-card, 18px);
+    box-shadow: var(--shadow-card, 0 2px 12px rgba(15, 23, 42, 0.05));
+  }
+
+  // ---------- Hero ----------
+  .profile-hero {
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .avatar-xl {
+    width: 84px;
+    height: 84px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #7e8dff, var(--accent, #5b6cff));
+    border: 3px solid #fff;
+    box-shadow: 0 6px 18px rgba(91, 108, 255, 0.28);
+    display: grid;
+    place-items: center;
+
+    :deep(.ant-upload),
+    :deep(.cropper-img) {
+      border-radius: 50%;
     }
+  }
 
-    .account-avatar {
-      align-items: center;
-      display: flex;
-      margin-right: 30px;
-      flex: 1;
-    }
+  .hero-meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
 
-    .change-avatar {
-      img {
-        display: block;
-        margin-bottom: 15px;
-        border-radius: 50%;
+  .hero-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink-900);
+
+    .icon-edit {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: var(--surface, #fff);
+      display: grid;
+      place-items: center;
+      color: var(--ink-500);
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s;
+      padding: 0;
+
+      &:hover {
+        background: var(--surface-2, #f7f8fb);
+        color: var(--accent-600);
       }
     }
+  }
 
-    .account-right {
-      margin-left: 25px !important;
+  .hero-sub {
+    font-size: 13px;
+    color: var(--ink-500);
+
+    b {
+      color: var(--accent-600);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      padding: 0 2px;
+    }
+  }
+
+  // ---------- 区块标题 ----------
+  .block-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-900);
+    margin-bottom: 4px;
+
+    &::before {
+      content: '';
+      width: 3px;
+      height: 14px;
+      border-radius: 2px;
+      background: var(--accent, #5b6cff);
     }
 
-    .font-size-15 {
-      font-size: 15px;
-    }
-
-    .font-size-17 {
-      font-size: 17px;
-    }
-
-    .pointer {
-      cursor: pointer;
-    }
-
-    .account-name {
-      white-space: nowrap;
-      overflow: hidden;
-      width: 200px;
-      text-overflow: ellipsis;
-      line-height: 32px !important;
-      /*begin 兼容暗夜模式*/
-      color: @text-color;
-      /*end 兼容暗夜模式*/
-      font-weight: 500;
-    }
-
-    .gray-bd {
-      color: #bdbdbd;
-    }
-
-    .account-icon {
+    .sub {
+      font-size: 12px;
+      color: var(--ink-400);
+      font-weight: 400;
       margin-left: 4px;
     }
+  }
 
-    .account-data {
-      width: 100% !important;
-      display: flex;
-      min-width: 0;
+  // ---------- 详细资料 / 联系信息 双栏 ----------
+  .info-section {
+    padding: 22px 28px;
+  }
+
+  .info-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 56px;
+  }
+
+  .kv-row {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line, rgba(15, 23, 42, 0.07));
+
+    &.last {
+      border-bottom: 0;
     }
 
-    .account-detail {
-      width: 40%;
-      display: flex;
-      flex-direction: column;
-      padding: 40px 0;
-
-      .item-label {
-        display: inline-block;
-        text-align: left;
-        width: 80px;
-      }
-    }
-
-    .font-bold {
-      font-weight: 700 !important;
-    }
-
-    .margin-bottom-10 {
-      margin-bottom: 10px;
-    }
-
-    .account-info {
-      width: 60%;
-      display: flex;
-      flex-direction: column;
-      padding: 40px 0;
-      box-sizing: border-box;
-      margin-left: 10px;
-
-      .item-label {
-        display: inline-block;
-        text-align: left;
-        width: 80px;
-      }
-    }
-
-    .nowarp {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
-    .account-padding {
-      padding-left: 20px !important;
-      padding-right: 40px !important;
-    }
-
-    .use-day {
-      /*begin 兼容暗夜模式*/
-      color: @text-color;
-      /*end 兼容暗夜模式*/
-      margin-top: 10px;
-      font-size: 13px;
-      span {
-        color: #1e88e5;
-        margin-left: 5px;
-      }
-    }
-    .font-size-13 {
+    .k {
+      color: var(--ink-500);
       font-size: 13px;
     }
-    .ant-upload-select,.ant-upload-list-item-container{
+
+    .v {
+      color: var(--ink-900);
+      font-size: 14px;
+      font-weight: 500;
+
+      &.empty {
+        color: var(--ink-400);
+        font-weight: 400;
+      }
+    }
+  }
+
+  .section-foot {
+    margin-top: 12px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line, rgba(15, 23, 42, 0.07));
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  // ---------- 个性签名 ----------
+  .sign-section {
+    padding: 22px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .sign-row {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    align-items: start;
+    gap: 16px;
+
+    &--switch {
+      align-items: center;
+    }
+
+    > label {
+      color: var(--ink-500);
+      font-size: 13px;
+      padding-top: 10px;
+    }
+
+    &--switch > label {
+      padding-top: 0;
+    }
+
+    &__body {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    &--switch .sign-row__body {
+      align-items: center;
+      gap: 12px;
+    }
+
+    &__hint {
+      font-size: 13px;
+      color: var(--ink-500);
+    }
+  }
+
+  .sign-tips {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--ink-500);
+    line-height: 1.7;
+
+    b {
+      color: var(--ink-900);
+      font-weight: 600;
+    }
+
+    a {
+      color: var(--accent-600);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  // 签名上传缩略图尺寸 200×80
+  :deep(.sign-upload) {
+    .ant-upload.ant-upload-select,
+    .ant-upload-list-item-container {
       width: 200px !important;
       height: 80px !important;
     }
     .ant-upload-list-item-thumbnail .ant-upload-list-item-image {
       object-fit: cover !important;
     }
-    p{
-      margin-bottom: 5px;
-    }
-    .border-bottom{
-      border-bottom: 1px solid @border-color-base;
+  }
+
+  .uz-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-500);
+
+    .anticon {
+      font-size: 18px;
     }
   }
 </style>

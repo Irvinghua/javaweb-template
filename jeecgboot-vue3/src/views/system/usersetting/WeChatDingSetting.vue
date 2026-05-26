@@ -1,55 +1,79 @@
+<!--
+  UI Redesign: 第三方APP 绑定
+  按 profile.html "Tab 4：第三方 APP" 设计稿重做：
+    .app-card 卡片，内部多行 .app-row
+    每行：app-info (app-logo 渐变方块 + app-meta：name + desc) + 绑定按钮
+  业务逻辑（initUserDetail / dingDingBind / wechatBind / wechatEnterpriseBind 等）保持不变
+-->
 <template>
-  <div :class="[`${prefixCls}`]">
-    <div class="my-account">第三方APP</div>
-<!--    <div class="account-row-item">-->
-<!--      <div class="account-label gray-75">企业微信绑定</div>-->
-<!--      <span>-->
-<!--        <icon-font :style="!bindEnterpriseData.sysUserId ? { color: '#9e9e9e' } : { color: '#0082EF' }" class="item-icon" type="icon-qiyeweixin3" />-->
-<!--        <span class="gray-75" style="margin-left: 12px">企业微信</span>-->
-<!--        <span class="gray-75" style="margin-left: 8px" v-if="bindEnterpriseData.realname">{{ '已绑定：' + bindEnterpriseData.realname }}</span>-->
-<!--        <span class="blue-e5 pointer" style="margin-left: 24px" @click="wechatEnterpriseBind">{{-->
-<!--          !bindEnterpriseData.sysUserId ? '绑定' : '解绑'-->
-<!--        }}</span>-->
-<!--      </span>-->
-<!--    </div>-->
-    <div class="account-row-item">
-      <div class="account-label gray-75">钉钉绑定</div>
-      <span>
-        <DingtalkCircleFilled :style="!bindDingData.sysUserId ? { color: '#9e9e9e' } : { color: '#007FFF' }" class="item-icon" />
-        <span class="gray-75" style="margin-left: 12px">钉钉</span>
-        <span class="gray-75" style="margin-left: 8px" v-if="bindDingData.realname">{{ '已绑定：' + bindDingData.realname }}</span>
-        <span class="blue-e5 pointer" style="margin-left: 24px" @click="dingDingBind">{{ !bindDingData.sysUserId ? '绑定' : '解绑' }}</span>
-      </span>
-    </div>
-    <div class="account-row-item">
-      <div class="account-label gray-75">账号绑定</div>
-      <span>
-        <WechatFilled :style="!bindWechatData.sysUserId ? { color: '#9e9e9e' } : { color: '#1ec563' }" class="item-icon" />
-        <span class="gray-75" style="margin-left: 12px">微信</span>
-        <span class="gray-75" style="margin-left: 8px" v-if="bindWechatData.realname">{{ '已绑定：' + bindWechatData.realname }}</span>
-        <span class="blue-e5 pointer" style="margin-left: 24px" @click="wechatBind">{{ !bindWechatData.sysUserId ? '绑定' : '解绑' }}</span>
-      </span>
+  <div :class="[`${prefixCls}`, 'third-app-redesign']">
+    <div class="card app-wrapper">
+      <div class="block-title">第三方 APP <span class="sub">绑定后可使用对应应用快速登录</span></div>
+
+      <div class="app-card">
+        <!-- 钉钉 -->
+        <div class="app-row">
+          <div class="app-info">
+            <span class="app-logo app-logo--dingtalk">
+              <DingtalkCircleFilled />
+            </span>
+            <div class="app-meta">
+              <div class="app-name">
+                钉钉
+                <span class="sec-tag sec-tag--green" v-if="bindDingData.sysUserId">已绑定</span>
+              </div>
+              <div class="app-desc">
+                {{ bindDingData.realname ? `已绑定 ${bindDingData.realname}` : '未绑定，绑定后可使用钉钉账号一键登录' }}
+              </div>
+            </div>
+          </div>
+          <a-button
+            :type="bindDingData.sysUserId ? 'default' : 'primary'"
+            :ghost="!bindDingData.sysUserId"
+            @click="dingDingBind"
+          >
+            {{ !bindDingData.sysUserId ? '绑定' : '解绑' }}
+          </a-button>
+        </div>
+
+        <!-- 微信 -->
+        <div class="app-row">
+          <div class="app-info">
+            <span class="app-logo app-logo--wechat">
+              <WechatFilled />
+            </span>
+            <div class="app-meta">
+              <div class="app-name">
+                微信
+                <span class="sec-tag sec-tag--green" v-if="bindWechatData.sysUserId">已绑定</span>
+              </div>
+              <div class="app-desc">
+                {{ bindWechatData.realname ? `已绑定 ${bindWechatData.realname}` : '未绑定，绑定后可使用微信账号一键登录' }}
+              </div>
+            </div>
+          </div>
+          <a-button
+            :type="bindWechatData.sysUserId ? 'default' : 'primary'"
+            :ghost="!bindWechatData.sysUserId"
+            @click="wechatBind"
+          >
+            {{ !bindWechatData.sysUserId ? '绑定' : '解绑' }}
+          </a-button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup name="we-chat-ding-setting">
-  import { onMounted, ref, reactive, unref } from 'vue';
-  import { CollapseContainer } from '/@/components/Container';
+  import { onMounted, ref, unref } from 'vue';
   import { bindThirdAppAccount, deleteThirdAccount, getThirdAccountByUserId } from './UserSetting.api';
-  import { useUserStore } from '/@/store/modules/user';
-  import { useModal } from '/@/components/Modal';
-  import { DingtalkCircleFilled, createFromIconfontCN, WechatFilled } from '@ant-design/icons-vue';
+  import { DingtalkCircleFilled, WechatFilled } from '@ant-design/icons-vue';
   import { useGlobSetting } from '/@/hooks/setting';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { Modal } from 'ant-design-vue';
   import { useDesign } from '/@/hooks/web/useDesign';
 
   const { prefixCls } = useDesign('j-user-tenant-setting-container');
-
-  const IconFont = createFromIconfontCN({
-    scriptUrl: '//at.alicdn.com/t/font_2316098_umqusozousr.js',
-  });
-  const userStore = useUserStore();
 
   //绑定微信的数据
   const bindWechatData = ref<any>({});
@@ -63,14 +87,12 @@
   const thirdType = ref('');
   //第三方用户UUID
   const thirdUserUuid = ref('');
-  //第三方详情
-  const thirdDetail = ref<any>({});
   const { createMessage } = useMessage();
   //windows对象，用于关闭窗口事件
   const windowsIndex = ref<any>('');
   //窗口监听事件
   const receiveMessage = ref<any>('');
-  
+
   /**
    * 初始化钉钉和企业微信数据
    */
@@ -87,18 +109,9 @@
     }
   }
 
-  /**
-   * 企业微信绑定解绑事件
-   */
-  function wechatEnterpriseBind() {
-    console.log('企业微信绑定解绑事件');
-    let data = unref(bindEnterpriseData);
-    if (!data.sysUserId) {
-      onThirdLogin('wechat_enterprise');
-    }else{
-      deleteAccount({ sysUserId: data.sysUserId, id: data.id }, '企业微信');
-    }
-  }
+  // UI Redesign: 企业微信绑定/解绑功能保留 setThirdDetail 写入 bindEnterpriseData，
+  // 但当前设计稿（profile.html "第三方APP" 区）只展示钉钉/微信两项；
+  // 如需启用企业微信，恢复 wechatEnterpriseBind 函数并在模板中加一行 .app-row 即可。
 
   /**
    * 钉钉绑定解绑事件
@@ -139,7 +152,7 @@
       //确保只有一个监听
       window.removeEventListener('message', unref(receiveMessage),false);
     }
-    
+
     windowsIndex.value = window.open(
       url,
       `login ${source}`,
@@ -244,65 +257,134 @@
     initUserDetail();
   });
 </script>
-<style lang="less">
-// 代码逻辑说明: [issues/563]暗色主题部分失效
-@prefix-cls: ~'@{namespace}-j-user-tenant-setting-container';
-.@{prefix-cls} {
-   padding: 30px 40px 0 20px;
-  .account-row-item {
-    align-items: center;
-    /*begin 兼容暗夜模式*/
-    border-bottom: 1px solid @border-color-base;
-    /*end 兼容暗夜模式*/
-    box-sizing: border-box;
+<style lang="less" scoped>
+  // ----------------------------------------------------
+  // UI Redesign: profile.html .app-card
+  // ----------------------------------------------------
+  .third-app-redesign {
     display: flex;
-    height: 71px;
-    position: relative;
+    flex-direction: column;
+    gap: 16px;
   }
 
-  .account-label {
-    text-align: left;
-    width: 160px;
+  .card {
+    background: var(--surface, #fff);
+    border-radius: var(--radius-card, 18px);
+    box-shadow: var(--shadow-card, 0 2px 12px rgba(15, 23, 42, 0.05));
   }
 
-  .gray-75 {
-    /*begin 兼容暗夜模式*/
-    color: @text-color !important;
-    /*end 兼容暗夜模式*/
+  .app-wrapper {
+    padding: 22px 28px 4px;
   }
 
-  .pointer {
-    cursor: pointer;
+  .block-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-900);
+    margin-bottom: 4px;
+
+    &::before {
+      content: '';
+      width: 3px;
+      height: 14px;
+      border-radius: 2px;
+      background: var(--accent, #5b6cff);
+    }
+
+    .sub {
+      font-size: 12px;
+      color: var(--ink-400);
+      font-weight: 400;
+      margin-left: 4px;
+    }
   }
 
-  .blue-e5 {
-    color: #1e88e5;
+  .app-card {
+    padding: 0;
   }
 
-  .phone-margin {
-    margin-left: 24px;
-    margin-right: 24px;
+  .app-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line, rgba(15, 23, 42, 0.07));
+
+    &:last-child {
+      border-bottom: 0;
+    }
   }
 
-  .clearfix:after {
-    clear: both;
+  .app-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
   }
 
-  .clearfix:before {
-    content: '';
-    display: table;
+  .app-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: #fff;
+    font-size: 22px;
+
+    :deep(.anticon) {
+      font-size: 22px;
+      color: #fff;
+    }
+
+    &--dingtalk {
+      background: linear-gradient(135deg, #2dbcff, #0089d6);
+    }
+
+    &--wechat {
+      background: linear-gradient(135deg, #2bc964, #07c160);
+    }
   }
 
-  .my-account {
-    font-size: 17px;
-    font-weight: 700 !important;
-    /*begin 兼容暗夜模式*/
-    color: @text-color !important;
-    /*end 兼容暗夜模式*/
-    margin-bottom: 20px;
+  .app-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
   }
-  .item-icon {
-    font-size: 16px !important;
+
+  .app-name {
+    color: var(--ink-900);
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
-}
+
+  .app-desc {
+    color: var(--ink-500);
+    font-size: 12.5px;
+  }
+
+  .sec-tag {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+
+    &--green {
+      background: #e8f7ee;
+      color: #15a052;
+    }
+  }
 </style>

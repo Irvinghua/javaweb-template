@@ -5,6 +5,116 @@
 @transition-time: 0.2s;
 @menu-dark-subsidiary-color: rgba(255, 255, 255, 0.7);
 
+// ---- Redesign: Light sidebar menu ----
+// Applied when menu is in light theme (sidebar nav mode default)
+.@{menu-prefix-cls}-light.@{menu-prefix-cls}-vertical {
+  background-color: var(--surface) !important;
+  padding: 0 14px;
+  box-sizing: border-box;
+
+  // Top-level item (leaf or parent trigger)
+  > .@{menu-prefix-cls}-item,
+  > .@{menu-prefix-cls}-submenu > .@{menu-prefix-cls}-submenu-title {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 11px 14px !important;
+    border-radius: 10px !important;
+    color: var(--ink-700) !important;
+    font-size: 14.5px !important;
+    font-weight: 500;
+    min-height: 44px;
+    transition: background-color var(--fast), color var(--fast);
+    cursor: pointer;
+    position: relative;
+    overflow: visible;
+
+    &:hover {
+      background-color: var(--surface-2) !important;
+      color: var(--ink-900) !important;
+    }
+  }
+
+  // Active leaf item
+  > .@{menu-prefix-cls}-item-active:not(.@{menu-prefix-cls}-submenu) {
+    background-color: var(--accent-50) !important;
+    color: var(--accent) !important;
+    font-weight: 600;
+
+    &::after {
+      display: none !important;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -14px;
+      top: 10px;
+      bottom: 10px;
+      width: 3px;
+      border-radius: 0 3px 3px 0;
+      background: var(--accent);
+    }
+  }
+
+  // Submenu open / active parent
+  > .@{menu-prefix-cls}-submenu-active > .@{menu-prefix-cls}-submenu-title,
+  > .@{menu-prefix-cls}-child-item-active > .@{menu-prefix-cls}-submenu-title,
+  > .@{menu-prefix-cls}-opened > .@{menu-prefix-cls}-submenu-title {
+    background-color: var(--surface-2) !important;
+    color: var(--ink-900) !important;
+  }
+
+  // Nested children list
+  .@{menu-prefix-cls}-submenu-nested,
+  .@{menu-prefix-cls}-submenu {
+    .@{menu-prefix-cls}-item {
+      padding: 9px 12px 9px 36px !important;
+      border-radius: 8px !important;
+      font-size: 13.5px !important;
+      color: var(--ink-600) !important;
+      min-height: 38px;
+
+      &:hover {
+        background-color: var(--surface-2) !important;
+        color: var(--ink-900) !important;
+      }
+
+      &.@{menu-prefix-cls}-item-active {
+        background-color: var(--accent-50) !important;
+        color: var(--accent) !important;
+        font-weight: 600;
+
+        &::after {
+          display: none !important;
+        }
+      }
+    }
+  }
+
+  // Collapse / collapsed state active item
+  &.@{menu-prefix-cls}-collapse {
+    padding: 0 10px;
+
+    > .@{menu-prefix-cls}-item-active,
+    > .@{menu-prefix-cls}-submenu-active {
+      background-color: var(--accent-50) !important;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 20px;
+        border-radius: 0 3px 3px 0;
+        background: var(--accent);
+      }
+    }
+  }
+}
+
 .light-border {
   &::after {
     position: absolute;
@@ -117,18 +227,18 @@
     // }
 
     &-light {
-      background-color: #fff;
-      color: rgba(0, 0, 0, 0.65);
+      background-color: var(--surface);
+      color: var(--ink-700);
       .@{menu-prefix-cls} {
-        color: rgba(0, 0, 0, 0.65);
+        color: var(--ink-700);
       }
       .@{namespace}-menu-submenu:not(.@{namespace}-menu-item-active)  .@{namespace}-menu-submenu-title {
         .anticon {
-           color: rgba(0, 0, 0, 0.9);
+          color: var(--ink-500);
         }
       }
       .@{menu-prefix-cls}-submenu-active {
-        color: @primary-color !important;
+        color: var(--accent) !important;
 
         &-border {
           .light-border();
@@ -172,14 +282,19 @@
     &-vertical &-submenu-title {
       position: relative;
       z-index: 1;
-      padding: 14px 24px;
+      padding: 11px 14px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       cursor: pointer;
+      border-radius: 10px;
+      min-height: 44px;
+      font-size: 14.5px;
+      transition: background-color var(--fast), color var(--fast);
 
       &:hover {
-        color: @primary-color;
+        color: var(--ink-900);
+        background-color: var(--surface-2);
       }
 
       .@{menu-prefix-cls}-tooltip {
@@ -225,23 +340,41 @@
 
     &-vertical &-submenu {
       &-nested {
-        padding-left: 20px;
+        padding-left: 12px;
       }
       .@{menu-prefix-cls}-item {
-        padding-left: 43px;
+        padding: 9px 12px 9px 32px !important;
+        border-radius: 8px !important;
+        font-size: 13.5px;
+        min-height: 38px;
       }
     }
 
     &-light&-vertical &-item {
       &-active:not(.@{menu-prefix-cls}-submenu) {
         z-index: 2;
-        color: @primary-color;
-        background-color: fade(@primary-color, 10);
+        color: var(--accent);
+        background-color: var(--accent-50);
+        border-radius: 10px !important;
+        font-weight: 600;
 
-        .light-border();
+        &::after {
+          display: none !important;
+        }
+
+        &::before {
+          position: absolute;
+          content: '';
+          left: -14px;
+          top: 10px;
+          bottom: 10px;
+          width: 3px;
+          border-radius: 0 3px 3px 0;
+          background-color: var(--accent);
+        }
       }
       &-active.@{menu-prefix-cls}-submenu {
-        color: @primary-color;
+        color: var(--accent);
       }
     }
 
@@ -249,7 +382,7 @@
       > li.@{menu-prefix-cls}-item-active,
       .@{menu-prefix-cls}-submenu-active {
         position: relative;
-        background-color: fade(@primary-color, 5);
+        background-color: var(--accent-50);
 
         &::after {
           display: none;
@@ -257,12 +390,14 @@
 
         &::before {
           position: absolute;
-          top: 0;
-          left: 0;
+          top: 50%;
+          left: -10px;
+          transform: translateY(-50%);
           width: 3px;
-          height: 100%;
-          background-color: @primary-color;
+          height: 20px;
+          background-color: var(--accent);
           content: '';
+          border-radius: 0 3px 3px 0;
         }
       }
     }

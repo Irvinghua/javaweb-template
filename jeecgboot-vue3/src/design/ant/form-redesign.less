@@ -1,0 +1,299 @@
+// =============================================================
+// == UI Redesign: 共享表单换肤（弹窗/抽屉内的 BasicForm）
+// == 任何业务 BasicForm 只要在容器上加 class="redesign-form"
+// == 即可继承设计稿的字号 / 控件高度 / 标签对齐 / 必填星号 / 段控件样式
+// ==
+// == 设计稿基线: jeecgboot-ui/pages/jeecg-page.css
+// ==   .control { height: 38px; font-size: 13px; border-radius: 10px; padding: 0 12px }
+// ==   .form-row > label { width: 88px; font-size: 13px; color: var(--ink-700); font-weight: 500 }
+// ==   .seg { background: var(--surface-3); border-radius: 999px; padding: 3px }
+// ==
+// == 使用方：
+// ==   <BasicForm class="redesign-form" ... />
+// ==   配合 useForm({ labelWidth: 88, ... }) 即可
+// ==
+// == 已使用：MenuDrawer / DataRuleModal
+// =============================================================
+.redesign-form {
+  // ----------------------------------------------------
+  // == 〇、字段太多时的分节标题（设计稿 .dlg-section-title）
+  // == 用法：在 FormSchema 里插一项
+  // ==   { field: '__section_xx__', label: '基本信息',
+  // ==     component: 'Divider', componentProps: { orientation: 'left' } }
+  // == FormItem 对 Divider 已自动套 <Col span={24}>，这里只刷外观
+  // ----------------------------------------------------
+  .ant-divider-horizontal.ant-divider-with-text {
+    margin: 4px 0 14px;
+    color: var(--ink-900);
+    font-size: 13px;
+    font-weight: 600;
+    border-top-color: transparent;
+
+    // 文字左右两侧的细分隔线
+    &::before,
+    &::after {
+      border-block-start: 1px solid var(--line);
+      border-top: 1px solid var(--line);
+    }
+
+    // orientation="left" 时左侧不要短横线，文字直接贴左
+    &.ant-divider-with-text-left::before {
+      width: 0;
+    }
+
+    .ant-divider-inner-text {
+      padding: 0 12px 0 0;
+      position: relative;
+      // 左侧色块装饰，模仿设计稿小色条
+      &::before {
+        content: '';
+        display: inline-block;
+        width: 3px;
+        height: 14px;
+        border-radius: 2px;
+        background: var(--accent);
+        margin-right: 8px;
+        vertical-align: -2px;
+      }
+    }
+  }
+
+  // ----------------------------------------------------
+  // == 一、Form.Item 间距 + 行内垂直居中
+  // ----------------------------------------------------
+  .ant-form-item {
+    margin-bottom: 16px;
+    // 标签与输入框垂直居中（默认 align-items: stretch → 标签视觉偏顶部）
+    .ant-form-item-row {
+      align-items: center;
+    }
+  }
+
+  // textarea 所在行：让整行跟随 textarea 自然撑高，并把标签顶部对齐
+  // 双重根因：
+  //   (a) 上方第三节给 .ant-input-affix-wrapper 设了 height: 38px / min-height: 38px，
+  //       而 antd v4 把 textarea 也用 .ant-input-affix-wrapper 包了一层，
+  //       导致 76px 高的 textarea 把 38px 的外壳撑爆，textarea 物理溢出，
+  //       把下一行（"自动分配用户"）的位置视觉上盖住。
+  //   (b) align-items: center 会把 row 高度锁在 label 38px，row 不跟随 textarea。
+  // :has() 在 Chrome 105+ / Safari 15.4+ / Firefox 121+ 已普遍支持。
+  .ant-form-item:has(textarea) {
+    .ant-form-item-row {
+      align-items: flex-start;
+    }
+    // 让 label 视觉对齐到 textarea 的第一行（textarea padding-top 9px + 一点行高补偿）
+    .ant-form-item-label {
+      line-height: 1.4;
+      padding-top: 8px;
+    }
+    // 关键：解锁 textarea 外层 affix-wrapper 的 38px 高度限制，让它跟着 textarea 撑开
+    .ant-input-affix-wrapper {
+      height: auto;
+      min-height: 0;
+      padding: 8px 12px;
+    }
+  }
+
+  // ----------------------------------------------------
+  // == 二、标签（去掉固定 height，用 line-height 让 inline-flex 自适应居中）
+  // ----------------------------------------------------
+  .ant-form-item-label {
+    padding-bottom: 0;
+    line-height: 38px;
+
+    > label {
+      font-size: 13px;
+      color: var(--ink-700);
+      font-weight: 500;
+      height: 38px;
+      line-height: 1.4;
+    }
+  }
+
+  // 必填星号：靠左、红色
+  .ant-form-item-label
+    > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+    color: var(--bad);
+    margin-right: 2px;
+  }
+
+  // ----------------------------------------------------
+  // == 三、控件：高度 38px / 字号 13px / 圆角 10px
+  // ----------------------------------------------------
+  // 容器型控件统一外形（不能命中 affix-wrapper 内层 input.ant-input，
+  // 否则 min-height: 38px 会让内层撑过 wrapper 内容区盖住下边框）
+  .ant-input-affix-wrapper,
+  .ant-input-number,
+  .ant-select-single .ant-select-selector,
+  .ant-tree-select .ant-select-selector,
+  .ant-picker {
+    height: 38px;
+    min-height: 38px;
+    border-radius: var(--radius-ctrl, 10px);
+    font-size: 13px;
+  }
+
+  // 没被 affix-wrapper 包裹的独立 .ant-input（裸 input、textarea 除外）
+  .ant-input:not(.ant-input-affix-wrapper > input):not(textarea) {
+    height: 38px;
+    border-radius: var(--radius-ctrl, 10px);
+    font-size: 13px;
+  }
+
+  // Select 内文字与高度对齐
+  .ant-select-single .ant-select-selector .ant-select-selection-item,
+  .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+    line-height: 36px;
+    font-size: 13px;
+  }
+
+  // InputNumber
+  .ant-input-number {
+    width: 100%;
+  }
+  .ant-input-number .ant-input-number-input {
+    height: 36px;
+    font-size: 13px;
+  }
+
+  // affix-wrapper 内层 input —— 必须 min-height: 0 + height: auto，
+  // 走 flex 默认 stretch 跟随 wrapper 内容区高度 36px，不然会盖住下边框
+  .ant-input-affix-wrapper > input.ant-input {
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 13px;
+  }
+  .ant-input-affix-wrapper {
+    padding: 0 12px;
+  }
+
+  // textarea —— 与设计稿 textarea.control 对齐
+  //   { height: auto; min-height: 76px; padding: 9px 12px; resize: vertical; line-height: 1.5 }
+  textarea.ant-input {
+    height: auto;
+    min-height: 76px;
+    border-radius: var(--radius-ctrl, 10px);
+    font-size: 13px;
+    padding: 9px 12px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  // ----------------------------------------------------
+  // == 四、RadioButtonGroup → 设计稿 .seg 胶囊段控件
+  // == 例外：标记成顶部 tab 切换的字段（class="form-tabs-row"）
+  // ==      由下方「五」专门渲染成 .detail-tabs 下划线 tab
+  // ----------------------------------------------------
+  .ant-form-item:not(.form-tabs-row) {
+    .ant-radio-group {
+      display: inline-flex;
+      background: var(--surface-3);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 2px;
+      border: 0;
+      height: 34px;
+      align-items: center;
+    }
+
+    .ant-radio-button-wrapper {
+      height: 26px;
+      line-height: 26px;
+      padding: 0 16px;
+      border: 0 !important;
+      background: transparent !important;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-500);
+      border-radius: 999px !important;
+      box-shadow: none !important;
+      transition: color var(--fast), background-color var(--fast);
+
+      &::before {
+        display: none !important;
+      }
+
+      &:hover {
+        color: var(--ink-900);
+      }
+
+      &-checked {
+        background: var(--surface) !important;
+        color: var(--accent) !important;
+        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1) !important;
+      }
+    }
+  }
+
+  // ----------------------------------------------------
+  // == 五、form-tabs-row：把 RadioButtonGroup 渲染成顶部下划线 tab
+  // == 设计稿: jeecgboot-ui/pages/jeecg-page.css .detail-tabs
+  // == 用法：在该 FormSchema 上加
+  // ==   colProps: { span: 24 },
+  // ==   disabledLabelWidth: true,
+  // ==   itemProps: { class: 'form-tabs-row', labelCol: { span: 0 }, wrapperCol: { span: 24 } }
+  // == 适用：menu.menuType / homeConfig.relationType / JDictSelectTag(type:'radioButton')
+  // ----------------------------------------------------
+  .form-tabs-row {
+    margin-bottom: 18px;
+    padding-bottom: 0;
+    border-bottom: 1px solid var(--line);
+
+    // 隐藏标签列
+    .ant-form-item-label {
+      display: none;
+    }
+
+    .ant-form-item-control-input-content {
+      // 让 RadioGroup 占满
+      > div {
+        width: 100%;
+      }
+    }
+
+    // RadioButtonGroup 整体抹掉胶囊样式
+    .ant-radio-group {
+      display: inline-flex;
+      gap: 4px;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      height: auto;
+      margin-bottom: -1px;
+      align-items: stretch;
+    }
+
+    .ant-radio-button-wrapper {
+      height: auto;
+      line-height: 1.4;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--ink-500);
+      font-weight: 500;
+      background: transparent !important;
+      border: 0 !important;
+      border-bottom: 2px solid transparent !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+
+      &::before {
+        display: none !important;
+      }
+
+      &:hover {
+        color: var(--ink-900);
+      }
+
+      &-checked {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+        border-bottom-color: var(--accent) !important;
+        background: transparent !important;
+      }
+    }
+  }
+}

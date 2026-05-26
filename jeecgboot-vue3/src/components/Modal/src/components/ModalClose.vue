@@ -115,45 +115,49 @@
   });
 </script>
 <style lang="less">
+  // UI Redesign: ModalClose 换皮（图标按钮区域）
   @prefix-cls: ~'@{namespace}-basic-modal-close';
   .@{prefix-cls} {
     display: flex;
-    height: 95%;
+    height: 30px;
     align-items: center;
-    // 代码逻辑说明: 【issues/7260】原生a-modal关闭按钮位置偏移
-    margin-top: -2px;
+    // UI Redesign: 4px 太紧，hover 灰底 + hover 浅红 视觉上几乎贴边
+    // 8px 给两个按钮的 hover 圆角背景留出明显间距
+    gap: 8px;
+    margin-top: 0;
+
     > span {
-      margin-left: 48px;
-      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-left: 0;
+      padding: 0;
+      color: var(--ink-400);
+      cursor: pointer;
+      transition: background-color var(--fast), color var(--fast);
+
+      &:hover {
+        background: var(--surface-3);
+        color: var(--ink-700);
+      }
     }
 
     &--can-full {
       > span {
-        margin-left: 12px;
-      }
-    }
-
-    &:not(&--can-full) {
-      > span:nth-child(1) {
-        &:hover {
-          font-weight: 700;
-        }
-      }
-    }
-
-    & span:nth-child(1) {
-      display: inline-block;
-      padding: 10px;
-
-      &:hover {
-        color: @primary-color;
+        margin-left: 0;
       }
     }
 
     & span:last-child {
-      padding: 10px 10px 10px 0;
+      padding: 0;
+
       &:hover {
-        color: @error-color;
+        color: var(--bad);
+        background: var(--bad-bg);
       }
     }
   }

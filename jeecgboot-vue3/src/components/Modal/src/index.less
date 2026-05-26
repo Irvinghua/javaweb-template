@@ -1,3 +1,6 @@
+// -------------------------------------------------------
+// == Modal 全屏模式（逻辑不变，只修正视觉问题）
+// -------------------------------------------------------
 .ant-modal-root .fullscreen-modal {
   overflow: hidden;
 
@@ -13,11 +16,13 @@
 
     &-content {
       height: 100%;
+      border-radius: 0;
     }
 
     .ant-modal-header,
     .@{namespace}-basic-title {
       cursor: default !important;
+      border-radius: 0;
     }
     // update-begin--author:liaozhiyang---date:20241225---for：【issues/7601】ant-design-vue@4.2.6后弹窗全屏底部有空隙
     & > div:has( > .ant-modal-content) {
@@ -27,26 +32,24 @@
   }
 }
 
+// -------------------------------------------------------
+// == Modal 基本结构（padding-bottom 清零、可拖拽标题）
+// -------------------------------------------------------
 .ant-modal {
   width: 520px;
   padding-bottom: 0;
 
-  .ant-modal-body > .scrollbar {
-    padding: 14px;
-  }
-
   .ant-modal-title {
-    font-size: 16px;
-    font-weight: bold;
-    line-height: 16px;
-
     .base-title {
       cursor: move !important;
     }
   }
 
   .ant-modal-body {
-    padding: 0;
+    // UI Redesign: body padding 由 modal-drawer.less 统一为 20px；这里若设 padding: 0
+    // 会让 jeecg-modal-wrapper 的 margin: -20px + scroll-container padding: 20px
+    // 的“抵消”链条变成“向外溢出”，最终表单贴住弹窗左右边框。
+    // 见 src/design/ant/modal-drawer.less 第 132-153 行。
 
     > .scrollbar > .scrollbar__bar.is-horizontal {
       display: none;
@@ -60,71 +63,10 @@
       top: 16px;
     }
   }
-
-  .ant-modal-header {
-    padding: 16px;
-  }
-
-  .ant-modal-content {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  }
-
-  .ant-modal-footer {
-    button + button {
-      margin-left: 10px;
-    }
-  }
-
-  .ant-modal-close {
-    font-weight: normal;
-    outline: none;
-  }
-
-  .ant-modal-close-x {
-    // update-begin--author:liaozhiyang---date:20241010---for：【issues/7260】原生a-modal关闭按钮位置偏移
-    // display: inline-block;
-    // width: 96px;
-    // height: 56px;
-    // line-height: 56px;
-    // update-end--author:liaozhiyang---date:20241010---for：【issues/7260】原生a-modal关闭按钮位置偏移
-  }
-
-  .ant-modal-confirm-body {
-    .ant-modal-confirm-content {
-      // color: #fff;
-
-      > * {
-        color: @text-color-help-dark;
-      }
-    }
-  }
-
-  .ant-modal-confirm-confirm.error .ant-modal-confirm-body > .anticon {
-    color: @error-color;
-  }
-
-  .ant-modal-confirm-btns {
-    .ant-btn:last-child {
-      margin-right: 0;
-    }
-  }
-
-  .ant-modal-confirm-info {
-    .ant-modal-confirm-body > .anticon {
-      color: @warning-color;
-    }
-  }
-
-  .ant-modal-confirm-confirm.success {
-    .ant-modal-confirm-body > .anticon {
-      color: @success-color;
-    }
-  }
 }
 
-.ant-modal-confirm .ant-modal-body {
-  padding: 24px !important;
-}
+// 确认弹窗 body padding 由 modal-drawer.less 统一控制
+// 此处保留媒体查询（逻辑相关，不影响视觉）
 @media screen and (max-height: 600px) {
   .ant-modal {
     top: 60px;

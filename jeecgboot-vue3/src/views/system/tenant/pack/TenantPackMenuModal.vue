@@ -1,6 +1,13 @@
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" :title="title" @ok="handleSubmit" width="800px" destroyOnClose>
-    <BasicForm @register="registerForm" />
+  <BasicModal
+    v-bind="$attrs"
+    @register="registerModal"
+    :title="title"
+    @ok="handleSubmit"
+    :width="560"
+    destroyOnClose
+  >
+    <BasicForm @register="registerForm" class="redesign-form tenant-pack-form" />
   </BasicModal>
 </template>
 <script lang="ts" setup name="tenant-pack-menu-modal">
@@ -15,8 +22,12 @@
   const emit = defineEmits(['register', 'success']);
   //表单配置
   const [registerForm, { resetFields, setFieldsValue, validate, setProps }] = useForm({
+    // UI Redesign: 单列布局；这里 labelWidth 加大到 120，因为 "自动分配用户" + help icon
+    // 6 字符 + 13px 字体 + 16px ⓘ ≈ 100px，再加点 padding 才不会被右侧 toggle 段控件遮住
     schemas: packMenuFormSchema,
     showActionButtonGroup: false,
+    labelWidth: 120,
+    baseColProps: { span: 24 },
   });
   //租户
   const tenantId = ref<number>();
@@ -45,7 +56,8 @@
     setProps({ disabled: !data?.showFooter })
   });
   //设置标题
-  const title = computed(() => (unref(isUpdate) ? '编辑 租户套餐' : '新增 租户套餐'));
+  // UI Redesign: 去掉中间的空格
+  const title = computed(() => (unref(isUpdate) ? '编辑租户套餐' : '新增租户套餐'));
   //表单提交事件
   async function handleSubmit(v) {
     const values = await validate();

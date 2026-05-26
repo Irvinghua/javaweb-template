@@ -37,7 +37,7 @@
   const { prefixCls } = useDesign('app-logo');
   const { getCollapsedShowTitle } = useMenuSetting();
   const userStore = useUserStore();
-  const { title, shortTitle } = useGlobSetting();
+  const { shortTitle } = useGlobSetting();
   
   const go = useGo();
 
@@ -60,23 +60,41 @@
   .@{prefix-cls} {
     display: flex;
     align-items: center;
-    padding-left: 7px;
+    padding: 4px 14px 18px 14px;
     cursor: pointer;
     transition: all 0.2s ease;
-    //左侧菜单模式和左侧菜单混合模式加渐变背景色
-    &.jeecg-layout-mix-sider-logo,&.jeecg-layout-menu-logo{
-      background:@sider-logo-bg-color;
-    }
-    // &.light {
-    //   border-bottom: 1px solid @border-color-base;
-    // }
+    gap: 10px;
+    border-bottom: none !important;
 
+    // Sidebar logo area: white bg, no gradient
+    &.jeecg-layout-mix-sider-logo,
+    &.jeecg-layout-menu-logo {
+      background: var(--surface) !important;
+    }
+
+    // The logo image: render as accent-colored square
+    img {
+      width: 34px !important;
+      height: 34px !important;
+      border-radius: 10px;
+      background: var(--accent);
+      object-fit: contain;
+      padding: 4px;
+      filter: brightness(0) invert(1);
+    }
+
+    // Collapsed state: center the icon
     &.collapsed-show-title {
-      padding-left: 20px;
+      padding-left: 10px;
+      padding-right: 10px;
+      justify-content: center;
     }
 
     &.light &__title {
-      color: @primary-color;
+      color: var(--ink-900);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.1px;
     }
 
     &.dark &__title {
@@ -84,10 +102,11 @@
     }
 
     &__title {
-      font-size: 18px;
-      font-weight: 600;
-      transition: all 0.5s;
+      font-size: 17px;
+      font-weight: 700;
+      transition: all 0.3s;
       line-height: normal;
+      color: var(--ink-900);
     }
   }
 </style>

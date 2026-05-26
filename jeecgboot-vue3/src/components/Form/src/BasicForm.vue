@@ -112,6 +112,7 @@
           prefixCls,
           {
             [`${prefixCls}--compact`]: unref(getProps).compact,
+            [`${prefixCls}--advanced`]: advanceState.isAdvanced,
             'jeecg-form-detail-effect': unref(getProps).disabled
           },
         ];

@@ -36,7 +36,7 @@
       if (getDarkMode.value === ThemeEnum.DARK) {
         Object.assign(data.token, { colorTextBase: 'fff' });
       } else {
-        Object.assign(data.token, { colorTextBase: '#333' });
+        Object.assign(data.token, { colorTextBase: '#0F172A' });
       }
 
       // 定义主题色 css 变量

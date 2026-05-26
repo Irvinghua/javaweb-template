@@ -277,8 +277,8 @@ export function useListTable(tableProps: TableProps): [
       wrapperCol: {},
       // 是否显示 展开/收起 按钮
       showAdvancedButton: true,
-      // 超过指定列数默认折叠
-      autoAdvancedCol: 3,
+      // 超过指定列数默认折叠（设计稿要求：1 行 2 字段 + 操作按钮组，第 3 个起折叠进"高级筛选"）
+      autoAdvancedCol: 2,
       // 操作按钮配置
       actionColOptions: {
         ...adaptiveColProps,
@@ -311,8 +311,11 @@ export function useListTable(tableProps: TableProps): [
     actionColumn: {
       width: 120,
       title: '操作',
-      //是否锁定操作列取值 right ,left,false
-      fixed: false,
+      // UI Redesign: 默认锁定到右侧，避免多列窄表格挤压成 "编辑 …"。
+      // 取值 'right' / 'left' / false（不锁定）。业务页面可在自己的
+      // useListPage tableProps 里覆盖回 false。
+      fixed: 'right',
+      align: 'center',
       dataIndex: 'action',
       slots: { customRender: 'action' },
     },

@@ -1,24 +1,36 @@
 <template>
   <template v-if="getShow">
-    <LoginFormTitle class="enter-x" />
-    <div class="enter-x min-w-64 min-h-64">
-      <QrCode :value="qrCodeUrl" class="enter-x flex justify-center xl:justify-start" :width="280" />
-      <Divider class="enter-x">{{ scanContent }}</Divider>
-      <Button size="large" block class="mt-4 enter-x" @click="handleBackLogin">
+    <LoginFormTitle />
+
+    <div class="qf-body">
+      <!-- 二维码展示 -->
+      <div class="qf-qrcode-wrap">
+        <QrCode :value="qrCodeUrl" class="qf-qrcode" :width="200" />
+      </div>
+
+      <p class="qf-scan-tip" :class="{ 'qf-scan-tip--success': state === '2' }">
+        <svg v-if="state === '2'" class="qf-icon-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 6 9 17l-5-5"/>
+        </svg>
+        {{ scanContent }}
+      </p>
+
+      <button class="qf-btn-back" type="button" @click="handleBackLogin">
         {{ t('sys.login.backSignIn') }}
-      </Button>
+      </button>
     </div>
   </template>
 </template>
+
 <script lang="ts" setup>
   import { computed, onMounted, unref, ref, watch } from 'vue';
   import LoginFormTitle from './LoginFormTitle.vue';
-  import { Button, Divider } from 'ant-design-vue';
   import { QrCode } from '/@/components/Qrcode/index';
   import { useUserStore } from '/@/store/modules/user';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useLoginState, LoginStateEnum } from './useLogin';
   import { getLoginQrcode, getQrcodeToken } from '/@/api/sys/user';
+
   const qrCodeUrl = ref('');
   let timer: IntervalHandle;
   const { t } = useI18n();
@@ -29,6 +41,7 @@
   const scanContent = computed(() => {
     return unref(state) === '0' ? t('sys.login.scanSign') : t('sys.login.scanSuccess');
   });
+
   //加载二维码信息
   function loadQrCode() {
     state.value = '0';
@@ -39,6 +52,7 @@
       }
     });
   }
+
   //监控扫码状态
   function watchQrcodeToken(qrcodeId) {
     getQrcodeToken({ qrcodeId: qrcodeId }).then((res) => {
@@ -81,3 +95,67 @@
     }
   });
 </script>
+
+<style lang="less" scoped>
+  .qf-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 8px 0 4px;
+  }
+
+  .qf-qrcode-wrap {
+    padding: 16px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-card);
+    display: inline-flex;
+  }
+
+  .qf-qrcode {
+    display: block;
+  }
+
+  .qf-scan-tip {
+    font-size: 14px;
+    color: var(--ink-500);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color var(--fast);
+
+    &--success {
+      color: var(--good);
+    }
+  }
+
+  .qf-icon-ok {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .qf-btn-back {
+    width: 100%;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-600);
+    cursor: pointer;
+    transition:
+      background-color var(--fast),
+      color var(--fast);
+
+    &:hover {
+      background: #fff;
+      color: var(--ink-900);
+    }
+  }
+</style>

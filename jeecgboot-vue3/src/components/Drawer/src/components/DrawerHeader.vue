@@ -47,28 +47,44 @@
 </script>
 
 <style lang="less">
+  // UI Redesign: DrawerHeader 换皮
   @prefix-cls: ~'@{namespace}-basic-drawer-header';
-  @footer-height: 60px;
   .@{prefix-cls} {
     display: flex;
     height: 100%;
     align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-900);
 
     &__back {
-      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
       cursor: pointer;
+      color: var(--ink-500);
+      margin-right: 8px;
+      transition: background-color var(--fast), color var(--fast);
 
       &:hover {
-        color: @primary-color;
+        background: var(--surface-3);
+        color: var(--ink-700);
       }
     }
 
     &__twrap {
       flex: 1;
+      min-width: 0;
     }
 
     &__toolbar {
-      padding-right: 50px;
+      padding-right: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
   }
 </style>

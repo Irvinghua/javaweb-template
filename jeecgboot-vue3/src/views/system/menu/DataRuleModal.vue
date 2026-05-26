@@ -1,6 +1,6 @@
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" :title="getTitle" @ok="handleSubmit" width="700px" destroyOnClose>
-    <BasicForm @register="registerForm" />
+  <BasicModal v-bind="$attrs" @register="registerModal" :title="getTitle" @ok="handleSubmit" width="560px" destroyOnClose>
+    <BasicForm @register="registerForm" class="redesign-form" />
   </BasicModal>
 </template>
 <script lang="ts" setup>
@@ -15,8 +15,11 @@
   const isUpdate = ref(true);
   //表单配置
   const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
+    // UI Redesign: 单列布局；labelWidth 88px 与设计稿 .dlg-form .form-row > label 对齐
     schemas: dataRuleFormSchema,
     showActionButtonGroup: false,
+    labelWidth: 88,
+    baseColProps: { span: 24 },
   });
   //表单赋值
   const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {

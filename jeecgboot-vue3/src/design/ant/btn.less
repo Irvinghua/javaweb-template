@@ -1,3 +1,103 @@
+// =====================================================
+// == ITEM 2: 工具栏按钮 — 对齐 user-v2.html .btn / .btn-primary / .btn-ghost
+// =====================================================
+// 工具栏按钮在 __tableTitle 容器内（slot="toolbar" 渲染位置）
+// 同时也覆盖 __toolbar 区域内的 ant-btn
+.jeecg-basic-table-header__tableTitle,
+.jeecg-basic-table-header__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  // 所有工具栏按钮基础形状
+  .ant-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    height: 36px !important;
+    padding: 0 14px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.18s, color 0.18s, box-shadow 0.18s, border-color 0.18s !important;
+
+    .anticon {
+      font-size: 14px !important;
+    }
+
+    // icon + text gap
+    > span:not(.anticon) {
+      line-height: 1 !important;
+    }
+  }
+
+  // 第一个直接子 primary 按钮 (新增) — blue primary
+  // 直接放在 __tableTitle 下，非 ant-upload 包裹
+  > .ant-btn-primary:not(.ant-btn-dangerous):not(.ant-btn-background-ghost):not(.ant-btn-circle):not(.ant-btn-text):first-of-type {
+    background: linear-gradient(135deg, #2a66ff, var(--accent)) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(91, 108, 255, 0.28) !important;
+
+    &:hover,
+    &:focus {
+      box-shadow: 0 6px 16px rgba(91, 108, 255, 0.36) !important;
+      opacity: 0.95;
+    }
+  }
+
+  // 其余直接子 type="primary" 按钮 ghost 风格 (导出/回收站)
+  > .ant-btn-primary:not(.ant-btn-dangerous):not(.ant-btn-background-ghost):not(.ant-btn-circle):not(.ant-btn-text):not(:first-of-type) {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-700) !important;
+    box-shadow: none !important;
+
+    &:hover,
+    &:focus {
+      background: var(--surface-2) !important;
+      color: var(--ink-900) !important;
+      border-color: rgba(15, 23, 42, 0.15) !important;
+    }
+  }
+
+  // danger 按钮
+  > .ant-btn-dangerous,
+  .ant-btn-dangerous {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--bad) !important;
+    box-shadow: none !important;
+
+    &:hover,
+    &:focus {
+      background: var(--bad-bg) !important;
+      border-color: var(--bad) !important;
+    }
+  }
+
+  // ant-upload wrapper — 导入按钮走 ghost 风格（覆盖 first-of-type 规则）
+  .ant-upload .ant-btn,
+  .ant-upload-select .ant-btn {
+    background: var(--surface) !important;
+    background-image: none !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-700) !important;
+    box-shadow: none !important;
+
+    &:hover,
+    &:focus {
+      background: var(--surface-2) !important;
+      background-image: none !important;
+      color: var(--ink-900) !important;
+    }
+  }
+}
+
 // button reset
 .ant-btn {
   // display: inline-flex;

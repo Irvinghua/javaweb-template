@@ -1,6 +1,6 @@
 <template>
   <Dropdown :dropMenuList="getDropMenuList" :trigger="getTrigger" @menuEvent="handleMenuEvent" :overlayClassName="prefixCls">
-    <div :class="`${prefixCls}__info`" @contextmenu="handleContext" v-if="getIsTabs">
+    <div :class="`${prefixCls}__info`" v-if="getIsTabs">
       <!-- updateBy:sunjianlei---updateDate:2021-09-03---修改tab切换栏样式：增加前缀图标 -->
       <!-- <span v-if="showPrefixIcon" :class="`${prefixCls}__prefix-icon`" @click="handleContext">
         <Icon :icon="prefixIconType" :size="14" />
@@ -69,7 +69,8 @@
         }
       });
 
-      const getTrigger = computed((): ('contextmenu' | 'click' | 'hover')[] => (unref(getIsTabs) ? ['contextmenu'] : ['click']));
+      // Contextmenu is now handled by the custom .tab-ctx in tabs/index.vue — disable here to avoid double menus
+      const getTrigger = computed((): ('contextmenu' | 'click' | 'hover')[] => (unref(getIsTabs) ? [] : ['click']));
 
       const { getDropMenuList, handleMenuEvent, handleContextMenu } = useTabDropdown(props as TabContentProps, getIsTabs);
 

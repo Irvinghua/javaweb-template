@@ -1,5 +1,287 @@
 @prefix-cls: ~'@{namespace}-basic-table';
 
+/* ============================================================
+   ITEM 3: BasicTable 全局换皮 — 对齐 user-v2.html .data-table
+   jeecgboot-ui/pages/jeecg-page.css 精确值
+   ============================================================ */
+
+/* 表头 — surface-2 bg, ink-500 color, 600 weight, 13px, 12px 14px padding */
+.ant-table-wrapper .ant-table-thead > tr > th,
+.ant-table-wrapper .ant-table-thead > tr > td {
+  background: var(--surface-2) !important;
+  color: var(--ink-500) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 12px 14px !important;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line) !important;
+
+  &::before {
+    /* 去掉 AntD 默认的列分隔竖线 */
+    background-color: transparent !important;
+    width: 0 !important;
+  }
+}
+
+/* 数据行 — ink-700, 13px, 13px 14px padding, --line border-bottom */
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  padding: 13px 14px !important;
+  color: var(--ink-700) !important;
+  font-size: 13px !important;
+  border-bottom: 1px solid var(--line) !important;
+  white-space: nowrap;
+}
+
+/* 最后一行无 border-bottom */
+.ant-table-wrapper .ant-table-tbody > tr:last-child > td {
+  border-bottom: 0 !important;
+}
+
+/* 行 hover — surface-2 */
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row:hover > td,
+.ant-table-wrapper .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+  background: var(--surface-2) !important;
+}
+
+/* 选中行 — accent-50 bg */
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td {
+  background: var(--accent-50) !important;
+}
+
+/* 去掉表格整体 border，让设计稿 card 边框足够 */
+.ant-table {
+  background: transparent !important;
+}
+
+.ant-table-container,
+.ant-table-content {
+  border-radius: 0 !important;
+}
+
+/* 去掉 ant-table-wrapper 外层 border */
+.ant-table-wrapper .ant-table {
+  border-radius: 0 !important;
+}
+
+/* 空状态 */
+.ant-table-placeholder {
+  background: transparent !important;
+
+  .ant-table-cell {
+    border-bottom: 0 !important;
+  }
+}
+
+/* Checkbox 列 */
+.ant-table-wrapper .ant-table-selection-column {
+  padding: 12px 14px !important;
+}
+
+/* 覆盖 index.less 中对表头颜色的原有规则 */
+.ant-table-wrapper .ant-table-thead > tr > th {
+  color: var(--ink-500) !important;
+  font-weight: 600 !important;
+}
+
+/* ============================================================
+   FIX: 仅行线、无竖线、无 thead/tbody 间隙、字体 13px / inherit
+   对齐 jeecg-page.css `table.data-table { border-collapse: collapse; font-size: 13px }`
+   ============================================================ */
+
+/* 1) border-collapse: 消除 thead 与 tbody 之间视觉间隙 + 防双重边框 */
+.ant-table-wrapper .ant-table table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+}
+
+/* 2) 所有单元格：去掉左右竖线 / 顶部线，仅保留 border-bottom 行线 */
+.ant-table-wrapper .ant-table-thead > tr > th,
+.ant-table-wrapper .ant-table-thead > tr > td,
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-right: 0 !important;
+  border-left: 0 !important;
+  border-top: 0 !important;
+  box-shadow: none !important; /* 防 AntD 用 inset shadow 模拟竖线 */
+}
+
+/* 3) tbody 首行不留顶部线（紧贴 thead 底部线） */
+.ant-table-wrapper .ant-table-tbody > tr:first-child > td {
+  border-top: 0 !important;
+}
+
+/* 4) 单元格字体大小 / 字体家族明确，避免继承到 AntD 默认 14px */
+.ant-table-wrapper .ant-table-thead > tr > th,
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  font-size: 13px !important;
+  font-family: inherit !important;
+}
+
+/* 5) 干掉 AntD 表头列右侧的小竖线 (::before) */
+.ant-table-wrapper .ant-table-thead > tr > th::before,
+.ant-table-wrapper .ant-table-thead > tr > th:not(:last-child)::before {
+  display: none !important;
+}
+
+/* ============================================================
+   FIX: 列表页布局 —— 对齐设计稿 .page + .card.filter-card + .card.panel
+   `.page { padding:22px 24px 28px; gap:16px }`
+   ============================================================ */
+
+/* 0) Content 区域 padding —— 让卡片与侧边栏 / 顶栏 / 底部留出呼吸 */
+.jeecg-layout-content,
+.jeecg-layout-content.full {
+  padding: 22px 24px 28px !important;
+}
+
+/* 1) BasicTable 外层（同时挂 .jeecg-basic-table 与 .jeecg-basic-table-form-container 两个 class）
+      去掉它早前被当成单个 card 加的 bg/shadow/border-radius/padding —— 它只做 flex 布局 */
+.jeecg-basic-table,
+.jeecg-basic-table.jeecg-basic-table-form-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+/* 2) 搜索 card —— BasicForm 根元素 .jeecg-basic-form */
+.jeecg-basic-table > .jeecg-basic-form {
+  background: var(--surface) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--shadow-card) !important;
+  padding: 18px 22px !important;
+}
+
+/* 3) 表格 card —— 整张 card 给 16/20/18 内边距
+      toolbar / 警示条 / 表格 / 分页都共享这个 padding，统一内缩 */
+.jeecg-basic-table .ant-table-wrapper {
+  background: var(--surface) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--shadow-card) !important;
+  padding: 16px 20px 18px !important;
+  // overflow: hidden 让 thead 灰底跟 card 圆角剪裁齐平；body 内部有自己的纵向滚动（见 3d）
+  overflow: hidden !important;
+}
+
+/* 3a) toolbar 取消自带 padding，让 card padding 接管 */
+.jeecg-basic-table .ant-table-wrapper .ant-table-title {
+  padding: 0 0 14px !important;
+  background: transparent !important;
+}
+
+/* 3b) 表格本体无额外边距 */
+.jeecg-basic-table .ant-table-wrapper .ant-table {
+  margin: 0 !important;
+}
+
+/* 3c) 分页器距表格底部 14px，水平 padding 由 card 承担 */
+.jeecg-basic-table .ant-table-wrapper .ant-table-pagination,
+.jeecg-basic-table .ant-table-wrapper .ant-pagination {
+  margin: 14px 0 0 !important;
+}
+
+/* 3d) 表格滚动 —— 让 antd 的 body 内部纵向滚动正常工作。
+      之前写 overflow-y: hidden 是为了消除右侧空隙，结果把 tbody 内容直接裁掉，
+      page size = 50 时只显示前几行且没有滚动条（用户提的 bug）。
+      改回 overflow-y: auto，让 antd 自动算的 body max-height 配合 tbody 内容显示滚动条；
+      横向用 auto（超宽时出现 H-scrollbar）。 */
+.jeecg-basic-table .ant-table-wrapper .ant-table-container,
+.jeecg-basic-table .ant-table-wrapper .ant-table-content,
+.jeecg-basic-table .ant-table-wrapper .ant-table-body {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  scrollbar-gutter: auto !important;
+}
+
+.jeecg-basic-table .ant-table-wrapper .ant-table-header {
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* 3e) 干掉表格区任何左/右/上边线条 —— 包括 wrapper / container / header / body / table
+      （仅保留 thead/tbody 单元格的 border-bottom 行线） */
+.jeecg-basic-table .ant-table-wrapper .ant-table,
+.jeecg-basic-table .ant-table-wrapper .ant-table-container,
+.jeecg-basic-table .ant-table-wrapper .ant-table-header,
+.jeecg-basic-table .ant-table-wrapper .ant-table-body,
+.jeecg-basic-table .ant-table-wrapper .ant-table-content,
+.jeecg-basic-table .ant-table-wrapper .ant-table-container > table,
+.jeecg-basic-table .ant-table-wrapper .ant-table-container > div > table {
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-top: 0 !important;
+}
+
+/* 3f) 干掉 AntD 固定列影子伪元素（用作竖向阴影分隔条，跟设计稿"无竖线"冲突） */
+.jeecg-basic-table .ant-table-wrapper .ant-table-cell-fix-left::after,
+.jeecg-basic-table .ant-table-wrapper .ant-table-cell-fix-left-last::after,
+.jeecg-basic-table .ant-table-wrapper .ant-table-cell-fix-right::after,
+.jeecg-basic-table .ant-table-wrapper .ant-table-cell-fix-right-first::after,
+.jeecg-basic-table .ant-table-wrapper .ant-table-container::before,
+.jeecg-basic-table .ant-table-wrapper .ant-table-container::after {
+  display: none !important;
+  box-shadow: none !important;
+}
+
+/* 6) 中和外层 ant-form-item-rest > ant-form-item 的 margin（rest 是 Vue 兼容包装） */
+.jeecg-basic-table > .ant-form-item-rest > .ant-form-item {
+  margin: 0 !important;
+}
+
+/* 6) 中和 AntD 用于列宽测量的隐藏行 ant-table-measure-row
+      —— 它本身高度应为 0，但被我们对 tbody td 的 padding/font-size 规则撑成 26.5px，
+      在 thead 和首条数据行之间形成视觉"空白间隙"。
+      特异性要比上面 .ant-table-tbody > tr > td 高，所以挂在 tbody > tr.ant-table-measure-row 下。 */
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-measure-row,
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-measure-row > td {
+  height: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+  border: 0 !important;
+}
+
+/* ============================================================
+   7) 表格密度（宽松 / 默认 / 紧凑）—— 对齐设计稿
+      body.density-loose: thead 16/14, tbody 18/14
+      body.density-default(默认): thead 12/14, tbody 13/14   (已是默认规则)
+      body.density-compact: thead 8/14,  tbody 7/14 + 12.5px
+   AntD 通过 .ant-table-large / .ant-table-middle / .ant-table-small 切换。
+   选择器需比 `.ant-table-wrapper .ant-table-tbody > tr > td` (0,2,2) 高，
+   挂在 `.ant-table-wrapper .ant-table-XXX .ant-table-tbody > tr > td` (0,3,2) 上即可。
+   ============================================================ */
+
+/* 宽松（settings 弹层选"宽松"时给 wrapRef 加 .jeecg-table-density-loose） */
+.jeecg-table-density-loose .ant-table-thead > tr > th {
+  padding: 16px 14px !important;
+}
+.jeecg-table-density-loose .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
+  padding: 18px 14px !important;
+}
+
+/* 紧凑（settings 弹层选"紧凑"时给 wrapRef 加 .jeecg-table-density-compact） */
+.jeecg-table-density-compact .ant-table-thead > tr > th {
+  padding: 8px 14px !important;
+}
+.jeecg-table-density-compact .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
+  padding: 7px 14px !important;
+  font-size: 12.5px !important;
+}
+
+/* 兼容：AntD 若仍给 'small' 加 .ant-table-small 类，沿用相同紧凑值 */
+.ant-table-wrapper .ant-table.ant-table-small .ant-table-thead > tr > th {
+  padding: 8px 14px !important;
+}
+.ant-table-wrapper .ant-table.ant-table-small .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
+  padding: 7px 14px !important;
+  font-size: 12.5px !important;
+}
+
 // fix table unnecessary scrollbar
 .@{prefix-cls} {
   .hide-scrollbar-y {

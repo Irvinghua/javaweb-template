@@ -157,6 +157,9 @@ export default function ({ advanceState, emit, getProps, getSchema, formModel, d
 
   function handleToggleAdvanced() {
     advanceState.isAdvanced = !advanceState.isAdvanced;
+    // 立即同步更新各字段的 schema.isAdvanced，避免被 debounceUpdateAdvanced(30ms) 延迟，
+    // 否则折叠时字段会"先保持显示几百毫秒再消失"的滞后动画。
+    updateAdvanced();
   }
 
   return { handleToggleAdvanced };

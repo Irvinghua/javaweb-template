@@ -33,7 +33,14 @@
         <slot :name="item.slot"></slot>
       </template>
 
-      <a-button type="link" size="small" v-if="!$slots.more"> 更多 <Icon icon="mdi-light:chevron-down"></Icon> </a-button>
+      <!-- ITEM 4: ⋯ more trigger — 28×28 ghost square -->
+      <button class="row-btn more" v-if="!$slots.more" type="button">
+        <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+          <circle cx="3" cy="8" r="1.5"/>
+          <circle cx="8" cy="8" r="1.5"/>
+          <circle cx="13" cy="8" r="1.5"/>
+        </svg>
+      </button>
     </Dropdown>
   </div>
 </template>
@@ -95,6 +102,14 @@
         return isIfShow;
       }
 
+      // 共享层自动识别：label 含「删除 / delete」的操作自动按 danger 渲染（设计稿要求红色）
+      function isDangerAction(action: ActionItem): boolean {
+        if ((action as any).danger === true || (action as any).color === 'error') return true;
+        const label = (action as any).label;
+        if (!label || typeof label !== 'string') return false;
+        return /删除|delete/i.test(label);
+      }
+
       const getActions = computed(() => {
         return (toRaw(props.actions) || [])
           .filter((action) => {
@@ -117,6 +132,7 @@
               const overlayClassName = popConfirm.overlayClassName;
               popConfirm.overlayClassName = `${overlayClassName ? overlayClassName : ''} ${prefixCls}-popconfirm`;
             }
+            const danger = isDangerAction(action);
             return {
               getPopupContainer: () => unref((table as any)?.wrapRef.value) ?? document.body,
               type: 'link',
@@ -127,6 +143,8 @@
               onConfirm: handelConfirm(popConfirm?.confirm),
               onCancel: popConfirm?.cancel,
               enable: !!popConfirm,
+              danger,
+              color: danger ? 'error' : (action as any).color,
             };
           });
       });
@@ -163,6 +181,7 @@
           if (popConfirm) {
             popConfirm.confirm = handelConfirm(popConfirm?.confirm);
           }
+          const danger = isDangerAction(action);
           return {
             ...action,
             ...popConfirm,
@@ -170,6 +189,8 @@
             onCancel: popConfirm?.cancel,
             text: label,
             divider: index < list.length - 1 ? props.divider : false,
+            danger,
+            color: danger ? 'error' : (action as any).color,
           };
         });
       });
@@ -235,15 +256,10 @@
   @prefix-cls: ~'@{namespace}-basic-table-action';
 
   .@{prefix-cls} {
-    display: flex;
+    // ITEM 4: row-actions-v2 layout
+    display: inline-flex;
     align-items: center;
-    /* update-begin-author:taoyan date:2022-11-18 for: 表格默认行高比官方示例多出2px*/
-    height: 22px;
-    /* update-end-author:taoyan date:2022-11-18 for: 表格默认行高比官方示例多出2px*/
-
-    .action-divider {
-      display: table;
-    }
+    gap: 4px;
 
     &.left {
       justify-content: flex-start;
@@ -257,52 +273,152 @@
       justify-content: flex-end;
     }
 
-    button {
-      display: flex;
-      align-items: center;
+    // ITEM 4: 可见行操作 — .row-btn ghost style (替代原 link-action)
+    button.ant-btn-link,
+    button.ant-btn {
+      height: 28px !important;
+      padding: 0 10px !important;
+      background: transparent !important;
+      border: 1px solid var(--line) !important;
+      border-radius: 6px !important;
+      color: var(--ink-700) !important;
+      font-size: 12.5px !important;
+      font-weight: 500 !important;
+      cursor: pointer;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      transition: background-color 0.15s, color 0.15s, border-color 0.15s !important;
+      box-shadow: none !important;
+      white-space: nowrap;
 
-      span {
+      span:not(.anticon) {
         margin-left: 0 !important;
+        line-height: 1 !important;
+      }
+
+      .anticon {
+        font-size: 12px !important;
+        margin: 0 !important;
+      }
+
+      &:hover {
+        background: var(--accent-50) !important;
+        color: var(--accent) !important;
+        border-color: rgba(91, 108, 255, 0.3) !important;
+      }
+
+      // 危险操作 (删除等)
+      &.ant-btn-dangerous {
+        color: var(--bad) !important;
+        border-color: var(--line) !important;
+
+        &:hover {
+          background: var(--bad-bg) !important;
+          color: var(--bad) !important;
+          border-color: var(--bad) !important;
+        }
       }
     }
 
-    button.ant-btn-circle {
-      span {
-        margin: auto !important;
-      }
-    }
-
-    .ant-divider,
-    .ant-divider-vertical {
-      margin: 0 2px;
-    }
-
-    .icon-more {
-      transform: rotate(90deg);
+    // ⋯ more 按钮 — 28×28 square ghost
+    .row-btn.more {
+      width: 28px !important;
+      height: 28px !important;
+      padding: 0 !important;
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--ink-700);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 
       svg {
-        font-size: 1.1em;
-        font-weight: 700;
+        width: 14px;
+        height: 14px;
+        display: block;
+      }
+
+      &:hover {
+        background: var(--accent-50);
+        color: var(--accent);
+        border-color: rgba(91, 108, 255, 0.3);
       }
     }
+
+    // 隐藏 divider — gap 已足够
+    .ant-divider,
+    .ant-divider-vertical {
+      display: none !important;
+    }
+
     &-popconfirm {
       .ant-popconfirm-buttons {
         min-width: 120px;
-        // 代码逻辑说明: 【issues/1019】popConfirm确认框待端后端返回过程中（处理中）样式错乱
         display: flex;
         align-items: center;
         justify-content: center;
       }
     }
-    // 代码逻辑说明: 【QQYUN-8762】调整table操作栏ant-dropdown样式
+
+    // ITEM 4: 下拉菜单 — .menu-pop 风格
     &-dropdown {
+      .ant-dropdown-menu {
+        background: var(--surface) !important;
+        border: 1px solid var(--line) !important;
+        border-radius: 10px !important;
+        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.16) !important;
+        padding: 5px !important;
+        min-width: 128px;
+      }
+
       .ant-dropdown-menu .ant-dropdown-menu-item-divider {
-        margin: 2px 0;
+        height: 1px;
+        background: var(--line) !important;
+        margin: 4px 6px !important;
       }
+
       .ant-dropdown-menu .ant-dropdown-menu-item {
-        padding: 3px 8px;
-        font-size: 13.6px;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 8px 10px !important;
+        font-size: 13px !important;
+        color: var(--ink-700) !important;
+        border-radius: 7px !important;
+        transition: background-color 0.15s !important;
+
+        &:hover {
+          background: var(--surface-2) !important;
+          color: var(--ink-700) !important;
+        }
+
+        // icon color
+        .anticon {
+          width: 14px;
+          height: 14px;
+          color: var(--ink-400);
+          font-size: 13px !important;
+        }
+
+        &.ant-dropdown-menu-item-danger {
+          color: var(--bad) !important;
+
+          .anticon {
+            color: var(--bad) !important;
+          }
+
+          &:hover {
+            background: var(--bad-bg) !important;
+            color: var(--bad) !important;
+          }
+        }
       }
+
       .dropdown-event-area {
         padding: 0 !important;
       }

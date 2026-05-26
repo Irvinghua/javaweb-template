@@ -1,6 +1,21 @@
 <template>
-  <BasicDrawer v-bind="$attrs" @register="registerDrawer" showFooter :width="adaptiveWidth" :title="getTitle" @ok="handleSubmit">
-    <BasicForm @register="registerForm" class="menuForm" />
+  <BasicDrawer
+    v-bind="$attrs"
+    @register="registerDrawer"
+    showFooter
+    :width="adaptiveWidth"
+    :title="getTitle"
+    @ok="handleSubmit"
+    wrapClassName="menu-drawer-redesign"
+  >
+    <!-- UI Redesign: 自定义抽屉标题，带菜单图标，匹配设计稿 .dlg-title -->
+    <template #title>
+      <span class="menu-drawer-title">
+        <Icon icon="ant-design:menu-outlined" :size="18" />
+        <span class="menu-drawer-title__text">{{ getTitle }}</span>
+      </span>
+    </template>
+    <BasicForm @register="registerForm" class="menuForm redesign-form menu-drawer-form" />
   </BasicDrawer>
 </template>
 <script lang="ts" setup>
@@ -11,6 +26,7 @@
   import { list, saveOrUpdateMenu } from './menu.api';
   import { useDrawerAdaptiveWidth } from '/@/hooks/jeecg/useAdaptiveWidth';
   import { useI18n } from "/@/hooks/web/useI18n";
+  import { Icon } from '/@/components/Icon';
   // 声明Emits
   const emit = defineEmits(['success', 'register']);
   const { adaptiveWidth } = useDrawerAdaptiveWidth();
@@ -19,14 +35,13 @@
   const menuType = ref(0);
   const isButton = (type) => type === 2;
   const [registerForm, { setProps, resetFields, setFieldsValue, updateSchema, validate, clearValidate }] = useForm({
-    labelCol: {
-      md: { span: 4 },
-      sm: { span: 6 },
-    },
-    wrapperCol: {
-      md: { span: 20 },
-      sm: { span: 18 },
-    },
+    // UI Redesign: 2 列网格布局；
+    // - labelWidth 88px 与设计稿 .dlg-form .form-row > label 对齐
+    // - rowProps.gutter [26, 0] 与设计稿 .dlg-form.cols-2 gap: 16px 26px 的列间距对齐
+    //   （行间距由 .ant-form-item margin-bottom 16px 提供）
+    baseColProps: { span: 12 },
+    labelWidth: 88,
+    rowProps: { gutter: [26, 0] },
     schemas: formSchema,
     showActionButtonGroup: false,
   });
@@ -137,3 +152,34 @@
     return data;
   }
 </script>
+
+<!-- ================================================== -->
+<!-- UI Redesign: 菜单弹窗专属换肤                          -->
+<!-- 通用部分（字号/控件高度/段控件/.form-tabs-row 下划线 tab） -->
+<!-- 由 src/design/ant/form-redesign.less 提供              -->
+<!-- 本块只保留菜单特有: 抽屉头图标                          -->
+<!-- ================================================== -->
+<style lang="less">
+  // 抽屉头：自定义标题
+  .menu-drawer-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-900);
+
+    .app-iconify,
+    svg {
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+  }
+
+  // BasicTitle 包裹下，避免外层 BasicTitle 额外样式干扰
+  .menu-drawer-redesign {
+    .jeecg-basic-title .menu-drawer-title {
+      gap: 8px;
+    }
+  }
+</style>

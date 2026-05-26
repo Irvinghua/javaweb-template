@@ -1,79 +1,96 @@
-<!--我的租户详情-->
+<!--
+  我的租户 - 当前租户信息（profile 风格）
+  UI Redesign: 按设计稿 my-tenant.html 重做布局，两张 card：
+    组织信息（LOGO / 组织名称 / 门牌号 / 组织编号）
+    其他信息（所在地 / 所在行业 / 工作地点）
+  业务逻辑（initTenant / updateTenantInfo / modal 表单字段）完全不动。
+-->
 <template>
-  <div class="message-set-container">
-    <div class="message-set-box">
-      <div class="message-set-header">
-        <span class="font17">组织信息</span>
+  <div class="my-tenant-page">
+    <!-- ===== 组织信息 ===== -->
+    <div class="info-card">
+      <div class="info-head">
+        <h2>组织信息</h2>
+        <div class="sub">当前租户的基础组织资料</div>
       </div>
-      <a-form :model="formState">
-        <div class="message-set-content">
-          <div class="common-info">
-            <div class="common-info-row">
-              <div class="common-info-row-label">组织LOGO</div>
-              <div class="common-info-row-content">
-                <JImageUpload v-model:value="formState.companyLogo" @change="handleCompanyLogoChange"></JImageUpload>
-              </div>
-            </div>
-            <div class="common-info-row m-top24">
-              <div class="common-info-row-label">组织名称</div>
-              <span class="m-right16">{{ formState.name }}</span>
-              <span class="edit-name" @click="goUpdate('name')">修改</span>
-            </div>
-            <div class="common-info-row m-top24">
-              <div class="common-info-row-label">组织门牌号</div>
-              <div class="common-info-row-content">
-                <span class="pointer">
-                  <span>{{ formState.houseNumber }}</span>
-                </span>
-              </div>
-            </div>
-            <div class="common-info-row m-top24">
-              <div class="common-info-row-label">组织编号(ID)</div>
-              <div class="common-info-row-content">
-                <span class="pointer">
-                  <span>{{ formState.id }}</span>
-                </span>
-              </div>
-            </div>
-            <div class="split-line"></div>
-            <div class="common-info-row">
-              <div class="common-info-row-label">所在地</div>
-              <span class="m-right16">{{ formState.companyAddress_dictText }}</span>
-              <span class="edit-name" @click="goUpdate('companyAddress')">修改</span>
-            </div>
-            <div class="common-info-row m-top24">
-              <div class="common-info-row-label">所在行业</div>
-              <span class="m-right16">{{ formState.trade_dictText }}</span>
-              <span class="edit-name" @click="goUpdate('trade')">修改</span>
-            </div>
-            <div class="common-info-row m-top24">
-              <div class="common-info-row-label">工作地点</div>
-              <span class="m-right16">{{ formState.workPlace }}</span>
-              <span class="edit-name" @click="goUpdate('workPlace')">修改</span>
-            </div>
-            <div class="cancel-split-line"></div>
-          </div>
+      <div class="info-body">
+        <div class="info-row">
+          <span class="info-label">组织 LOGO</span>
+          <span class="info-value">
+            <JImageUpload v-model:value="formState.companyLogo" @change="handleCompanyLogoChange" />
+          </span>
         </div>
-      </a-form>
+        <div class="info-row">
+          <span class="info-label">组织名称</span>
+          <span class="info-value">{{ formState.name || '--' }}</span>
+          <a class="link-action" @click="goUpdate('name')">修改</a>
+        </div>
+        <div class="info-row">
+          <span class="info-label">组织门牌号</span>
+          <span class="info-value">
+            <span class="id-pill" v-if="formState.houseNumber">{{ formState.houseNumber }}</span>
+            <span class="info-value empty" v-else>未设置</span>
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">组织编号(ID)</span>
+          <span class="info-value">
+            <span class="id-pill" v-if="formState.id">{{ formState.id }}</span>
+            <span class="info-value empty" v-else>--</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 其他信息 ===== -->
+    <div class="info-card">
+      <div class="info-head">
+        <h2>其他信息</h2>
+        <div class="sub">补充组织的所在地与行业信息</div>
+      </div>
+      <div class="info-body">
+        <div class="info-row">
+          <span class="info-label">所在地</span>
+          <span class="info-value" :class="{ empty: !formState.companyAddress_dictText }">
+            {{ formState.companyAddress_dictText || '未设置' }}
+          </span>
+          <a class="link-action" @click="goUpdate('companyAddress')">修改</a>
+        </div>
+        <div class="info-row">
+          <span class="info-label">所在行业</span>
+          <span class="info-value" :class="{ empty: !formState.trade_dictText }">
+            {{ formState.trade_dictText || '未设置' }}
+          </span>
+          <a class="link-action" @click="goUpdate('trade')">修改</a>
+        </div>
+        <div class="info-row">
+          <span class="info-label">工作地点</span>
+          <span class="info-value" :class="{ empty: !formState.workPlace }">
+            {{ formState.workPlace || '未设置' }}
+          </span>
+          <a class="link-action" @click="goUpdate('workPlace')">修改</a>
+        </div>
+      </div>
     </div>
   </div>
+
   <!-- 组织名称修改弹窗 -->
-  <a-modal v-model:open="modalVisible.name" title="修改组织名称" width="500" destroy-on-close @ok="doUpdate('name')">
+  <a-modal v-model:open="modalVisible.name" title="修改组织名称" :width="500" destroy-on-close @ok="doUpdate('name')">
     <a-form ref="manageNameRef" :model="updateInfo" :rules="getManageNameRules">
       <a-form-item name="name" class="form-item-padding">
         <div class="form-group">
-              <span class="form-label">
-                组织名称
-                <span class="txt-middle red">*</span>
-              </span>
+          <span class="form-label">
+            组织名称
+            <span class="txt-middle red">*</span>
+          </span>
           <a-input v-model:value="updateInfo.name" />
         </div>
       </a-form-item>
     </a-form>
   </a-modal>
-  
+
   <!-- 组织所在地弹窗 -->
-  <a-modal v-model:open="modalVisible.companyAddress" title="所在地" width="500" destroy-on-close @ok="doUpdate('companyAddress')">
+  <a-modal v-model:open="modalVisible.companyAddress" title="所在地" :width="500" destroy-on-close @ok="doUpdate('companyAddress')">
     <a-form :model="updateInfo">
       <a-form-item name="companyAddress" class="form-item-padding">
         <div style="margin-top: 20px">
@@ -84,7 +101,7 @@
   </a-modal>
 
   <!-- 组织所在行业弹窗 -->
-  <a-modal v-model:open="modalVisible.trade" title="设置所在行业" width="500" destroy-on-close @ok="doUpdate('trade')">
+  <a-modal v-model:open="modalVisible.trade" title="设置所在行业" :width="500" destroy-on-close @ok="doUpdate('trade')">
     <a-form :model="updateInfo">
       <a-form-item name="trade" class="form-item-padding">
         <div style="margin-top: 20px">
@@ -95,9 +112,9 @@
   </a-modal>
 
   <!-- 工作地点弹窗 -->
-  <a-modal v-model:open="modalVisible.workPlace" title="设置工作地点" width="500" destroy-on-close @ok="doUpdate('workPlace')">
+  <a-modal v-model:open="modalVisible.workPlace" title="设置工作地点" :width="500" destroy-on-close @ok="doUpdate('workPlace')">
     <a-form ref="workPlaceRef" :model="updateInfo">
-      <a-form-item name="name" class="form-item-padding">
+      <a-form-item name="workPlace" class="form-item-padding">
         <div style="margin-top: 20px">
           <a-textarea placeholder="请填写工作地点" v-model:value="updateInfo.workPlace" />
         </div>
@@ -108,17 +125,15 @@
 <script lang="ts" name="tenant-my-tenant-list" setup>
   import { onMounted, reactive, ref } from 'vue';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import {getFileAccessHttpUrl, tenantSaasMessage} from '@/utils/common/compUtils';
+  import { tenantSaasMessage } from '@/utils/common/compUtils';
   import { getTenantById, saveOrUpdateTenant } from '@/views/system/tenant/tenant.api';
   import { getTenantId } from '@/utils/auth';
   import { getDataByCode, getRealCode, provinceOptions } from '@/components/Form/src/utils/areaDataUtil';
   import { initDictOptions } from '@/utils/dict';
-  import {createImgPreview} from "@/components/Preview";
-  import { JImageUpload } from "@/components/Form";
-  // import {updateTenantInfo} from "@/views/super/myapps/organization/organization.api";
-  import { defHttp } from "/@/utils/http/axios";
-  import JAreaSelect from "/@/components/Form/src/jeecg/components/JAreaSelect.vue";
-  import JDictSelectTag from "/@/components/Form/src/jeecg/components/JDictSelectTag.vue";
+  import { JImageUpload } from '@/components/Form';
+  import { defHttp } from '/@/utils/http/axios';
+  import JAreaSelect from '/@/components/Form/src/jeecg/components/JAreaSelect.vue';
+  import JDictSelectTag from '/@/components/Form/src/jeecg/components/JDictSelectTag.vue';
 
   const { createMessage } = useMessage();
   const formState = reactive({
@@ -133,27 +148,28 @@
   });
   let tradeOptions: any[] = [];
   //组织名称ref
-  const manageNameRef= ref();
+  const manageNameRef = ref();
   // modal显示
   const modalVisible = reactive<any>({
     name: false,
     trade: false,
-    companyAddress: false
+    companyAddress: false,
+    workPlace: false,
   });
 
   // 组织名称检验规则
-  const getManageNameRules =  {
+  const getManageNameRules = {
     name: [{ required: true, message: '组织名称不能为空', trigger: 'blur' }],
   };
 
   //修改对象
   const updateInfo = reactive<any>({
     name: '',
-    trade:'',
+    trade: '',
     companyAddress: '',
     workPlace: '',
   });
-  
+
   /**
    * 初始化租户信息
    */
@@ -180,7 +196,6 @@
    */
   function getPcaText(code) {
     let arr = getRealCode(code, 3);
-    console.log("arr:::",arr)
     let provinces: any = provinceOptions.filter((item) => item.value == arr[0]);
     let cities: any[] = getDataByCode(arr[0]);
     let areas: any[] = getDataByCode(arr[1]);
@@ -218,54 +233,48 @@
 
   /**
    * 公司logo上传成功事件
-   * 
-   * @param val
    */
   function handleCompanyLogoChange(val) {
-    if(val){
-      saveOrUpdateTenant({ id: formState.id, companyLogo: val }, true)
+    if (val) {
+      saveOrUpdateTenant({ id: formState.id, companyLogo: val }, true);
     }
   }
 
   /**
    * 更新打开弹窗
-   * 
-   * @param key
    */
-  function goUpdate(key){
+  function goUpdate(key) {
     modalVisible[key] = true;
     updateInfo[key] = formState[key];
   }
 
   /**
    * 编辑租户信息
-   * @param params
    */
-  async function updateTenantInfo(params){
+  async function updateTenantInfo(params) {
     return defHttp.put({ url: '/sys/tenant/editOwnTenant', params });
   }
 
   /**
    * 更新数据
-   * @param key
    */
   async function doUpdate(key) {
-    if(key=='name'){
+    if (key == 'name') {
       await manageNameRef.value.validateFields();
     }
     //所在地为空报错
-    if(key == 'companyAddress'){
-      if(updateInfo[key] instanceof Array){
+    if (key == 'companyAddress') {
+      if (updateInfo[key] instanceof Array) {
         updateInfo[key] = '';
       }
     }
     let params = {
       id: formState.id,
-      [key]: updateInfo[key]
+      [key]: updateInfo[key],
     };
     await updateTenantInfo(params);
     initTenant();
-    modalVisible[key] = false
+    modalVisible[key] = false;
   }
 
   onMounted(() => {
@@ -275,158 +284,130 @@
   });
 </script>
 <style lang="less" scoped>
-  .message-set-container {
-    box-sizing: border-box;
-    flex: 1;
-    margin: 16px;
-    min-height: 0;
-  }
-  .message-set-box {
-    background: #fff;
-    border-radius: 4px;
+  // ----------------------------------------------------
+  // UI Redesign: 设计稿 my-tenant.html .info-card / .info-head / .info-body
+  // ----------------------------------------------------
+  .my-tenant-page {
     display: flex;
     flex-direction: column;
-    min-width: 750px;
-    position: relative;
-    height: 100%;
+    gap: 16px;
+    padding: 22px 24px;
   }
-  .message-set-header {
+
+  .info-card {
+    background: var(--surface, #fff);
+    border: 1px solid var(--line, rgba(15, 23, 42, 0.07));
+    border-radius: var(--radius-card, 18px);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .info-head {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--line, rgba(15, 23, 42, 0.07));
+
+    h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-900);
+    }
+    .sub {
+      font-size: 12px;
+      color: var(--ink-400);
+      margin-top: 3px;
+    }
+  }
+
+  .info-body {
+    padding: 6px 24px 16px;
+  }
+
+  .info-row {
+    display: flex;
     align-items: center;
-    background: #fff;
-    border-bottom: 1px solid #eaeaea;
-    box-sizing: border-box;
-    color: #333;
-    display: flex;
-    font-weight: 600;
-    height: 57px;
-    line-height: 57px;
-    padding: 0 18px 0 24px;
+    gap: 18px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line, rgba(15, 23, 42, 0.07));
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    .info-label {
+      width: 120px;
+      flex-shrink: 0;
+      color: var(--ink-500);
+      font-size: 13px;
+    }
+
+    .info-value {
+      flex: 1;
+      color: var(--ink-900);
+      font-size: 14px;
+      font-weight: 500;
+      min-width: 0;
+
+      &.empty {
+        color: var(--ink-400);
+        font-weight: 400;
+      }
+    }
   }
-  .message-set-content {
-    box-sizing: border-box;
-    flex: 1;
-    min-height: 0;
-    overflow-x: hidden;
-  }
-  .font17 {
-    font-size: 17px;
-  }
-  .common-info {
-    padding: 20px 24px;
-    background: #ffffff;
-    margin-bottom: 20px;
-  }
-  .common-info-row {
-    color: #333;
-    display: flex;
+
+  .id-pill {
+    display: inline-flex;
+    align-items: center;
+    font-variant-numeric: tabular-nums;
+    background: var(--surface-3, #F1F3F8);
+    color: var(--ink-700);
+    border-radius: 8px;
+    padding: 4px 10px;
     font-size: 13px;
+    font-weight: 600;
   }
-  .common-info-row-label {
-    color: #757575;
-    display: flex;
-    justify-content: flex-start;
-    width: 140px;
-  }
-  .common-info-row-content {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-  }
-  .pointer {
+
+  .link-action {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
+    text-decoration: none;
+    padding: 2px 6px;
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--accent-50, rgba(91, 108, 255, 0.08));
+    }
   }
-  .delete-color {
-    color: #f51744;
-    cursor: pointer;
-  }
-  .set-describe {
-    color: #757575;
-    margin-top: 10px !important;
-  }
-  .m-top24 {
-    margin-top: 24px;
-  }
-  .edit-name {
-    border: none;
-    border-radius: 3px;
-    box-sizing: border-box;
-    color: #1e88e5;
-    cursor: pointer;
-    display: inline-block;
-    outline: none;
-    text-shadow: none;
-    user-select: none;
-    vertical-align: middle;
-  }
-  .m-right16 {
-    margin-right: 16px;
-  }
-  .split-line {
-    background: #eaeaea;
-    height: 1px;
-    margin: 40px 0;
-    width: 100%;
-  }
-  .cancel-split-line {
-    background: #eaeaea;
-    height: 1px;
-    margin: 40px 0 20px;
-    width: 100%;
-  }
+
+  // 弹窗内 form 元素
   .form-item-padding {
     padding: 0 24px 22px;
   }
   .form-group {
-    display: table;
+    display: block;
     font-size: 13px;
-    position: relative;
     width: 100%;
+
     .form-label {
-      color: #333;
+      color: var(--ink-900);
       font-weight: 600;
       line-height: 29px;
     }
     .txt-middle {
       vertical-align: middle !important;
     }
+    .red {
+      color: var(--bad);
+    }
   }
-  .red {
-    color: red;
-  }
-  .domain-background {
-    height: 56px;
-    margin-top: 6px;
-    width: 100px;
-    margin-left: 142px;
-  }
-  .cancellation {
-    color: #333333;
-    font-size: 20px;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  :deep(.ant-upload.ant-upload-select){
+
+  // LOGO 上传缩略图：保留原 80×80 大小
+  :deep(.ant-upload.ant-upload-select),
+  :deep(.ant-upload-list-item-container) {
     width: 80px !important;
     height: 80px !important;
     border: unset !important;
-  }
-  :deep(.ant-upload-list-item-container){
-    width: 80px !important;
-    height: 80px !important;
-    border: unset !important;
-  }
-  .edit-name {
-    border: none;
-    border-radius: 3px;
-    box-sizing: border-box;
-    color: #1e88e5;
-    cursor: pointer;
-    display: inline-block;
-    outline: none;
-    text-shadow: none;
-    user-select: none;
-    vertical-align: middle;
   }
 </style>
