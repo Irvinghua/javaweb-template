@@ -127,9 +127,8 @@
     }
 
     &__alert-wrap {
-      // UI Redesign: 按钮行 → alert（文字提示）间距统一 14px，与按钮行 → 表格顶部一致
-      // (.ant-table-title padding-bottom 14px 是 alert 行 → 表格顶部的间距，
-      //  两个 14px 配合就保证 "有 alert" 和 "无 alert" 两种情形下视觉一致)
+      // UI Redesign: 占位（实际 DOM class 是不带前缀的 .basic-table-header__alert-wrap，
+      // 真正生效的规则见下方）
       margin-top: 14px;
     }
 
@@ -148,6 +147,13 @@
         }
       }
     }
+  }
+
+  // ⚠️ 注意：template 里 .basic-table-header__alert-wrap 是不带 @prefix-cls 前缀的字面量类名，
+  // 不能写成 `.@{prefix-cls}__alert-wrap`（那会编译成 .jeecg-basic-table-header__alert-wrap）。
+  // 这里独立挂一条规则，确保按钮行 → alert 行有 14px 间距。
+  .basic-table-header__alert-wrap {
+    margin-top: 14px;
   }
 
   /* 已选提示条 */
