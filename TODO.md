@@ -63,29 +63,32 @@ hold 住，未发现破坏性回归。
 迁移会在下次启动 jeecg-boot 时自动执行（位于 `src/main/resources/flyway/sql/mysql/`），
 覆盖既有数据库的清理 + 新 fork DB 初始化后的清理（fresh dump 里 V3.9.0~V3.9.3 全跑一遍）。
 
-### C. 未抽查的页面（**Task 10 端到端再过一遍即可**）
+### C. 未抽查的页面 — ✅ Task 10 已补抽样
 
-抽样代表性已够，下列页面留到端到端最终验证里扫一眼（应该都没问题）：
+Task 10 端到端验证里补查了：
+- `/system/tableWhiteList` ✓（截图 `sample-tablewhitelist.png`）— 操作列 fixed:right 生效；
+  表格里看到 `airag_knowledge` / `airag_flow` / `airag_model` 行 — 已由 B 项的
+  flyway 迁移 V3.9.3_0 处理，下次启动后端自动清掉。
+- `/system/category` ✓（截图 `sample-category.png`）— 编辑/删除/添加下级 三个操作在
+  120px 操作列里略挤但仍可读，可后续考虑给该页 actionColumn 覆盖 width 为 160。
+- 其余 `/system/tenant`、`/system/homeConfig`、`/system/message` 未单独抽样，但都走
+  同一套 BasicTable / useListPage，A 项修复后均默认受益（操作列锁右）。
+- `/monitor/*` 已在前期任务覆盖 disk / redis / route / datalog。
+- `/mytenant/*` 在前期单独改过。
 
-- `/system/tableWhiteList`（白名单管理）
-- `/system/tenant`（多租户管理）— 注意：tenant 弹窗已经在前期任务里改过设计稿对齐
-- `/system/category`（分类字典）
-- `/system/homeConfig`（首页配置）
-- `/system/message`（消息中心 — 模板 / 收件箱）
-- `/monitor/*`（系统监控）— 已覆盖 disk / redis / route / datalog
-- `/mytenant/*`（我的租户子页 — 租户用户、租户默认套餐等已逐个改过）
+### D. 暗色主题适配 — 保留为"模板未启用"
 
-### D. 暗色主题适配（**Task 10 时再过**）
+整改时走亮色（设计稿基准）。暗色模式 (`html[data-theme='dark']`) 各部件的状态：
+- `BasicTable` / `Modal/Drawer` / 工具栏 — 走 antd ConfigProvider tokens，未单独
+  改过暗色主题样式；
+- 加载页 — `index.html` 里已补 dark 主题 fork（双 radial + linear 反色）；
+- App 整体 — 默认亮色，设置抽屉里仍有"暗色主题"切换按钮，但本模板未做暗色稿。
 
-整改时主要走亮色（设计稿基准），暗色模式（`html[data-theme='dark']`）的：
-- `BasicTable` 表格底色 / 行 hover
-- `Modal/Drawer` 表面色
-- 加载页（已在最新 commit 里补了 dark fork）
-- 工具栏 / 搜索区文本对比度
+依据 `jeecgboot-vue3/CLAUDE.md`："Dark 模式：JeecgBoot 原生能力保留但不主动使用。
+fork 项目如确定不用，可删设置抽屉里的开关。" — 本模板暗色保留为"原生兜底"，
+不做逐页回归。fork 项目如要正式支持，需按设计稿出一版暗色 token 再回归。
 
-均未逐个回归。Task 10 启动后再切到 dark mode 抽样几个页面校对。
-
-**优先级**：P2 — fork 项目默认亮色，但模板要兼顾。
+**优先级**：P3 — 模板范畴外，留给具体 fork 项目处理。
 
 ## 不影响合并的"提了知道一下"
 
@@ -96,3 +99,17 @@ hold 住，未发现破坏性回归。
 - 加载页 color hardcoded 用了 `#5B6CFF`/`#7E8DFF` 字面量而不是 CSS
   variable，原因是 `<style>` 在 `index.html` 里，跑在 Vue 挂载前，
   `variables.less` 还没载入。属于不可避免的硬编码。
+
+## Task 10 端到端验证结论
+
+执行了下列检查（命令均在 `jeecgboot-vue3/` 目录跑）：
+
+| 项 | 命令 | 结果 |
+| --- | --- | --- |
+| Type check | `npx vue-tsc --noEmit` | 30 个 TS 错误，**全是 JeecgBoot 基线问题**（chart/Bar.vue、BasicButton.vue、mock/menu.ts、build/vite/plugin/* 等），UI 重构涉及的文件 0 错误 |
+| Prod build | `pnpm build` | exit 0，dist 正常产出（PWA + sw.js + _app.config.js 都齐全），末尾"复制 airag chat 目录失败"是裁剪 AI 模块后 copyChat 脚本找不到目录的副作用，不影响构建 |
+| 浏览器抽样 | chrome-devtools | 用户/角色/菜单/部门/职务/字典/通告 / 白名单 / 分类字典 全部正常渲染；操作列默认锁右生效，毛玻璃遮罩生效，新增 Modal 富文本可用 |
+| Git 状态 | `git log --oneline` | feat/ui-redesign 分支累计 ~30 个 commit，最后一个是本 Task 10 收口 |
+
+**结论**：UI 重构无破坏性回归，可合并。剩余 30 个 vue-tsc 基线错误属于 JeecgBoot 3.9.1
+继承，不在本次重构范围；建议后续单独发一个 `chore: clean baseline ts errors` 系列收尾。

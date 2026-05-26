@@ -65,23 +65,15 @@
   </div>
 </template>
 <script lang="ts" setup name="we-chat-ding-setting">
-  import { onMounted, ref, reactive, unref } from 'vue';
-  import { CollapseContainer } from '/@/components/Container';
+  import { onMounted, ref, unref } from 'vue';
   import { bindThirdAppAccount, deleteThirdAccount, getThirdAccountByUserId } from './UserSetting.api';
-  import { useUserStore } from '/@/store/modules/user';
-  import { useModal } from '/@/components/Modal';
-  import { DingtalkCircleFilled, createFromIconfontCN, WechatFilled } from '@ant-design/icons-vue';
+  import { DingtalkCircleFilled, WechatFilled } from '@ant-design/icons-vue';
   import { useGlobSetting } from '/@/hooks/setting';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { Modal } from 'ant-design-vue';
   import { useDesign } from '/@/hooks/web/useDesign';
 
   const { prefixCls } = useDesign('j-user-tenant-setting-container');
-
-  const IconFont = createFromIconfontCN({
-    scriptUrl: '//at.alicdn.com/t/font_2316098_umqusozousr.js',
-  });
-  const userStore = useUserStore();
 
   //绑定微信的数据
   const bindWechatData = ref<any>({});
@@ -95,8 +87,6 @@
   const thirdType = ref('');
   //第三方用户UUID
   const thirdUserUuid = ref('');
-  //第三方详情
-  const thirdDetail = ref<any>({});
   const { createMessage } = useMessage();
   //windows对象，用于关闭窗口事件
   const windowsIndex = ref<any>('');
@@ -119,18 +109,9 @@
     }
   }
 
-  /**
-   * 企业微信绑定解绑事件
-   */
-  function wechatEnterpriseBind() {
-    console.log('企业微信绑定解绑事件');
-    let data = unref(bindEnterpriseData);
-    if (!data.sysUserId) {
-      onThirdLogin('wechat_enterprise');
-    }else{
-      deleteAccount({ sysUserId: data.sysUserId, id: data.id }, '企业微信');
-    }
-  }
+  // UI Redesign: 企业微信绑定/解绑功能保留 setThirdDetail 写入 bindEnterpriseData，
+  // 但当前设计稿（profile.html "第三方APP" 区）只展示钉钉/微信两项；
+  // 如需启用企业微信，恢复 wechatEnterpriseBind 函数并在模板中加一行 .app-row 即可。
 
   /**
    * 钉钉绑定解绑事件

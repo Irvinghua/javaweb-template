@@ -210,12 +210,8 @@
 import { onMounted, ref, unref } from "vue";
 import { getTenantListByUserId, cancelApplyTenant, exitUserTenant, changeOwenUserTenant, agreeOrRefuseJoinTenant } from "./UserSetting.api";
 import { useUserStore } from "/@/store/modules/user";
-import { CollapseContainer } from "/@/components/Container";
-import { getFileAccessHttpUrl, userExitChangeLoginTenantId } from "/@/utils/common/compUtils";
-import headerImg from "/@/assets/images/header.jpg";
+import { userExitChangeLoginTenantId } from "/@/utils/common/compUtils";
 import {useMessage} from "/@/hooks/web/useMessage";
-import { initDictOptions } from '/@/utils/dict';
-import { uniqWith } from 'lodash-es';
 import { Modal } from 'ant-design-vue';
 import UserSelect from '/@/components/Form/src/jeecg/components/userSelect/index.vue';
 import {router} from "/@/router";
@@ -236,11 +232,13 @@ const tenantVisible = ref<boolean>(false);
 //用户数据
 const userData = ref<any>([]);
 //用户
+// UserInfo 类型未声明 workNo / orgCodeTxt / postText，但运行时存在 — 走 any 跳过 TS 报错
+const userInfoAny: any = userStore.getUserInfo;
 const userDetail = ref({
-  realname: userStore.getUserInfo.realname,
-  workNo: userStore.getUserInfo.workNo,
-  orgCodeTxt: userStore.getUserInfo.orgCodeTxt,
-  postText: userStore.getUserInfo.postText,
+  realname: userInfoAny.realname,
+  workNo: userInfoAny.workNo,
+  orgCodeTxt: userInfoAny.orgCodeTxt,
+  postText: userInfoAny.postText,
 });
 
 /**
@@ -345,20 +343,6 @@ function getInitial(name: string): string {
     } else {
       value.show = false;
     }
-  };
-
-  /**
-   * 获取部门文本
-   * @param value
-   */
-  function getDepartText(value) {
-    let arr = departOptions.value.filter((item) => {
-      item.value == value;
-    });
-    if (arr && arr.length > 0) {
-      return arr[0].label;
-    }
-    return '未填写';
   };
 
   /**
