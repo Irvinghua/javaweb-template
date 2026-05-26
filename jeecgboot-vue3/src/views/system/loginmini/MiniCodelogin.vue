@@ -1,62 +1,30 @@
 <template>
-  <div class="aui-content">
-    <div class="aui-container">
-      <div class="aui-form">
-        <div class="aui-image">
-          <div class="aui-image-text">
-            <img :src="adTextImg" alt="" />
-          </div>
-        </div>
-        <div class="aui-formBox aui-formEwm">
-          <div class="aui-formWell">
-            <form>
-              <div class="aui-flex aui-form-nav investment_title" style="padding-bottom: 19px">
-                <div class="aui-flex-box activeNav">{{t('sys.login.qrSignInFormTitle')}}</div>
-              </div>
-              <div class="aui-form-box">
-                <div class="aui-account" style="padding: 30px 0">
-                  <div class="aui-ewm">
-                    <QrCode :value="qrCodeUrl" class="enter-x flex justify-center xl:justify-start" :width="280" />
-                  </div>
-                </div>
-              </div>
-              <div class="aui-formButton">
-                <a class="aui-linek-code aui-link-register" @click="goBackHandleClick">{{t('sys.login.backSignIn')}}</a>
-              </div>
-            </form>
-          </div>
-          <div class="aui-flex aui-third-text">
-            <div class="aui-flex-box aui-third-border">
-              <span>{{ t('sys.login.otherSignIn') }}</span>
-            </div>
-          </div>
-          <div class="aui-flex" :class="`${prefixCls}-sign-in-way`">
-            <div class="aui-flex-box">
-              <div class="aui-third-login">
-                <a href="" title="github" @click="onThirdLogin('github')"><GithubFilled /></a>
-              </div>
-            </div>
-            <div class="aui-flex-box">
-              <div class="aui-third-login">
-                <a href="" title="企业微信" @click="onThirdLogin('wechat_enterprise')"><icon-font class="item-icon" type="icon-qiyeweixin3" /></a>
-              </div>
-            </div>
-            <div class="aui-flex-box">
-              <div class="aui-third-login">
-                <a href="" title="钉钉" @click="onThirdLogin('dingtalk')"><DingtalkCircleFilled /></a>
-              </div>
-            </div>
-            <div class="aui-flex-box">
-              <div class="aui-third-login">
-                <a href="" title="微信" @click="onThirdLogin('wechat_open')"><WechatFilled /></a>
-              </div>
-            </div>
-          </div>
-        </div>
+  <div class="mini-view">
+    <div class="mini-title-wrap">
+      <h2 class="mini-title">{{ t('sys.login.qrSignInFormTitle') }}</h2>
+    </div>
+
+    <div class="mini-qr-wrap">
+      <div class="mini-qr-box">
+        <QrCode :value="qrCodeUrl" class="mini-qr" :width="200" />
       </div>
+      <p class="mini-qr-tip" :class="{ 'mini-qr-tip--success': state === '2' }">
+        {{ state === '2' ? t('sys.login.scanSuccess') : t('sys.login.scanSign') }}
+      </p>
+    </div>
+
+    <button class="mini-btn-ghost" type="button" @click="goBackHandleClick">{{ t('sys.login.backSignIn') }}</button>
+
+    <div class="mini-divider">
+      <span>{{ t('sys.login.otherSignIn') }}</span>
+    </div>
+    <div class="mini-third-row" :class="`${prefixCls}-sign-in-way`">
+      <a class="mini-third-btn" href="javascript:;" title="github" @click="onThirdLogin('github')"><GithubFilled /></a>
+      <a class="mini-third-btn" href="javascript:;" title="企业微信" @click="onThirdLogin('wechat_enterprise')"><icon-font class="item-icon" type="icon-qiyeweixin3" /></a>
+      <a class="mini-third-btn" href="javascript:;" title="钉钉" @click="onThirdLogin('dingtalk')"><DingtalkCircleFilled /></a>
+      <a class="mini-third-btn" href="javascript:;" title="微信" @click="onThirdLogin('wechat_open')"><WechatFilled /></a>
     </div>
   </div>
-  <!-- 第三方登录相关弹框 -->
   <ThirdModal ref="thirdModalRef"></ThirdModal>
 </template>
 
@@ -66,10 +34,8 @@
   import { useUserStore } from '/@/store/modules/user';
   import { QrCode } from '/@/components/Qrcode/index';
   import ThirdModal from '/@/views/sys/login/ThirdModal.vue';
-  import logoImg from '/@/assets/loginmini/icon/jeecg_logo.png';
-  import adTextImg from '/@/assets/loginmini/icon/jeecg_ad_text.png';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { useDesign } from "/@/hooks/web/useDesign";
+  import { useDesign } from '/@/hooks/web/useDesign';
   import { GithubFilled, WechatFilled, DingtalkCircleFilled, createFromIconfontCN } from '@ant-design/icons-vue';
 
   const IconFont = createFromIconfontCN({
@@ -84,7 +50,6 @@
   const userStore = useUserStore();
   const emit = defineEmits(['go-back', 'success', 'register']);
 
-  //加载二维码信息
   function loadQrCode() {
     state.value = '0';
     getLoginQrcode().then((res) => {
@@ -94,16 +59,14 @@
       }
     });
   }
-  //监控扫码状态
+
   function watchQrcodeToken(qrcodeId) {
     getQrcodeToken({ qrcodeId: qrcodeId }).then((res) => {
       let token = res.token;
       if (token == '-2') {
-        //二维码过期重新获取
         loadQrCode();
         clearInterval(timer);
       }
-      //扫码成功
       if (res.success) {
         state.value = '2';
         clearInterval(timer);
@@ -114,7 +77,6 @@
     });
   }
 
-  /** 开启定时器 */
   function openTimer(qrcodeId) {
     watchQrcodeToken(qrcodeId);
     closeTimer();
@@ -123,29 +85,18 @@
     }, 1500);
   }
 
-  /** 关闭定时器 */
   function closeTimer() {
     if (timer) clearInterval(timer);
   }
 
-  /**
-   * 第三方登录
-   * @param type
-   */
   function onThirdLogin(type) {
     thirdModalRef.value.onThirdLogin(type);
   }
 
-  /**
-   * 初始化表单
-   */
   function initFrom() {
     loadQrCode();
   }
 
-  /**
-   * 返回
-   */
   function goBackHandleClick() {
     emit('go-back');
     closeTimer();
@@ -159,7 +110,128 @@
     initFrom,
   });
 </script>
+
 <style lang="less" scoped>
-@import '/@/assets/loginmini/style/home.less';
-@import '/@/assets/loginmini/style/base.less';
+  .mini-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mini-title-wrap {
+    text-align: center;
+  }
+
+  .mini-title {
+    display: inline-block;
+    position: relative;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--ink-900);
+    margin: 0;
+    letter-spacing: -0.4px;
+
+    &::after {
+      content: '';
+      display: block;
+      width: 38px;
+      height: 3px;
+      margin: 8px auto 0;
+      border-radius: 2px;
+      background: var(--accent);
+    }
+  }
+
+  .mini-qr-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin: 28px 0 12px;
+  }
+
+  .mini-qr-box {
+    width: 220px;
+    height: 220px;
+    padding: 14px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 8px 22px rgba(40, 40, 90, 0.08);
+    display: grid;
+    place-items: center;
+  }
+
+  .mini-qr-tip {
+    margin: 0;
+    color: var(--ink-600);
+    font-size: 14px;
+    text-align: center;
+
+    &--success {
+      color: var(--good);
+      font-weight: 600;
+    }
+  }
+
+  .mini-btn-ghost {
+    width: 100%;
+    height: 54px;
+    margin-top: 20px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.4);
+    color: var(--ink-700);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    cursor: pointer;
+  }
+
+  .mini-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0 14px;
+    color: var(--ink-400);
+    font-size: 13px;
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+  }
+
+  .mini-third-row {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+  }
+
+  .mini-third-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--ink-600);
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    text-decoration: none;
+    transition:
+      transform var(--fast),
+      color var(--fast),
+      background-color var(--fast);
+
+    &:hover {
+      transform: translateY(-2px);
+      color: var(--accent);
+      background: #fff;
+    }
+  }
 </style>

@@ -841,10 +841,13 @@
   .ml-card {
     position: absolute;
     right: 8%;
-    top: 50%;
-    transform: translateY(-50%);
+    top: calc((100vh - min(700px, calc(100vh - 64px))) / 2);
+    transform: none;
     width: 100%;
-    max-width: 420px;
+    max-width: 480px;
+    height: min(700px, calc(100vh - 64px));
+    display: flex;
+    flex-direction: column;
     background: rgba(255, 255, 255, 0.78);
     backdrop-filter: blur(18px) saturate(150%);
     -webkit-backdrop-filter: blur(18px) saturate(150%);
@@ -853,8 +856,9 @@
     box-shadow:
       0 24px 60px -12px rgba(40, 40, 90, 0.18),
       0 8px 24px rgba(40, 40, 90, 0.08);
-    padding: 40px 40px 36px;
+    padding: 44px 44px 36px;
     z-index: 2;
+    overflow-y: auto;
 
     &--mobile {
       position: static;
@@ -862,6 +866,9 @@
       right: auto;
       margin: 24px auto 60px;
       width: calc(100% - 32px);
+      height: auto;
+      min-height: auto;
+      padding: 36px 28px 30px;
     }
   }
 
@@ -871,11 +878,11 @@
   }
 
   .ml-form-title {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 30px;
+    font-weight: 800;
     color: var(--ink-900);
     margin: 0 0 6px;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.6px;
     line-height: 1.3;
   }
 
@@ -1210,7 +1217,9 @@
 
   /* 子面板（忘记密码、注册、扫码） */
   .ml-sub-panel {
-    /* 子组件自带样式，这里仅提供容器 */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   /* 底部版权 */
