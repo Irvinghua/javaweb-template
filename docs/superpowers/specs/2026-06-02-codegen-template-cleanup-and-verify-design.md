@@ -137,3 +137,17 @@ onetomany2/java/${bussiPackage}/${entityPackage}/vue/modules/[1-n]Modal.vuei
 | `jeecgboot-vue3/src/views/system/tableWhiteList/` | 参考页（List + data + Modal） |
 | `jeecgboot-vue3/src/design/ant/btn.less` | 工具栏按钮自动 ghost 化规则（行 38–98） |
 | `docs/superpowers/specs/2026-05-23-codegen-template-newui-alignment-spec.md` | 盘点 + 踩坑清单 + 验证清单 |
+
+## 8. 验证结论与已知遗留（实施回填）
+
+**端到端验证已执行并通过**（用 `codegen_demo` 测试表，含 6 查询字段 + 枚举 + 时间字段，单表风格）：
+
+- 生成器（`CodeGenerateOne` 程序化入口）跑通，产出 java + uniapp + vue2 + vue3 全套，无异常。
+- 生成的 vue3 三件套与重构后参考页 `SysTableWhiteListList.vue` 结构一致：`BasicTable`+`useListPage`、`#tableTitle` slot、`TableAction`(getTableAction/getDropDownAction)、工具栏 `type="primary"`（由 `btn.less` 自动转 ghost）、`searchFormSchema` 不写 `colProps`（`useListPage` 默认 `autoAdvancedCol:2` 接管）、删除走 `popConfirm`+`label:'删除'`（自动红）、无任何已裁剪模块引用。
+- 生成的 `CodegenDemoModal.vue` 含 `labelWidth: 120` + `wrapperCol: null`，**证明改动 B 流转到产物**。
+- `vue-tsc --noEmit` 对生成文件仅报 unused-var 警告，无类型/缺模块错误。
+- **删除 vue2 后重跑**：生成器无 "template not found" 报错，不再产出 `vue/`，vue3 产物与删除前 `diff -r` 零差异——**证明改动 A 安全**。
+
+**生成器运行机制（重要，已沉淀为记忆）**：web/online 代码生成已随裁剪移除，独立运行时引擎从文件系统回退路径 `jeecg-boot/config/jeecg/code-template-online/` 读模板（非 classpath `code-template/`）。需先把 `code-template/` 拷进该回退目录才能生成；该目录非 git 跟踪、属本地运行产物，验证后已清理。
+
+**已知遗留（不修）**：`onetomany`/`onetomany2` 弹窗内子表用 `JVxeTable`，其内置皮肤 token/全局样式覆盖不全，与新 UI 存在视觉差距。沿用重构主 spec（`2026-05-23`）处置：做到不崩、视觉基本协调即可，深改另立任务。这也是这两套的弹窗模板（`width=1000px` + tabs）保留 `labelWidth: 150` 不做改动 B 的原因。
