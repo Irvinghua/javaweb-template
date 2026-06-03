@@ -240,6 +240,8 @@ html[data-theme='dark'] {
   > .jeecg-basic-form .ant-form-item-label {
     display: flex !important;
     align-items: center !important;
+    // label 右对齐贴近 input（mockup 要求 text-align:right；flex 容器需用 justify-content）
+    justify-content: flex-end !important;
     padding: 0 !important;
     // 固定宽度对齐 mockup .field > label { width: 84px; text-align: right }
     min-width: 72px;
